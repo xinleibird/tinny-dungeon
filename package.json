@@ -1,0 +1,46 @@
+{
+  "name": "tough-rogue",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "TS_NODE_PROJECT=\"tsconfig.webpack.json\" webpack --config webpack.production.ts",
+    "start": "webpack-dev-server --content-base ./public --hot --inline --colors --port 3000 --open",
+    "dev": "npm run start"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/copy-webpack-plugin": "^6.0.0",
+    "@types/mersenne-twister": "^1.1.2",
+    "@types/node": "^14.6.4",
+    "@types/socket.io-client": "^1.4.33",
+    "@types/webpack": "^4.41.22",
+    "@typescript-eslint/eslint-plugin": "^4.0.1",
+    "@typescript-eslint/parser": "^4.0.1",
+    "clean-webpack-plugin": "^3.0.0",
+    "copy-webpack-plugin": "^6.1.0",
+    "css-loader": "^4.2.2",
+    "eslint": "^7.8.1",
+    "eslint-config-alloy": "^3.8.0",
+    "file-loader": "^6.1.0",
+    "html-webpack-plugin": "^4.4.1",
+    "prettier": "^2.1.1",
+    "style-loader": "^1.2.1",
+    "ts-loader": "^8.0.3",
+    "ts-node": "^9.0.0",
+    "tsconfig-paths": "^3.9.0",
+    "typescript": "^4.0.2",
+    "url-loader": "^4.1.0",
+    "webpack": "^4.44.1",
+    "webpack-cli": "^3.3.12",
+    "webpack-dev-server": "^3.11.0"
+  },
+  "peerDependencies": {
+    "yarn": "~1.22.5"
+  },
+  "dependencies": {
+    "mersenne-twister": "^1.1.0",
+    "pixi.js": "^5.3.3"
+  }
+}
