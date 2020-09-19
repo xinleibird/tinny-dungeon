@@ -1,6 +1,7 @@
 import './index.css';
 import * as PIXI from 'pixi.js';
 import { initTileTextures } from './tiles';
+import { getSpriteAnimation } from './player';
 
 const root = document.getElementById('root');
 
@@ -16,11 +17,16 @@ const app = new PIXI.Application({
 root.appendChild(app.view);
 
 const map = [
-  [1, 1, 1, 1, 1, 1],
-  [1, 0, 0, 0, 0, 1],
-  [1, 0, 0, 0, 0, 1],
-  [1, 0, 0, 0, 0, 1],
-  [1, 1, 1, 1, 1, 1],
+  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+  [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 ];
 
 const drawMap = async () => {
@@ -51,3 +57,15 @@ const drawMap = async () => {
 };
 
 drawMap();
+
+const drawPlayer = async () => {
+  const knight = await getSpriteAnimation();
+
+  knight.position.x = 16;
+  knight.position.y = 16;
+
+  knight.play();
+  app.stage.addChild(knight);
+};
+
+drawPlayer();

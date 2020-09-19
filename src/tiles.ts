@@ -14,13 +14,13 @@ type TilesType = {
   [key in keyof typeof TILES_ENUM]?: PIXI.Texture;
 };
 
-const tiles: TilesType = {};
+const loader = PIXI.Loader.shared;
+loader.add('assets/tiles/map_tiles.json');
 
 export const initTileTextures = (): Promise<TilesType> => {
+  const tiles: TilesType = {};
   return new Promise((resolve, reject) => {
-    const loader = new PIXI.Loader();
-
-    loader.add('assets/tiles/map_tiles.json').load(() => {
+    loader.load(() => {
       tiles[TILES_ENUM[TILES_ENUM.EMPTY]] = PIXI.Texture.from(`map_tiles_${TILES_ENUM.EMPTY}`);
       tiles[TILES_ENUM[TILES_ENUM.FLOOR]] = PIXI.Texture.from(`map_tiles_${TILES_ENUM.FLOOR}`);
       tiles[TILES_ENUM[TILES_ENUM.WALL]] = PIXI.Texture.from(`map_tiles_${TILES_ENUM.WALL}`);
