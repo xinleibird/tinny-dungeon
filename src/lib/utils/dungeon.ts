@@ -1,7 +1,8 @@
-import { ENTITY_TYPES } from '../objects/entity';
-import { initialize2DArray } from './array';
 import * as ROT from 'rot-js';
+
+import { ENTITY_TYPES } from '../objects/entity';
 import { TILE_TYPES } from '../tilemap/tile';
+import { initialize2DArray } from './array';
 
 const fillTiles = (
   tiles: TILE_TYPES[][],

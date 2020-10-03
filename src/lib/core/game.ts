@@ -1,8 +1,9 @@
 import * as PIXI from 'pixi.js';
-import { Player, NonePlayer, PLAYER_TYPES } from '../character';
+
+import { NonePlayer, Player, PLAYER_TYPES } from '../character';
 import { ENTITY_TYPES } from '../objects/entity';
+import { emitter, Loader, RESOURCE_EVENTS } from '../system';
 import Dungeon from '../tilemap/dungeon';
-import { emitter, RESOURCE_EVENTS, Loader } from '../system';
 
 export interface PIXIAppOption {
   autoStart?: boolean;

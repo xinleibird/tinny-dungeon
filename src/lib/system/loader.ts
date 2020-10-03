@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js';
-import { CHARACTER_TYPES, PLAYER_TYPES, CHARACTER_ANIMATION_TYPES } from '../character';
+
+import { CHARACTER_ANIMATION_TYPES, CHARACTER_TYPES, PLAYER_TYPES } from '../character';
 import { emitter, RESOURCE_EVENTS } from './events';
 
 const loader = PIXI.Loader.shared;

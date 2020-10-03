@@ -1,4 +1,5 @@
 import * as PIXI from 'pixi.js';
+
 import { Vector2 } from '../geometry';
 import { Ability, Openable, Passable } from './ability';
 

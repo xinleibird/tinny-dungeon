@@ -1,8 +1,8 @@
-import path from 'path';
-import { Configuration } from 'webpack';
-import HtmlWebpackPlugin from 'html-webpack-plugin';
 import { CleanWebpackPlugin } from 'clean-webpack-plugin';
 import CopyWebpackPlugin from 'copy-webpack-plugin';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+import path from 'path';
+import { Configuration } from 'webpack';
 
 const config: Configuration = {
   mode: 'development',

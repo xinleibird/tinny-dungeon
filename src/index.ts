@@ -1,5 +1,6 @@
-import Game from './lib/core/game';
 import './index.css';
+
+import Game from './lib/core/game';
 
 const GAME_PIXEL_SCALE = 2;
 const game = new Game({

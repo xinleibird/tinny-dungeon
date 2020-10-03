@@ -1,5 +1,6 @@
-import { Vector2 } from '../geometry';
 import * as PIXI from 'pixi.js';
+
+import { Vector2 } from '../geometry';
 import { Loader } from '../system';
 
 export enum PLAYER_TYPES {

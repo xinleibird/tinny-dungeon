@@ -1,6 +1,7 @@
 import * as PIXI from 'pixi.js';
-import Character, { PLAYER_TYPES } from './character';
+
 import { Vector2 } from '../geometry';
+import Character, { PLAYER_TYPES } from './character';
 
 // export enum PLAYER_TYPES {
 //   KNIGHT_M = 'knight_m',

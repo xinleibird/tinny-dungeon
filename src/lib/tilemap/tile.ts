@@ -1,4 +1,5 @@
 import * as PIXI from 'pixi.js';
+
 import { Loader } from '../system';
 import Dungeon from './dungeon';
 

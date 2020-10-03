@@ -1,8 +1,8 @@
 import * as PIXI from 'pixi.js';
-import * as ROT from 'rot-js';
+
 import { Vector2 } from '../geometry';
 import Entity, { ENTITY_TYPES } from '../objects/entity';
-import { generateAutotile, initialize2DArray, generateDungeon } from '../utils';
+import { generateAutotile, generateDungeon } from '../utils';
 import Tile, { TILE_TYPES } from './tile';
 
 export default class Dungeon extends PIXI.Container {
