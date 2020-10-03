@@ -40,7 +40,7 @@
     "yarn": "~1.22.5"
   },
   "dependencies": {
-    "mersenne-twister": "^1.1.0",
-    "pixi.js": "^5.3.3"
+    "pixi.js": "^5.3.3",
+    "rot-js": "^2.1.4"
   }
 }
