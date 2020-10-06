@@ -1,7 +1,8 @@
 import * as PIXI from 'pixi.js';
 
 import { NonePlayer, Player, PLAYER_TYPES } from '../character';
-import { ENTITY_TYPES } from '../objects/entity';
+import { Vector2 } from '../geometry';
+import { ABILITY_NAMES } from '../objects/ability';
 import { emitter, Loader, RESOURCE_EVENTS } from '../system';
 import Dungeon from '../tilemap/dungeon';
 
@@ -33,54 +34,52 @@ export default class Game extends PIXI.Application {
 
   public constructor(props: PIXIAppOption) {
     super(props);
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'd') {
-        // this._player.positionX += 1;
-        const { x, y } = this._player.geometryPosition;
-        const entities = this._currentDungeon.entities;
 
-        if (entities[y][x + 1] === ENTITY_TYPES.CORRIDOR) {
-          this._player.setGeometryPosition(x + 1, y);
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'a') {
+        const { x, y } = this._player.geometryPosition;
+        const { entities } = this._currentDungeon;
+
+        if (entities[y][x - 1]?.hasAbility(ABILITY_NAMES.PASSABLE)) {
+          this._player.walk(Vector2.left());
         }
       }
     });
 
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'a') {
-        // this._player.positionX -= 1;
+      if (e.key === 'd') {
         const { x, y } = this._player.geometryPosition;
-        const entities = this._currentDungeon.entities;
+        const { entities } = this._currentDungeon;
 
-        if (entities[y][x - 1] === ENTITY_TYPES.CORRIDOR) {
-          this._player.setGeometryPosition(x - 1, y);
+        if (entities[y][x + 1]?.hasAbility(ABILITY_NAMES.PASSABLE)) {
+          this._player.walk(Vector2.right());
         }
       }
     });
 
     document.addEventListener('keydown', (e) => {
       if (e.key === 'w') {
-        // this._player.positionY -= 1;
         const { x, y } = this._player.geometryPosition;
-        const entities = this._currentDungeon.entities;
+        const { entities } = this._currentDungeon;
 
-        if (entities[y - 1][x] === ENTITY_TYPES.CORRIDOR) {
-          this._player.setGeometryPosition(x, y - 1);
+        console.log(this._player.geometryPosition);
+
+        if (entities[y - 1][x]?.hasAbility(ABILITY_NAMES.PASSABLE)) {
+          this._player.walk(Vector2.up());
         }
       }
     });
 
     document.addEventListener('keydown', (e) => {
       if (e.key === 's') {
-        // this._player.positionY += 1;
         const { x, y } = this._player.geometryPosition;
-        const entities = this._currentDungeon.entities;
+        const { entities } = this._currentDungeon;
 
-        if (entities[y + 1][x] === ENTITY_TYPES.CORRIDOR) {
-          this._player.setGeometryPosition(x, y + 1);
+        if (entities[y + 1][x]?.hasAbility(ABILITY_NAMES.PASSABLE)) {
+          this._player.walk(Vector2.down());
         }
       }
     });
-
     Loader.load();
   }
 
@@ -89,18 +88,13 @@ export default class Game extends PIXI.Application {
     root.appendChild(this.view);
 
     emitter.on(RESOURCE_EVENTS.RESOURCES_LOADED, () => {
-      const dungeon = new Dungeon(25, 21);
-      this._currentDungeon = dungeon;
-      this.stage.addChild(dungeon);
+      const knight = new Player({ x: 0, y: 0 }, PLAYER_TYPES.KNIGHT_M);
 
-      const t = new Player(2, 2, PLAYER_TYPES.KNIGHT_M);
-      this.stage.addChild(t);
+      knight.hold();
+      this._player = knight;
 
-      const v = t.children[2] as PIXI.AnimatedSprite;
-      v.play();
-
-      this._gameLoop();
-      this._player = t;
+      this.gameLoop();
+      this.renderCompositions();
     });
   }
 
@@ -128,9 +122,33 @@ export default class Game extends PIXI.Application {
     this._noneplayers = [...this._noneplayers, none];
   }
 
+  public clearNonePlayers(none: NonePlayer) {
+    this._noneplayers = [];
+  }
+
   public get nonePlayers() {
     return this._noneplayers;
   }
 
-  private _gameLoop() {}
+  private renderCompositions() {
+    if (this._currentDungeon) {
+      this.stage.addChild(this._currentDungeon);
+    }
+
+    if (this._player) {
+      this.stage.addChild(this._player);
+    }
+  }
+
+  private gameLoop() {
+    const dungeon = new Dungeon(31, 27);
+    this._currentDungeon = dungeon;
+
+    this._player.geometryPosition = this._currentDungeon.getRespawnPosition();
+
+    const mainTheme = Loader.sounds.musics.main;
+    mainTheme.volume = 0.1;
+    mainTheme.loop = true;
+    mainTheme.play();
+  }
 }

@@ -1,3 +1,9 @@
+export enum ABILITY_NAMES {
+  OPENABLE = 'Openable',
+  PASSABLE = 'Passable',
+  RESPAWNABLE = 'Respawnable',
+  CLEARABLE = 'Clearable',
+}
 export default class Ability {
   protected _name: string;
   protected _status: string;

@@ -1,5 +1,6 @@
 import * as ROT from 'rot-js';
 
+import { Vector2 } from '../geometry';
 import { ENTITY_TYPES } from '../objects/entity';
 import { TILE_TYPES } from '../tilemap/tile';
 import { initialize2DArray } from './array';
@@ -19,7 +20,7 @@ const fillTiles = (
   }
 };
 
-const fillEntities = (
+const fillEntitiesMap = (
   entities: ENTITY_TYPES[][],
   top: number,
   bottom: number,
@@ -86,7 +87,7 @@ export const generateDungeon = (dungeonW: number, dungeonH: number) => {
   const tilesH = ~~(dungeonH / 2) + 1;
 
   const tiles = initialize2DArray(tilesW, tilesH, TILE_TYPES.EMPTY);
-  const entities = initialize2DArray(dungeonW, dungeonH, ENTITY_TYPES.EMPTY);
+  const entitiesMap = initialize2DArray(dungeonW, dungeonH, ENTITY_TYPES.EMPTY);
 
   const dungeon = new ROT.Map.Digger(tilesW, tilesH, {
     roomHeight: [2, 5],
@@ -104,12 +105,10 @@ export const generateDungeon = (dungeonW: number, dungeonH: number) => {
     const roomTop = room.getTop();
     const roomBottom = room.getBottom();
 
-    console.log(tiles);
-
     fillTiles(tiles, roomTop, roomBottom, roomLeft, roomRight, TILE_TYPES.FLOOR);
 
-    fillEntities(
-      entities,
+    fillEntitiesMap(
+      entitiesMap,
       roomTop * 2 - 1,
       roomBottom * 2 - 1,
       roomLeft * 2 - 1,
@@ -120,7 +119,14 @@ export const generateDungeon = (dungeonW: number, dungeonH: number) => {
     room.getDoors((x, y) => {
       fillTiles(tiles, y, y, x, x, TILE_TYPES.DOOR);
 
-      fillEntities(entities, 2 * y - 1, 2 * y - 1, 2 * x - 1, 2 * x - 1, ENTITY_TYPES.DOOR);
+      fillEntitiesMap(
+        entitiesMap,
+        2 * y - 1,
+        2 * y - 1,
+        2 * x - 1,
+        2 * x - 1,
+        ENTITY_TYPES.DOOR
+      );
     });
   });
 
@@ -131,8 +137,8 @@ export const generateDungeon = (dungeonW: number, dungeonH: number) => {
 
     fillTiles(tiles, top, bottom, left, right, TILE_TYPES.CORRIDOR);
 
-    fillEntities(
-      entities,
+    fillEntitiesMap(
+      entitiesMap,
       top * 2 - 1,
       bottom * 2 - 1,
       left * 2 - 1,
@@ -141,5 +147,39 @@ export const generateDungeon = (dungeonW: number, dungeonH: number) => {
     );
   });
 
-  return { tiles, entities };
+  const canRespawn = [];
+  for (let y = 0; y < entitiesMap.length; y++) {
+    for (let x = 0; x < entitiesMap[0].length; x++) {
+      if (
+        (entitiesMap[y][x] === ENTITY_TYPES.FLOOR ||
+          entitiesMap[y][x] === ENTITY_TYPES.CORRIDOR) &&
+        entitiesMap[y - 1][x] === ENTITY_TYPES.EMPTY &&
+        entitiesMap[y - 1][x - 1] === ENTITY_TYPES.EMPTY &&
+        entitiesMap[y - 1][x + 1] === ENTITY_TYPES.EMPTY
+      ) {
+        canRespawn.push({ rx: x, ry: y });
+      }
+    }
+  }
+  const { rx, ry } = ROT.RNG.getItem(canRespawn);
+  fillEntitiesMap(entitiesMap, ry, ry, rx, rx, ENTITY_TYPES.UPSTAIR);
+
+  const canClear = [];
+  for (let y = 0; y < entitiesMap.length; y++) {
+    for (let x = 0; x < entitiesMap[0].length; x++) {
+      const finalDistance = Vector2.manhattan(new Vector2(rx, ry), new Vector2(x, y));
+      if (
+        entitiesMap[y][x] === ENTITY_TYPES.FLOOR &&
+        finalDistance > (dungeonW + dungeonH) * 0.2 &&
+        entitiesMap[y + 1][x] !== ENTITY_TYPES.EMPTY &&
+        entitiesMap[y + 1][x] !== ENTITY_TYPES.CORRIDOR &&
+        entitiesMap[y - 1][x] !== ENTITY_TYPES.CORRIDOR
+      ) {
+        canClear.push({ cx: x, cy: y });
+      }
+    }
+  }
+  const { cx, cy } = ROT.RNG.getItem(canClear);
+  fillEntitiesMap(entitiesMap, cy, cy, cx, cx, ENTITY_TYPES.DOWNSTAIR);
+  return { tiles, entitiesMap };
 };

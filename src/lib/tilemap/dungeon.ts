@@ -1,35 +1,51 @@
 import * as PIXI from 'pixi.js';
 
 import { Vector2 } from '../geometry';
+import { ABILITY_NAMES } from '../objects/ability';
 import Entity, { ENTITY_TYPES } from '../objects/entity';
 import { generateAutotile, generateDungeon } from '../utils';
 import Tile, { TILE_TYPES } from './tile';
 
 export default class Dungeon extends PIXI.Container {
-  private _tiles: TILE_TYPES[][] = [];
-  private _entities: ENTITY_TYPES[][] = [];
+  private _tilesMap: TILE_TYPES[][] = [];
+  private _entitiesMap: ENTITY_TYPES[][] = [];
+  private _entities: Entity[][] = [];
 
   public constructor(tilesX = 0, tilesY = 0, randomSeed?: number) {
     super();
     this.initialize(tilesX, tilesY);
   }
 
+  public get entitiesMap() {
+    return this._entitiesMap;
+  }
+
   public get entities() {
     return this._entities;
   }
 
+  public getRespawnPosition() {
+    for (let y = 0; y < this._entities.length; y++) {
+      for (let x = 0; x < this._entities[0].length; x++) {
+        if (this._entities[y][x].hasAbility(ABILITY_NAMES.RESPAWNABLE)) {
+          return new Vector2(x, y);
+        }
+      }
+    }
+  }
+
   private renderTiles() {
-    const tileArray = generateAutotile(this._tiles);
-    const ty = this._tiles.length;
-    const tx = this._tiles[0].length;
+    const tileArray = generateAutotile(this._tilesMap);
+    const ty = this._tilesMap.length;
+    const tx = this._tilesMap[0].length;
 
     for (let y = 0; y < ty; y++) {
       for (let x = 0; x < tx; x++) {
         if (tileArray[y][x] === TILE_TYPES.EMPTY) {
-          const tile = new Tile(x, y, tileArray[y][x], true);
+          const tile = new Tile({ x, y }, tileArray[y][x], true);
           this.addChild(tile.sprite);
         } else {
-          const tile = new Tile(x, y, tileArray[y][x]);
+          const tile = new Tile({ x, y }, tileArray[y][x]);
           this.addChild(tile.sprite);
         }
       }
@@ -37,25 +53,30 @@ export default class Dungeon extends PIXI.Container {
   }
 
   private renderEntities() {
-    const cy = this.entities.length;
-    const cx = this.entities[0].length;
+    const cy = this.entitiesMap.length;
+    const cx = this.entitiesMap[0].length;
 
     for (let y = 0; y < cy; y++) {
+      this._entities[y] = [];
       for (let x = 0; x < cx; x++) {
-        const direction = this._entities[y][x - 1] ? Vector2.up() : Vector2.right();
-        const entity = new Entity(x, y, this._entities[y][x], direction);
+        const direction = this._entitiesMap[y][x - 1] ? Vector2.up() : Vector2.right();
+        const entity = new Entity(x, y, this._entitiesMap[y][x], direction);
 
+        this._entities[y][x] = entity;
         this.addChild(entity);
 
-        entity.abilities[0]?.status && (entity.abilities[0].status = 'open');
+        if (entity.hasAbility(ABILITY_NAMES.OPENABLE)) {
+          const door = entity.getAbility(ABILITY_NAMES.OPENABLE);
+          door.status = 'open';
+        }
       }
     }
   }
 
   private initialize(tx: number, ty: number) {
-    const { tiles, entities } = generateDungeon(tx, ty);
-    this._tiles = tiles;
-    this._entities = entities;
+    const { tiles, entitiesMap } = generateDungeon(tx, ty);
+    this._tilesMap = tiles;
+    this._entitiesMap = entitiesMap;
     this.renderTiles();
     this.renderEntities();
   }

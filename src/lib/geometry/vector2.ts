@@ -1,4 +1,8 @@
-export default class Vector2 {
+export interface IPosition {
+  x: number;
+  y: number;
+}
+export class Vector2 {
   public static merge(v1: Vector2, v2: Vector2) {
     return new Vector2(v1.x + v2.x, v1.y + v2.y);
   }
@@ -22,6 +26,12 @@ export default class Vector2 {
   public static equals(v1: Vector2, v2: Vector2) {
     return v1.x === v2.x && v1.y === v2.y;
   }
+  public static manhattan(v1: Vector2, v2: Vector2) {
+    const dx = v2.x - v1.x;
+    const dy = v2.y - v1.y;
+
+    return Math.abs(dx) + Math.abs(dy);
+  }
 
   private _x = 0;
   private _y = 0;
@@ -31,12 +41,24 @@ export default class Vector2 {
     this._y = y;
   }
 
+  public set(x: number, y: number) {
+    this._x = x;
+    this._y = y;
+  }
+
   public get x() {
     return this._x;
+  }
+  public set x(x: number) {
+    this._x = x;
   }
 
   public get y() {
     return this._y;
+  }
+
+  public set y(y: number) {
+    this._y = y;
   }
 
   public equals(another: Vector2) {

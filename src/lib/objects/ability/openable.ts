@@ -2,14 +2,14 @@ import * as PIXI from 'pixi.js';
 
 import { Vector2 } from '../../geometry';
 import { Loader } from '../../system';
-import Ability from './ability';
+import Ability, { ABILITY_NAMES } from './ability';
 
 export default class Openable extends Ability {
   protected _status: 'close' | 'open' = 'close';
   private _sprite: PIXI.AnimatedSprite;
   public constructor(initStatus: 'close' | 'open' = 'close', direction: Vector2) {
     super();
-    this._name = 'Openable';
+    this._name = ABILITY_NAMES.OPENABLE;
     this._status = initStatus;
 
     this.initialize(initStatus, direction);

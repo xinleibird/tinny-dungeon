@@ -12,6 +12,7 @@
   "license": "ISC",
   "devDependencies": {
     "@types/copy-webpack-plugin": "^6.0.0",
+    "@types/gsap": "^1.20.2",
     "@types/mersenne-twister": "^1.1.2",
     "@types/node": "^14.6.4",
     "@types/socket.io-client": "^1.4.33",
@@ -40,6 +41,8 @@
     "yarn": "~1.22.5"
   },
   "dependencies": {
+    "gsap": "^3.5.1",
+    "pixi-sound": "^3.0.5",
     "pixi.js": "^5.3.3",
     "rot-js": "^2.1.4"
   }
