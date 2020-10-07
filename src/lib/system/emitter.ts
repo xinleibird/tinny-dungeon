@@ -1,6 +1,6 @@
-import * as PIXI from 'pixi.js';
+import { utils } from 'pixi.js';
 
-const { EventEmitter } = PIXI.utils;
+const { EventEmitter } = utils;
 
 export enum RESOURCE_EVENTS {
   RESOURCES_LOADED = 'resources_loaded',

@@ -39,7 +39,6 @@ export default class Loader {
 
     loader.load((loader, resources) => {
       this.resources = resources;
-      console.log(this.resources);
     });
 
     loader.onComplete.add(() => {

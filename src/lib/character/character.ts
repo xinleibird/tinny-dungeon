@@ -3,6 +3,7 @@ import { PixiPlugin } from 'gsap/PixiPlugin';
 import * as PIXI from 'pixi.js';
 
 import { IPosition, Vector2 } from '../geometry';
+import Entity from '../objects/entity';
 import { Loader } from '../system';
 
 gsap.registerPlugin(PixiPlugin);
@@ -28,6 +29,8 @@ export enum CHARACTER_ANIMATION_TYPES {
 
 export default class Character extends PIXI.Container {
   protected _type: PLAYER_TYPES | NONPLAYER_TYPES;
+
+  private _entities: Entity[][];
   private _geometryPosition: Vector2;
   private _spriteOffset: { x: number; y: number };
 
@@ -62,6 +65,14 @@ export default class Character extends PIXI.Container {
     return this._geometryPosition;
   }
 
+  public get entities() {
+    return this._entities;
+  }
+
+  public set entities(entities: Entity[][]) {
+    this._entities = entities;
+  }
+
   public hold() {
     const [hold, walk, attack, hurt] = this.children as PIXI.AnimatedSprite[];
     hold.visible = true;
@@ -82,7 +93,6 @@ export default class Character extends PIXI.Container {
     this._geometryPosition.combine(direction);
     const { x, y } = this._geometryPosition;
 
-    // this.position.set(x * 16 + this._spriteOffset.x, y * 16 + this._spriteOffset.y);
     gsap.to(this, {
       duration: 0.5,
       pixi: {
@@ -94,11 +104,12 @@ export default class Character extends PIXI.Container {
         walk.play();
       },
       onComplete: () => {
-        // walk.play();
-        this.hold();
+        // this.hold();
       },
     });
+  }
 
+  public redirection(direction: Vector2) {
     if (direction.equals(Vector2.left())) {
       this.scale.x = -1;
     }
@@ -129,6 +140,10 @@ export default class Character extends PIXI.Container {
     hurt.play();
   }
 
+  protected get Entities() {
+    return this.Entities;
+  }
+
   private initialize(type: PLAYER_TYPES | NONPLAYER_TYPES) {
     const character = type.toString().toUpperCase();
 
@@ -142,14 +157,13 @@ export default class Character extends PIXI.Container {
     const attack = new PIXI.AnimatedSprite(attackBatch);
     const hurt = new PIXI.AnimatedSprite(hurtBatch);
 
-    hold.visible = false;
+    hold.visible = true;
     walk.visible = false;
     attack.visible = false;
     hurt.visible = false;
 
     const duringSecond = 0.5;
     const speed = 1 / (duringSecond / (4 / 60));
-    console.log(speed);
 
     hold.animationSpeed = speed;
     walk.animationSpeed = speed;
@@ -160,6 +174,8 @@ export default class Character extends PIXI.Container {
     walk.anchor.set(0.5, 0.5);
     attack.anchor.set(0.5, 0.5);
     hurt.anchor.set(0.5, 0.5);
+
+    hold.play();
 
     this.addChild(hold, walk, attack, hurt);
   }
