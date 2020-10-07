@@ -8,7 +8,7 @@ export enum CONTROL_ACTIONS {
   WALK_DOWN = 'walkDown',
 }
 
-export const controlledKeys = {
+export const CONTROLLED_KEYS = {
   [CONTROL_ACTIONS.WALK_LEFT]: KEY_NAMES.a,
   [CONTROL_ACTIONS.WALK_RIGHT]: KEY_NAMES.d,
   [CONTROL_ACTIONS.WALK_UP]: KEY_NAMES.w,
@@ -19,10 +19,11 @@ export default class Controller {
   private _keyboard: Keyboard;
   public constructor() {
     const keyboard = new Keyboard();
+    console.log(CONTROLLED_KEYS[CONTROL_ACTIONS.WALK_DOWN]);
 
-    for (const key in controlledKeys) {
-      if (Object.prototype.hasOwnProperty.call(controlledKeys, key)) {
-        keyboard.addHandleKey(controlledKeys[key]);
+    for (const key in CONTROLLED_KEYS) {
+      if (Object.prototype.hasOwnProperty.call(CONTROLLED_KEYS, key)) {
+        keyboard.addHandleKey(CONTROLLED_KEYS[key]);
       }
     }
 

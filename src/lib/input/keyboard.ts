@@ -6,6 +6,9 @@ type HandleKeysType = {
 };
 export default class Keyboard {
   private _handleKeys: HandleKeysType = {};
+  private _lastDown = 0;
+  private _lastKey: KEY_NAMES;
+  private _delay = 100;
 
   public constructor() {
     this.initialize();
@@ -29,8 +32,17 @@ export default class Keyboard {
     const inHandle = this._handleKeys?.[event.key] as Key;
 
     if (inHandle) {
-      event.preventDefault();
-      inHandle.processKeyDown(event);
+      const currentKey = event.key as KEY_NAMES;
+
+      if (
+        currentKey === this._lastKey ||
+        (currentKey !== this._lastKey && event.timeStamp > this._lastDown + this._delay)
+      ) {
+        event.preventDefault();
+        inHandle.processKeyDown(event);
+        this._lastKey = event.key as KEY_NAMES;
+        this._lastDown = event.timeStamp;
+      }
     }
   }
 

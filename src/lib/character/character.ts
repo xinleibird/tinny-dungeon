@@ -59,6 +59,10 @@ export default class Character extends PIXI.Container {
     this._geometryPosition = position;
     const { x, y } = position;
     this.position.set(x * 16 + this._spriteOffset.x, y * 16 + this._spriteOffset.y);
+
+    const shadowPosition = this._geometryPosition.y * 16 + this._spriteOffset.y * 2;
+    const [filter] = this.filters;
+    filter.uniforms.floorY = shadowPosition;
   }
 
   public get geometryPosition() {
@@ -94,29 +98,19 @@ export default class Character extends PIXI.Container {
     const { x, y } = this._geometryPosition;
 
     gsap.to(this, {
-      duration: 0.5,
+      duration: 0.2,
       pixi: {
         x: x * 16 + this._spriteOffset.x,
         y: y * 16 + this._spriteOffset.y,
       },
-      ease: 'back.inOut(1.4)',
       onStart: () => {
         walk.play();
       },
-      onComplete: () => {
-        // this.hold();
-      },
     });
-  }
 
-  public redirection(direction: Vector2) {
-    if (direction.equals(Vector2.left())) {
-      this.scale.x = -1;
-    }
-
-    if (direction.equals(Vector2.right())) {
-      this.scale.x = 1;
-    }
+    const shadowPosition = this._geometryPosition.y * 16 + this._spriteOffset.y * 2;
+    const [filter] = this.filters;
+    filter.uniforms.floorY = shadowPosition;
   }
 
   public attack(direction: Vector2) {
@@ -142,6 +136,68 @@ export default class Character extends PIXI.Container {
 
   protected get Entities() {
     return this.Entities;
+  }
+
+  protected changeDirection(direction: Vector2) {
+    if (direction.equals(Vector2.left())) {
+      this.scale.x = -1;
+    }
+
+    if (direction.equals(Vector2.right())) {
+      this.scale.x = 1;
+    }
+  }
+
+  private generateShadowFilter() {
+    const shadowVertex = `
+      attribute vec2 aVertexPosition;
+      attribute vec2 aTextureCoord;
+
+      uniform mat3 projectionMatrix;
+
+      varying vec2 vTextureCoord;
+
+      void main(void) {
+          gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);
+          vTextureCoord = aTextureCoord;
+      }
+      `;
+
+    const shadowFragment = `
+      varying vec2 vTextureCoord;
+
+      uniform sampler2D uSampler;
+      uniform vec4 inputSize;
+      uniform vec4 outputFrame;
+      uniform vec2 shadowDirection;
+      uniform float floorY;
+
+      void main(void) {
+          vec2 screenCoord = vTextureCoord * inputSize.xy + outputFrame.xy;
+          vec2 shadow;
+
+          float paramY = (screenCoord.y - floorY) / shadowDirection.y;
+          shadow.y = paramY + floorY;
+          shadow.x = screenCoord.x + paramY * shadowDirection.x;
+          vec2 bodyFilterCoord = (shadow - outputFrame.xy) * inputSize.zw; // same as / inputSize.xy
+
+          vec4 originalColor = texture2D(uSampler, vTextureCoord);
+          vec4 shadowColor = texture2D(uSampler, bodyFilterCoord);
+          shadowColor.rgb = vec3(0.0);
+          shadowColor.a *= 0.4;
+
+          gl_FragColor = originalColor + shadowColor * (1.0 - originalColor.a);
+      }
+      `;
+
+    const filter = new PIXI.Filter(shadowVertex, shadowFragment);
+    filter.uniforms.shadowDirection = [0.0, 1.2];
+    const filterPosition = this._geometryPosition.y * 16 + this._spriteOffset.y * 2;
+    filter.uniforms.floorY = filterPosition;
+
+    filter.padding = 100;
+
+    return filter;
   }
 
   private initialize(type: PLAYER_TYPES | NONPLAYER_TYPES) {
@@ -178,5 +234,8 @@ export default class Character extends PIXI.Container {
     hold.play();
 
     this.addChild(hold, walk, attack, hurt);
+
+    const shadowFilter = this.generateShadowFilter();
+    this.filters = [shadowFilter];
   }
 }

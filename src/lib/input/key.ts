@@ -6,13 +6,12 @@ export default class Key {
   private _isUp = true;
   private _lastDown = 0;
   private _lastUp = 0;
-  private _delay: number;
+  private _delay = 100;
   private onDown = event;
   private onUp = event;
 
-  public constructor(key: KEY_NAMES, delay = 500) {
+  public constructor(key: KEY_NAMES) {
     this._keyName = key;
-    this._delay = delay;
   }
 
   public processKeyDown(event: KeyboardEvent) {

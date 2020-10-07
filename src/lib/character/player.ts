@@ -1,60 +1,86 @@
+import * as PIXI from 'pixi.js';
+
 import { IPosition, Vector2 } from '../geometry';
-import { event, KEY_EVENT_TYPES, KEY_NAMES } from '../input';
+import { CONTROL_ACTIONS, CONTROLLED_KEYS, event, KEY_EVENT_TYPES, KEY_NAMES } from '../input';
 import { ABILITY_NAMES } from '../objects/ability';
-import Entity from '../objects/entity';
 import Character, { PLAYER_TYPES } from './character';
 
+const ticker = PIXI.Ticker.shared;
+
 export default class Player extends Character {
+  private _someKeysDown = false;
+  private _lastUpTimeStamp = 0;
+  private _holdDelay = 300;
+
   public constructor(geometryPosition: Vector2 | IPosition, type: PLAYER_TYPES) {
     super(geometryPosition, type);
-    this.withControl();
+    this.handleDown();
+    this.handleUp();
+    this.handleHold();
   }
 
   public get type() {
     return this._type;
   }
 
-  private withControl() {
+  public handleHold() {
+    ticker.add(() => {
+      if (!this._someKeysDown && Date.now() > this._lastUpTimeStamp + this._holdDelay) {
+        this.hold();
+      }
+    });
+  }
+
+  private handleDown() {
     event.on(KEY_EVENT_TYPES.KEY_DOWN, (key: KEY_NAMES) => {
-      switch (key) {
-        case KEY_NAMES.a: {
+      switch (KEY_NAMES[key]) {
+        case CONTROLLED_KEYS[CONTROL_ACTIONS.WALK_LEFT]: {
           const { x, y } = this.geometryPosition;
           const entities = this.entities;
 
-          this.redirection(Vector2.left());
+          this.changeDirection(Vector2.left());
           if (entities[y][x - 1]?.hasAbility(ABILITY_NAMES.PASSABLE)) {
             this.walk(Vector2.left());
           }
+
+          this._someKeysDown = true;
           break;
         }
 
-        case KEY_NAMES.d: {
+        case CONTROLLED_KEYS[CONTROL_ACTIONS.WALK_RIGHT]: {
           const { x, y } = this.geometryPosition;
           const entities = this.entities;
 
-          this.redirection(Vector2.right());
+          this.changeDirection(Vector2.right());
           if (entities[y][x + 1]?.hasAbility(ABILITY_NAMES.PASSABLE)) {
             this.walk(Vector2.right());
           }
+
+          this._someKeysDown = true;
           break;
         }
 
-        case KEY_NAMES.w: {
+        case CONTROLLED_KEYS[CONTROL_ACTIONS.WALK_UP]: {
           const { x, y } = this.geometryPosition;
           const entities = this.entities;
 
           if (entities[y - 1][x]?.hasAbility(ABILITY_NAMES.PASSABLE)) {
             this.walk(Vector2.up());
           }
+
+          this._someKeysDown = true;
           break;
         }
-        case KEY_NAMES.s: {
+
+        case CONTROLLED_KEYS[CONTROL_ACTIONS.WALK_DOWN]: {
           const { x, y } = this.geometryPosition;
           const entities = this.entities;
 
           if (entities[y + 1][x]?.hasAbility(ABILITY_NAMES.PASSABLE)) {
             this.walk(Vector2.down());
           }
+
+          this._someKeysDown = true;
           break;
         }
 
@@ -62,9 +88,38 @@ export default class Player extends Character {
           break;
       }
     });
+  }
 
+  private handleUp() {
     event.on(KEY_EVENT_TYPES.KEY_UP, (key: KEY_NAMES) => {
-      // console.log(key);
+      switch (KEY_NAMES[key]) {
+        case CONTROLLED_KEYS[CONTROL_ACTIONS.WALK_LEFT]: {
+          this._someKeysDown = false;
+          this._lastUpTimeStamp = Date.now();
+          break;
+        }
+
+        case CONTROLLED_KEYS[CONTROL_ACTIONS.WALK_RIGHT]: {
+          this._someKeysDown = false;
+          this._lastUpTimeStamp = Date.now();
+          break;
+        }
+
+        case CONTROLLED_KEYS[CONTROL_ACTIONS.WALK_UP]: {
+          this._someKeysDown = false;
+          this._lastUpTimeStamp = Date.now();
+          break;
+        }
+
+        case CONTROLLED_KEYS[CONTROL_ACTIONS.WALK_DOWN]: {
+          this._someKeysDown = false;
+          this._lastUpTimeStamp = Date.now();
+          break;
+        }
+
+        default:
+          break;
+      }
     });
   }
 }
