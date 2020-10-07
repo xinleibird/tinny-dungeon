@@ -1,7 +1,8 @@
 import * as PIXI from 'pixi.js';
 
+import { CONTROLLED_KEYS } from '../config';
 import { IPosition, Vector2 } from '../geometry';
-import { CONTROL_ACTIONS, CONTROLLED_KEYS, event, KEY_EVENT_TYPES, KEY_NAMES } from '../input';
+import { CONTROL_ACTIONS, event, KEY_EVENT_TYPES, KEY_NAMES } from '../input';
 import { ABILITY_NAMES } from '../objects/ability';
 import Character, { PLAYER_TYPES } from './character';
 

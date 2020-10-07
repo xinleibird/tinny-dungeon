@@ -1,4 +1,4 @@
-import { KEY_NAMES } from './event';
+import { CONTROLLED_KEYS } from '../config';
 import Keyboard from './keyboard';
 
 export enum CONTROL_ACTIONS {
@@ -7,13 +7,6 @@ export enum CONTROL_ACTIONS {
   WALK_UP = 'walkUp',
   WALK_DOWN = 'walkDown',
 }
-
-export const CONTROLLED_KEYS = {
-  [CONTROL_ACTIONS.WALK_LEFT]: KEY_NAMES.a,
-  [CONTROL_ACTIONS.WALK_RIGHT]: KEY_NAMES.d,
-  [CONTROL_ACTIONS.WALK_UP]: KEY_NAMES.w,
-  [CONTROL_ACTIONS.WALK_DOWN]: KEY_NAMES.s,
-};
 
 export default class Controller {
   private _keyboard: Keyboard;

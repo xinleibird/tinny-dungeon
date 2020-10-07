@@ -1,9 +1,8 @@
 import * as PIXI from 'pixi.js';
 
 import { NonePlayer, Player, PLAYER_TYPES } from '../character';
-import { Vector2 } from '../geometry';
+import { GAME_OPTIONS } from '../config';
 import Controller from '../input/controller';
-import { ABILITY_NAMES } from '../objects/ability';
 import { emitter, Loader, RESOURCE_EVENTS } from '../system';
 import Dungeon from '../tilemap/dungeon';
 
@@ -26,6 +25,17 @@ export interface PIXIAppOption {
   resizeTo?: Window | HTMLElement;
 }
 
+const { BACKGROUND_COLOR, GAME_PIXEL_SCALE } = GAME_OPTIONS;
+
+const defaultGameOptions: PIXIAppOption = {
+  width: window.innerWidth / GAME_PIXEL_SCALE / window.devicePixelRatio,
+  height: window.innerHeight / GAME_PIXEL_SCALE / window.devicePixelRatio,
+  antialias: false,
+  resolution: GAME_PIXEL_SCALE * window.devicePixelRatio,
+
+  backgroundColor: BACKGROUND_COLOR,
+};
+
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 
 export default class Game extends PIXI.Application {
@@ -34,8 +44,8 @@ export default class Game extends PIXI.Application {
   private _noneplayers: NonePlayer[] = [];
   private _controller: Controller;
 
-  public constructor(props: PIXIAppOption) {
-    super(props);
+  public constructor(props?: PIXIAppOption) {
+    super({ ...defaultGameOptions, ...props });
 
     Loader.load();
     this._controller = new Controller();
