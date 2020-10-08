@@ -26,6 +26,7 @@ export enum CHARACTER_ANIMATION_TYPES {
   ATTACK = 'attack',
   HURT = 'hurt',
 }
+const ticker = PIXI.Ticker.shared;
 
 export default class Character extends PIXI.Container {
   protected _type: PLAYER_TYPES | NONPLAYER_TYPES;
@@ -53,16 +54,22 @@ export default class Character extends PIXI.Container {
 
     const { x, y } = this._geometryPosition;
     this.position.set(x * 16 + spriteOffset.x, y * 16 + spriteOffset.y);
+
+    this.updateShadowFlooY();
+  }
+
+  public updateShadowFlooY() {
+    ticker.add(() => {
+      const filterFloorY = this._geometryPosition.y * 16 + this._spriteOffset.y * 2;
+      const [filter] = this.filters;
+      filter.uniforms.floorY = filterFloorY;
+    });
   }
 
   public set geometryPosition(position: Vector2) {
     this._geometryPosition = position;
     const { x, y } = position;
     this.position.set(x * 16 + this._spriteOffset.x, y * 16 + this._spriteOffset.y);
-
-    const shadowFloorY = this._geometryPosition.y * 16 + this._spriteOffset.y * 2;
-    const [filter] = this.filters;
-    filter.uniforms.floorY = shadowFloorY;
   }
 
   public get geometryPosition() {
@@ -107,10 +114,6 @@ export default class Character extends PIXI.Container {
         walk.play();
       },
     });
-
-    const shadowFloorY = this._geometryPosition.y * 16 + this._spriteOffset.y * 2;
-    const [filter] = this.filters;
-    filter.uniforms.floorY = shadowFloorY;
   }
 
   public attack(direction: Vector2) {
