@@ -12,7 +12,6 @@ export default class Controller {
   private _keyboard: Keyboard;
   public constructor() {
     const keyboard = new Keyboard();
-    console.log(CONTROLLED_KEYS[CONTROL_ACTIONS.WALK_DOWN]);
 
     for (const key in CONTROLLED_KEYS) {
       if (Object.prototype.hasOwnProperty.call(CONTROLLED_KEYS, key)) {

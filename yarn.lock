@@ -149,12 +149,24 @@
     "@pixi/core" "5.3.3"
     "@pixi/math" "5.3.3"
 
+"@pixi/filter-drop-shadow@^3.1.1":
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/@pixi/filter-drop-shadow/-/filter-drop-shadow-3.1.1.tgz#af4313ba4f3f9ac99702c4388333c6fbf5c74a2c"
+  integrity sha512-tx3MgEoUAL2iLK6fKbwan9zKXDxrMzZ6uEFaqZYYD/3pTYBMOMcPCF1oGq8YpzQqLUriOQJX5Sj2aWMNzQSm5g==
+  dependencies:
+    "@pixi/filter-kawase-blur" "3.1.1"
+
 "@pixi/filter-fxaa@5.3.3":
   version "5.3.3"
   resolved "https://registry.yarnpkg.com/@pixi/filter-fxaa/-/filter-fxaa-5.3.3.tgz#c7701631d60f485b6ec1052f71afb0637ca5f0b8"
   integrity sha512-p4vKdBwaoGRNZcoHz2ET8hBF1SoWvy9xU2B3Ci32+c0dg89ZUdGTEW0zimUHi2gMdU+2v/T0lqZ9NC9B6WVYAg==
   dependencies:
     "@pixi/core" "5.3.3"
+
+"@pixi/filter-kawase-blur@3.1.1":
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/@pixi/filter-kawase-blur/-/filter-kawase-blur-3.1.1.tgz#9e419f17bf17f46dea3230babff9b0449435ee11"
+  integrity sha512-whHyj8bpfbGSUCmHjd6wd3+C4vB2zyBxB+2IoWXxW44b/bDcDypifwDhRShsXcdWRJ5urTvukiqiZStaeK9oeA==
 
 "@pixi/filter-noise@5.3.3":
   version "5.3.3"
@@ -4027,6 +4039,11 @@ pbkdf2@^3.0.3:
     safe-buffer "^5.0.1"
     sha.js "^2.4.8"
 
+penner@^0.1.3:
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/penner/-/penner-0.1.3.tgz#0b8b482d4e9b39af2f3d7c37592229b8acc29705"
+  integrity sha1-C4tILU6bOa8vPXw3WSIpuKzClwU=
+
 picomatch@^2.0.4, picomatch@^2.0.5, picomatch@^2.2.1:
   version "2.2.2"
   resolved "https://registry.yarnpkg.com/picomatch/-/picomatch-2.2.2.tgz#21f333e9b6b8eaff02468f5146ea406d345f4dad"
@@ -4058,6 +4075,13 @@ pixi-sound@^3.0.5:
   version "3.0.5"
   resolved "https://registry.yarnpkg.com/pixi-sound/-/pixi-sound-3.0.5.tgz#b9edc12ee543ac3470c763484e1d1f7c4e842e2b"
   integrity sha512-I3qDfaDI3xSwMuH8ZbhIyoZiRv0jEDxR60D2rBZTTvlK5owxo5Sx4vDaQlrIyETilTU0xvBtiwh7fPGKBOsCTw==
+
+pixi-viewport@^4.15.0:
+  version "4.15.0"
+  resolved "https://registry.yarnpkg.com/pixi-viewport/-/pixi-viewport-4.15.0.tgz#fbbbe4dfa9acc61c983eadb2ec17feb88bd6d4a9"
+  integrity sha512-7yxPgB+t4PKt24OkFhanSKWV67Wpp2aqE1/AwxoMxXAJ8NR+rurseLHfdB7Z4Y2oMvdm9spCRKWc1qacBDiXgA==
+  dependencies:
+    penner "^0.1.3"
 
 pixi.js@^5.3.3:
   version "5.3.3"

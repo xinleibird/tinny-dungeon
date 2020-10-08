@@ -1,3 +1,4 @@
+import { Viewport, ViewportOptions } from 'pixi-viewport';
 import * as PIXI from 'pixi.js';
 
 import { NonePlayer, Player, PLAYER_TYPES } from '../character';
@@ -36,6 +37,13 @@ const defaultGameOptions: PIXIAppOption = {
   backgroundColor: BACKGROUND_COLOR,
 };
 
+const defaultViewportOptions: ViewportOptions = {
+  screenWidth: window.innerWidth / GAME_PIXEL_SCALE / window.devicePixelRatio,
+  screenHeight: window.innerHeight / GAME_PIXEL_SCALE / window.devicePixelRatio,
+  worldHeight: 31 * 16,
+  worldWidth: 27 * 16,
+};
+
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 
 export default class Game extends PIXI.Application {
@@ -43,11 +51,16 @@ export default class Game extends PIXI.Application {
   private _player: Player;
   private _noneplayers: NonePlayer[] = [];
   private _controller: Controller;
+  private _viewport: Viewport;
 
   public constructor(props?: PIXIAppOption) {
     super({ ...defaultGameOptions, ...props });
 
     Loader.load();
+
+    this._viewport = new Viewport(defaultViewportOptions);
+    this.stage.addChild(this._viewport);
+
     this._controller = new Controller();
   }
 
@@ -60,7 +73,7 @@ export default class Game extends PIXI.Application {
       this._player = knight;
 
       this.gameLoop();
-      this.renderCompositions();
+      this.renderLayers();
     });
   }
 
@@ -96,22 +109,24 @@ export default class Game extends PIXI.Application {
     return this._noneplayers;
   }
 
-  private renderCompositions() {
+  private renderLayers() {
     if (this._currentDungeon) {
-      this.stage.addChild(this._currentDungeon);
+      this._viewport.addChild(this._currentDungeon);
     }
 
     if (this._player) {
-      this.stage.addChild(this._player);
+      this._viewport.addChild(this._player);
     }
   }
 
   private gameLoop() {
-    const dungeon = new Dungeon(31, 27);
+    const dungeon = new Dungeon(100, 100);
     this._currentDungeon = dungeon;
 
     this._player.geometryPosition = this._currentDungeon.getRespawnPosition();
     this._player.entities = this._currentDungeon.entities;
+
+    this._viewport.follow(this._player);
 
     const mainTheme = Loader.sounds.musics.main;
     mainTheme.volume = 0.1;
