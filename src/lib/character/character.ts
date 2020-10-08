@@ -60,9 +60,9 @@ export default class Character extends PIXI.Container {
     const { x, y } = position;
     this.position.set(x * 16 + this._spriteOffset.x, y * 16 + this._spriteOffset.y);
 
-    const shadowPosition = this._geometryPosition.y * 16 + this._spriteOffset.y * 2;
+    const shadowFloorY = this._geometryPosition.y * 16 + this._spriteOffset.y * 2;
     const [filter] = this.filters;
-    filter.uniforms.floorY = shadowPosition;
+    filter.uniforms.floorY = shadowFloorY;
   }
 
   public get geometryPosition() {
@@ -108,9 +108,9 @@ export default class Character extends PIXI.Container {
       },
     });
 
-    const shadowPosition = this._geometryPosition.y * 16 + this._spriteOffset.y * 2;
+    const shadowFloorY = this._geometryPosition.y * 16 + this._spriteOffset.y * 2;
     const [filter] = this.filters;
-    filter.uniforms.floorY = shadowPosition;
+    filter.uniforms.floorY = shadowFloorY;
   }
 
   public attack(direction: Vector2) {
@@ -192,8 +192,8 @@ export default class Character extends PIXI.Container {
 
     const filter = new PIXI.Filter(shadowVertex, shadowFragment);
     filter.uniforms.shadowDirection = [0.0, 1.2];
-    const filterPosition = this._geometryPosition.y * 16 + this._spriteOffset.y * 2;
-    filter.uniforms.floorY = filterPosition;
+    const filterFloorY = this._geometryPosition.y * 16 + this._spriteOffset.y * 2;
+    filter.uniforms.floorY = filterFloorY;
 
     filter.padding = 100;
 
