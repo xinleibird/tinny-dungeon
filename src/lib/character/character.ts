@@ -7,6 +7,7 @@ import { DropShadowFilter } from '@pixi/filter-drop-shadow';
 import { IPosition, Vector2 } from '../geometry';
 import Entity from '../objects/entity';
 import { Loader } from '../system';
+import { DirectionIndicator, External } from './external';
 
 gsap.registerPlugin(PixiPlugin);
 PixiPlugin.registerPIXI(PIXI);
@@ -31,10 +32,11 @@ export enum CHARACTER_ANIMATIONS {
 
 export default class Character extends PIXI.Container {
   protected _type: PLAYER_TYPES | NONPLAYER_TYPES;
+  protected _entities: Entity[][];
   protected _stepSound: PIXI.sound.Sound;
+  protected _externals: External[] = [];
 
-  private _direction: Vector2 = Vector2.right;
-  private _entities: Entity[][];
+  private _direction: Vector2 = Vector2.down;
   private _geometryPosition: Vector2;
   private _spriteOffset: { x: number; y: number };
 
@@ -54,13 +56,45 @@ export default class Character extends PIXI.Container {
     this._spriteOffset = spriteOffset;
 
     this.initialize(type);
+  }
 
-    const { x, y } = this._geometryPosition;
-    this.position.set(x * 16 + spriteOffset.x, y * 16 + spriteOffset.y);
+  public addExternal(enternal: External) {
+    this._externals.push(enternal);
+    this.addChild(enternal.sprite);
+  }
+
+  public showExternal(externalName?: string) {
+    if (!externalName) {
+      this._externals.forEach((external) => {
+        external.visiable = true;
+      });
+    } else {
+      const externals = this._externals.filter((external) => {
+        return external.name === externalName;
+      });
+      externals.forEach((external) => {
+        external.visiable = true;
+      });
+    }
+  }
+
+  public hideExternal(externalName?: string) {
+    if (!externalName) {
+      this._externals.forEach((external) => {
+        external.visiable = false;
+      });
+    } else {
+      const externals = this._externals.filter((external) => {
+        return external.name === externalName;
+      });
+      externals.forEach((external) => {
+        external.visiable = false;
+      });
+    }
   }
 
   public get direction() {
-    return this.direction;
+    return this._direction;
   }
 
   public set direction(direction: Vector2) {
@@ -68,6 +102,10 @@ export default class Character extends PIXI.Container {
       this._direction = direction;
       this.changeSpriteDirection(direction);
     }
+
+    this._externals.forEach((external) => {
+      external.direction = direction;
+    });
   }
 
   public set geometryPosition(position: Vector2) {
@@ -98,6 +136,7 @@ export default class Character extends PIXI.Container {
     hold.play();
 
     this._stepSound.stop();
+    this.hideExternal();
   }
 
   public walk(direction: Vector2) {
@@ -192,9 +231,19 @@ export default class Character extends PIXI.Container {
     attack.anchor.set(0.5, 0.5);
     hurt.anchor.set(0.5, 0.5);
 
+    // default play HOLD animation
     hold.play();
 
+    // prepare character's animations
     this.addChild(hold, walk, attack, hurt);
+    const { x, y } = this._geometryPosition;
+    this.position.set(x * 16 + this._spriteOffset.x, y * 16 + this._spriteOffset.y);
+
+    // external composition
+    const directionIndicator = new DirectionIndicator();
+    directionIndicator.direction = this.direction;
+    this._externals.push(directionIndicator);
+    this.addChild(directionIndicator.sprite);
 
     // character's drop shadow
     this.filters = [new DropShadowFilter({ blur: 0, distance: 5, rotation: -90 })];

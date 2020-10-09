@@ -11,6 +11,9 @@ type TexturesTypes = {
     [key in keyof typeof CHARACTER_ANIMATIONS]?: PIXI.Texture[];
   };
 } & {
+  UI?: {
+    [key: string]: PIXI.Texture;
+  };
   DOORS?: PIXI.Texture[];
   STAIRS?: PIXI.Texture[];
   FLOOR_DECORATORS?: PIXI.Texture[];
@@ -36,6 +39,8 @@ export default class Loader {
     loader.add('assets/tiles/doors.json');
     loader.add('assets/tiles/stairs.json');
     loader.add('assets/tiles/floor_decorators.json');
+    loader.add('assets/tiles/ui.json');
+
     loader.add('assets/sprites/knight_m.json');
 
     loader.add('main', 'assets/sounds/musics/平坡の道.mp3');
@@ -52,7 +57,12 @@ export default class Loader {
         this.tileset.push(texture);
       }
 
-      this.textures = { DOORS: [], STAIRS: [], FLOOR_DECORATORS: [] };
+      this.textures = {
+        UI: {},
+        DOORS: [],
+        STAIRS: [],
+        FLOOR_DECORATORS: [],
+      };
       for (let i = 0; i < 4; i++) {
         const texture = PIXI.Texture.from(`doors_${i}`);
         this.textures.DOORS.push(texture);
@@ -65,6 +75,11 @@ export default class Loader {
         const texture = PIXI.Texture.from(`floor_decorators_${i}`);
         this.textures.FLOOR_DECORATORS.push(texture);
       }
+
+      this.textures.UI['arrow_down'] = PIXI.Texture.from(`ui_arrow_down`);
+      this.textures.UI['arrow_up'] = PIXI.Texture.from(`ui_arrow_up`);
+      this.textures.UI['arrow_left'] = PIXI.Texture.from(`ui_arrow_left`);
+      this.textures.UI['arrow_right'] = PIXI.Texture.from(`ui_arrow_right`);
 
       Object.keys(CHARACTER_CATEGORIES).forEach((character) => {
         this.textures[character] = {

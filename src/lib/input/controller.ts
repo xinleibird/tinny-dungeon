@@ -6,6 +6,7 @@ export enum CONTROL_ACTIONS {
   WALK_RIGHT = 'walkRight',
   WALK_UP = 'walkUp',
   WALK_DOWN = 'walkDown',
+  SHOW_EXTERNAL = 'showExternal',
 }
 
 export default class Controller {

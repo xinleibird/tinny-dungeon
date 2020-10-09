@@ -16,7 +16,7 @@ export enum KEY_NAMES {
   Alt = 'Alt',
   CapsLock = 'CapsLock',
   Escape = 'Escape',
-  Space = ' ',
+  Space = 'Space',
   PageUp = 'PageUp',
   PageDown = 'PageDown',
   End = 'End',

@@ -4,6 +4,7 @@ import { CONTROLLED_KEYS } from '../config';
 import { IPosition, Vector2 } from '../geometry';
 import { CONTROL_ACTIONS, event, KEY_EVENTS, KEY_NAMES } from '../input';
 import { ABILITY_NAMES } from '../objects/ability';
+import Entity from '../objects/entity';
 import { Loader } from '../system';
 import Character, { PLAYER_TYPES } from './character';
 
@@ -41,13 +42,15 @@ export default class Player extends Character {
   }
 
   private handleDown() {
-    event.on(KEY_EVENTS.KEY_DOWN, (key: KEY_NAMES) => {
-      switch (KEY_NAMES[key]) {
+    event.on(KEY_EVENTS.KEY_DOWN, (keyName: KEY_NAMES) => {
+      switch (KEY_NAMES[keyName]) {
         case CONTROLLED_KEYS[CONTROL_ACTIONS.WALK_LEFT]: {
           const { x, y } = this.geometryPosition;
           const entities = this.entities;
 
           this.direction = Vector2.left;
+          this.showExternal();
+
           if (entities[y][x - 1]?.hasAbility(ABILITY_NAMES.PASSABLE)) {
             this.walk(Vector2.left);
           }
@@ -61,6 +64,8 @@ export default class Player extends Character {
           const entities = this.entities;
 
           this.direction = Vector2.right;
+          this.showExternal();
+
           if (entities[y][x + 1]?.hasAbility(ABILITY_NAMES.PASSABLE)) {
             this.walk(Vector2.right);
           }
@@ -74,6 +79,8 @@ export default class Player extends Character {
           const entities = this.entities;
 
           this.direction = Vector2.up;
+          this.showExternal();
+
           if (entities[y - 1][x]?.hasAbility(ABILITY_NAMES.PASSABLE)) {
             this.walk(Vector2.up);
           }
@@ -87,10 +94,18 @@ export default class Player extends Character {
           const entities = this.entities;
 
           this.direction = Vector2.down;
+          this.showExternal();
+
           if (entities[y + 1][x]?.hasAbility(ABILITY_NAMES.PASSABLE)) {
             this.walk(Vector2.down);
           }
 
+          this._someKeysDown = true;
+          break;
+        }
+
+        case CONTROLLED_KEYS[CONTROL_ACTIONS.SHOW_EXTERNAL]: {
+          this.showExternal();
           this._someKeysDown = true;
           break;
         }
@@ -123,6 +138,12 @@ export default class Player extends Character {
         }
 
         case CONTROLLED_KEYS[CONTROL_ACTIONS.WALK_DOWN]: {
+          this._someKeysDown = false;
+          this._lastUpTimeStamp = Date.now();
+          break;
+        }
+
+        case CONTROLLED_KEYS[CONTROL_ACTIONS.SHOW_EXTERNAL]: {
           this._someKeysDown = false;
           this._lastUpTimeStamp = Date.now();
           break;

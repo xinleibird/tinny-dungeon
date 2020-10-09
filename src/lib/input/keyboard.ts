@@ -29,7 +29,8 @@ export default class Keyboard {
   }
 
   private processKeyDown(event: KeyboardEvent) {
-    const inHandle = this._handleKeys?.[event.key] as Key;
+    const renameSpace = event.key === ' ' ? 'Space' : event.key;
+    const inHandle = this._handleKeys?.[renameSpace] as Key;
 
     if (inHandle) {
       const currentKey = event.key as KEY_NAMES;
@@ -47,7 +48,8 @@ export default class Keyboard {
   }
 
   private processKeyUp(event: KeyboardEvent) {
-    const inHandle = this._handleKeys?.[event.key] as Key;
+    const renameSpace = event.key === ' ' ? 'Space' : event.key;
+    const inHandle = this._handleKeys?.[renameSpace] as Key;
     if (inHandle) {
       inHandle.processKeyUp(event);
     }
