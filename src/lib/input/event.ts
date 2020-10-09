@@ -2,7 +2,7 @@ import { utils } from 'pixi.js';
 
 const { EventEmitter } = utils;
 
-export enum KEY_EVENT_TYPES {
+export enum KEY_EVENTS {
   KEY_DOWN = 'keyDown',
   KEY_UP = 'keyUp',
 }

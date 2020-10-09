@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "build": "TS_NODE_PROJECT=\"tsconfig.webpack.json\" webpack --config webpack.production.ts",
-    "start": "webpack-dev-server --content-base ./public --hot --inline --colors --port 3000 --open",
+    "start": "webpack-dev-server --content-base ./public --hot --inline --colors --host 0.0.0.0 --port 3000 --open-page http://localhost:3000",
     "dev": "npm run start"
   },
   "keywords": [],

@@ -17,22 +17,23 @@ export enum PLAYER_TYPES {
 
 export enum NONPLAYER_TYPES {}
 
-export const CHARACTER_TYPES = {
+export const CHARACTER_CATEGORIES = {
   ...PLAYER_TYPES,
   ...NONPLAYER_TYPES,
 };
 
-export enum CHARACTER_ANIMATION_TYPES {
+export enum CHARACTER_ANIMATIONS {
   HOLD = 'hold',
   WALK = 'walk',
   ATTACK = 'attack',
   HURT = 'hurt',
 }
-const ticker = PIXI.Ticker.shared;
 
 export default class Character extends PIXI.Container {
   protected _type: PLAYER_TYPES | NONPLAYER_TYPES;
+  protected _stepSound: PIXI.sound.Sound;
 
+  private _direction: Vector2 = Vector2.right;
   private _entities: Entity[][];
   private _geometryPosition: Vector2;
   private _spriteOffset: { x: number; y: number };
@@ -56,6 +57,17 @@ export default class Character extends PIXI.Container {
 
     const { x, y } = this._geometryPosition;
     this.position.set(x * 16 + spriteOffset.x, y * 16 + spriteOffset.y);
+  }
+
+  public get direction() {
+    return this.direction;
+  }
+
+  public set direction(direction: Vector2) {
+    if (!this._direction.equals(direction)) {
+      this._direction = direction;
+      this.changeSpriteDirection(direction);
+    }
   }
 
   public set geometryPosition(position: Vector2) {
@@ -84,6 +96,8 @@ export default class Character extends PIXI.Container {
     hurt.visible = false;
 
     hold.play();
+
+    this._stepSound.stop();
   }
 
   public walk(direction: Vector2) {
@@ -106,6 +120,10 @@ export default class Character extends PIXI.Container {
         walk.play();
       },
     });
+
+    if (!this._stepSound.isPlaying) {
+      this._stepSound.play();
+    }
   }
 
   public attack(direction: Vector2) {
@@ -133,12 +151,12 @@ export default class Character extends PIXI.Container {
     return this.Entities;
   }
 
-  protected changeDirection(direction: Vector2) {
-    if (direction.equals(Vector2.left())) {
+  protected changeSpriteDirection(direction: Vector2) {
+    if (direction.equals(Vector2.left)) {
       this.scale.x = -1;
     }
 
-    if (direction.equals(Vector2.right())) {
+    if (direction.equals(Vector2.right)) {
       this.scale.x = 1;
     }
   }
@@ -146,10 +164,10 @@ export default class Character extends PIXI.Container {
   private initialize(type: PLAYER_TYPES | NONPLAYER_TYPES) {
     const character = type.toString().toUpperCase();
 
-    const holdBatch = Loader.textures[character][CHARACTER_ANIMATION_TYPES.HOLD];
-    const walkBatch = Loader.textures[character][CHARACTER_ANIMATION_TYPES.WALK];
-    const attackBatch = Loader.textures[character][CHARACTER_ANIMATION_TYPES.ATTACK];
-    const hurtBatch = Loader.textures[character][CHARACTER_ANIMATION_TYPES.HURT];
+    const holdBatch = Loader.textures[character][CHARACTER_ANIMATIONS.HOLD];
+    const walkBatch = Loader.textures[character][CHARACTER_ANIMATIONS.WALK];
+    const attackBatch = Loader.textures[character][CHARACTER_ANIMATIONS.ATTACK];
+    const hurtBatch = Loader.textures[character][CHARACTER_ANIMATIONS.HURT];
 
     const hold = new PIXI.AnimatedSprite(holdBatch);
     const walk = new PIXI.AnimatedSprite(walkBatch);

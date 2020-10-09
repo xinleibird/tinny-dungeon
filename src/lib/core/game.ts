@@ -33,15 +33,14 @@ const defaultGameOptions: PIXIAppOption = {
   height: window.innerHeight / GAME_PIXEL_SCALE / window.devicePixelRatio,
   antialias: false,
   resolution: GAME_PIXEL_SCALE * window.devicePixelRatio,
-
   backgroundColor: BACKGROUND_COLOR,
 };
 
 const defaultViewportOptions: ViewportOptions = {
   screenWidth: window.innerWidth / GAME_PIXEL_SCALE / window.devicePixelRatio,
   screenHeight: window.innerHeight / GAME_PIXEL_SCALE / window.devicePixelRatio,
-  worldHeight: 31 * 16,
-  worldWidth: 27 * 16,
+  worldHeight: 100 * 16,
+  worldWidth: 100 * 16,
 };
 
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
@@ -56,12 +55,12 @@ export default class Game extends PIXI.Application {
   public constructor(props?: PIXIAppOption) {
     super({ ...defaultGameOptions, ...props });
 
-    Loader.load();
-
+    this.registerResizer();
     this._viewport = new Viewport(defaultViewportOptions);
     this.stage.addChild(this._viewport);
-
     this._controller = new Controller();
+
+    Loader.load();
   }
 
   public play() {
@@ -109,6 +108,29 @@ export default class Game extends PIXI.Application {
     return this._noneplayers;
   }
 
+  private registerResizer() {
+    window.onorientationchange = () => {
+      this.renderer.resize(
+        window.innerWidth / GAME_PIXEL_SCALE / window.devicePixelRatio,
+        window.innerHeight / GAME_PIXEL_SCALE / window.devicePixelRatio
+      );
+      this._viewport.resize(
+        window.innerWidth / GAME_PIXEL_SCALE / window.devicePixelRatio,
+        window.innerHeight / GAME_PIXEL_SCALE / window.devicePixelRatio
+      );
+    };
+    window.onresize = () => {
+      this.renderer.resize(
+        window.innerWidth / GAME_PIXEL_SCALE / window.devicePixelRatio,
+        window.innerHeight / GAME_PIXEL_SCALE / window.devicePixelRatio
+      );
+      this._viewport.resize(
+        window.innerWidth / GAME_PIXEL_SCALE / window.devicePixelRatio,
+        window.innerHeight / GAME_PIXEL_SCALE / window.devicePixelRatio
+      );
+    };
+  }
+
   private renderLayers() {
     if (this._currentDungeon) {
       this._viewport.addChild(this._currentDungeon);
@@ -120,7 +142,7 @@ export default class Game extends PIXI.Application {
   }
 
   private gameLoop() {
-    const dungeon = new Dungeon(100, 100);
+    const dungeon = new Dungeon(31, 25);
     this._currentDungeon = dungeon;
 
     this._player.geometryPosition = this._currentDungeon.getRespawnPosition();
@@ -129,7 +151,7 @@ export default class Game extends PIXI.Application {
     this._viewport.follow(this._player);
 
     const mainTheme = Loader.sounds.musics.main;
-    mainTheme.volume = 0.1;
+    mainTheme.volume = 0.06;
     mainTheme.loop = true;
     mainTheme.play();
   }

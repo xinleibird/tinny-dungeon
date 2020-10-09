@@ -11,7 +11,7 @@ export const initialize2DArray = (
     matrix[y] = [];
     for (let x = 0; x < w; x++) {
       if (val instanceof Entity) {
-        const entity = new Entity(x, y, val.type);
+        const entity = new Entity({ x, y }, val.type);
         matrix[y][x] = entity;
       } else {
         matrix[y][x] = val;

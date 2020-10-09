@@ -2,6 +2,7 @@ import * as PIXI from 'pixi.js';
 
 import { Vector2 } from '../geometry';
 import { ABILITY_NAMES } from '../objects/ability';
+import Decorator from '../objects/decorator';
 import Entity, { ENTITY_TYPES } from '../objects/entity';
 import { generateAutotile, generateDungeon } from '../utils';
 import Tile, { TILE_TYPES } from './tile';
@@ -10,6 +11,7 @@ export default class Dungeon extends PIXI.Container {
   private _tilesMap: TILE_TYPES[][] = [];
   private _entitiesMap: ENTITY_TYPES[][] = [];
   private _entities: Entity[][] = [];
+  private _decoratorsMap: number[][] = [];
 
   public constructor(tilesX = 0, tilesY = 0, randomSeed?: number) {
     super();
@@ -41,10 +43,7 @@ export default class Dungeon extends PIXI.Container {
 
     for (let y = 0; y < ty; y++) {
       for (let x = 0; x < tx; x++) {
-        if (tileArray[y][x] === TILE_TYPES.EMPTY) {
-          const tile = new Tile({ x, y }, tileArray[y][x], true);
-          this.addChild(tile.sprite);
-        } else {
+        if (tileArray[y][x] !== TILE_TYPES.EMPTY) {
           const tile = new Tile({ x, y }, tileArray[y][x]);
           this.addChild(tile.sprite);
         }
@@ -59,8 +58,14 @@ export default class Dungeon extends PIXI.Container {
     for (let y = 0; y < cy; y++) {
       this._entities[y] = [];
       for (let x = 0; x < cx; x++) {
-        const direction = this._entitiesMap[y][x - 1] ? Vector2.up() : Vector2.right();
-        const entity = new Entity(x, y, this._entitiesMap[y][x], direction);
+        const decorator = new Decorator({ x, y }, this._decoratorsMap[y][x]);
+
+        if (decorator.sprite) {
+          this.addChild(decorator.sprite);
+        }
+
+        const direction = this._entitiesMap[y][x - 1] ? Vector2.up : Vector2.right;
+        const entity = new Entity({ x, y }, this._entitiesMap[y][x], direction);
 
         this._entities[y][x] = entity;
         this.addChild(entity);
@@ -74,9 +79,11 @@ export default class Dungeon extends PIXI.Container {
   }
 
   private initialize(tx: number, ty: number) {
-    const { tiles, entitiesMap } = generateDungeon(tx, ty);
+    const { tiles, entitiesMap, decoratorsMap } = generateDungeon(tx, ty);
     this._tilesMap = tiles;
     this._entitiesMap = entitiesMap;
+    this._decoratorsMap = decoratorsMap;
+
     this.renderTiles();
     this.renderEntities();
   }

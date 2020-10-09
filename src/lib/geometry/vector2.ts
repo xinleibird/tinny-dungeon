@@ -7,19 +7,19 @@ export class Vector2 {
     return new Vector2(v1.x + v2.x, v1.y + v2.y);
   }
 
-  public static left() {
+  public static get left() {
     return new Vector2(-1, 0);
   }
 
-  public static right() {
+  public static get right() {
     return new Vector2(1, 0);
   }
 
-  public static up() {
+  public static get up() {
     return new Vector2(0, -1);
   }
 
-  public static down() {
+  public static get down() {
     return new Vector2(0, 1);
   }
 

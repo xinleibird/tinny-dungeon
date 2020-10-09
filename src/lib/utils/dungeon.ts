@@ -63,6 +63,42 @@ const fillEntitiesMap = (
   }
 };
 
+const fillDecoratorsMap = (decoratorsMap, entitiesMap) => {
+  const decoratorTypesWeight = {
+    '0': 50,
+    '1': 1,
+    '2': 1,
+    '3': 1,
+    '4': 1,
+    '5': 1,
+    '6': 1,
+    '7': 1,
+    '8': 1,
+    '9': 1,
+    '10': 1,
+    '11': 1,
+    '12': 1,
+    '13': 1,
+    '14': 1,
+    '15': 1,
+    '16': 1,
+    '17': 1,
+    '18': 1,
+    '19': 1,
+    '20': 1,
+  };
+
+  for (let y = 0; y < entitiesMap.length; y++) {
+    for (let x = 0; x < entitiesMap[0].length; x++) {
+      const currentMap = entitiesMap[y][x];
+      if (currentMap !== ENTITY_TYPES.EMPTY) {
+        const str = ROT.RNG.getWeightedValue(decoratorTypesWeight);
+        decoratorsMap[y][x] = parseInt(str, 10);
+      }
+    }
+  }
+};
+
 const normalize = (top: number, bottom: number, left: number, right: number) => {
   let swapX1 = left;
   let swapX2 = right;
@@ -82,12 +118,14 @@ const normalize = (top: number, bottom: number, left: number, right: number) => 
   return { top: swapY1, bottom: swapY2, left: swapX1, right: swapX2 };
 };
 
+// eslint-disable-next-line complexity
 export const generateDungeon = (dungeonW: number, dungeonH: number) => {
   const tilesW = ~~(dungeonW / 2) + 1;
   const tilesH = ~~(dungeonH / 2) + 1;
 
   const tiles = initialize2DArray(tilesW, tilesH, TILE_TYPES.EMPTY);
   const entitiesMap = initialize2DArray(dungeonW, dungeonH, ENTITY_TYPES.EMPTY);
+  const decoratorsMap = initialize2DArray(dungeonW, dungeonH, 0);
 
   const dungeon = new ROT.Map.Digger(tilesW, tilesH, {
     roomHeight: [2, 5],
@@ -147,6 +185,8 @@ export const generateDungeon = (dungeonW: number, dungeonH: number) => {
     );
   });
 
+  fillDecoratorsMap(decoratorsMap, entitiesMap);
+
   const canRespawn = [];
   for (let y = 0; y < entitiesMap.length; y++) {
     for (let x = 0; x < entitiesMap[0].length; x++) {
@@ -173,7 +213,9 @@ export const generateDungeon = (dungeonW: number, dungeonH: number) => {
         finalDistance > (dungeonW + dungeonH) * 0.2 &&
         entitiesMap[y + 1][x] !== ENTITY_TYPES.EMPTY &&
         entitiesMap[y + 1][x] !== ENTITY_TYPES.CORRIDOR &&
-        entitiesMap[y - 1][x] !== ENTITY_TYPES.CORRIDOR
+        entitiesMap[y - 1][x] !== ENTITY_TYPES.CORRIDOR &&
+        entitiesMap[y][x - 1] !== ENTITY_TYPES.CORRIDOR &&
+        entitiesMap[y][x + 1] !== ENTITY_TYPES.CORRIDOR
       ) {
         canClear.push({ cx: x, cy: y });
       }
@@ -181,5 +223,6 @@ export const generateDungeon = (dungeonW: number, dungeonH: number) => {
   }
   const { cx, cy } = ROT.RNG.getItem(canClear);
   fillEntitiesMap(entitiesMap, cy, cy, cx, cx, ENTITY_TYPES.DOWNSTAIR);
-  return { tiles, entitiesMap };
+
+  return { tiles, entitiesMap, decoratorsMap };
 };

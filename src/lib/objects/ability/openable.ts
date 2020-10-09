@@ -16,7 +16,7 @@ export default class Openable extends Ability {
   }
 
   private initialize(initStatus: 'close' | 'open', direction: Vector2) {
-    const sprite = direction.equals(Vector2.right())
+    const sprite = direction.equals(Vector2.right)
       ? new PIXI.AnimatedSprite([Loader.textures.DOORS[0], Loader.textures.DOORS[1]])
       : new PIXI.AnimatedSprite([Loader.textures.DOORS[2], Loader.textures.DOORS[3]]);
 

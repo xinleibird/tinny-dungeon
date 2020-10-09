@@ -8,7 +8,7 @@ export default class Keyboard {
   private _handleKeys: HandleKeysType = {};
   private _lastDown = 0;
   private _lastKey: KEY_NAMES;
-  private _delay = 100;
+  private _delay = 200;
 
   public constructor() {
     this.initialize();

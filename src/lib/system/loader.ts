@@ -1,18 +1,19 @@
 import sound from 'pixi-sound';
 import * as PIXI from 'pixi.js';
 
-import { CHARACTER_ANIMATION_TYPES, CHARACTER_TYPES, PLAYER_TYPES } from '../character';
+import { CHARACTER_ANIMATIONS, CHARACTER_CATEGORIES, PLAYER_TYPES } from '../character';
 import { emitter, RESOURCE_EVENTS } from './emitter';
 
 const loader = PIXI.Loader.shared;
 
 type TexturesTypes = {
   [key in keyof typeof PLAYER_TYPES]?: {
-    [key in keyof typeof CHARACTER_ANIMATION_TYPES]?: PIXI.Texture[];
+    [key in keyof typeof CHARACTER_ANIMATIONS]?: PIXI.Texture[];
   };
 } & {
   DOORS?: PIXI.Texture[];
   STAIRS?: PIXI.Texture[];
+  FLOOR_DECORATORS?: PIXI.Texture[];
 };
 
 interface SoundTypes {
@@ -34,8 +35,11 @@ export default class Loader {
     loader.add('assets/tiles/tileset.json');
     loader.add('assets/tiles/doors.json');
     loader.add('assets/tiles/stairs.json');
+    loader.add('assets/tiles/floor_decorators.json');
     loader.add('assets/sprites/knight_m.json');
+
     loader.add('main', 'assets/sounds/musics/平坡の道.mp3');
+    loader.add('player_step', 'assets/sounds/effects/sfx_movement_footsteps1a.wav');
 
     loader.load((loader, resources) => {
       this.resources = resources;
@@ -48,7 +52,7 @@ export default class Loader {
         this.tileset.push(texture);
       }
 
-      this.textures = { DOORS: [], STAIRS: [] };
+      this.textures = { DOORS: [], STAIRS: [], FLOOR_DECORATORS: [] };
       for (let i = 0; i < 4; i++) {
         const texture = PIXI.Texture.from(`doors_${i}`);
         this.textures.DOORS.push(texture);
@@ -57,39 +61,44 @@ export default class Loader {
         const texture = PIXI.Texture.from(`stairs_${i}`);
         this.textures.STAIRS.push(texture);
       }
+      for (let i = 0; i <= 20; i++) {
+        const texture = PIXI.Texture.from(`floor_decorators_${i}`);
+        this.textures.FLOOR_DECORATORS.push(texture);
+      }
 
-      Object.keys(CHARACTER_TYPES).forEach((character) => {
+      Object.keys(CHARACTER_CATEGORIES).forEach((character) => {
         this.textures[character] = {
-          [CHARACTER_ANIMATION_TYPES.HOLD]: [],
-          [CHARACTER_ANIMATION_TYPES.WALK]: [],
-          [CHARACTER_ANIMATION_TYPES.ATTACK]: [],
-          [CHARACTER_ANIMATION_TYPES.HURT]: [],
+          [CHARACTER_ANIMATIONS.HOLD]: [],
+          [CHARACTER_ANIMATIONS.WALK]: [],
+          [CHARACTER_ANIMATIONS.ATTACK]: [],
+          [CHARACTER_ANIMATIONS.HURT]: [],
         };
 
         const frameName = character.toString().toLowerCase();
         for (let i = 0; i < 4; i++) {
           const texture = PIXI.Texture.from(`${frameName}_${i}`);
-          this.textures[character][CHARACTER_ANIMATION_TYPES.HOLD].push(texture);
+          this.textures[character][CHARACTER_ANIMATIONS.HOLD].push(texture);
         }
 
         for (let i = 4; i < 8; i++) {
           const texture = PIXI.Texture.from(`${frameName}_${i}`);
-          this.textures[character][CHARACTER_ANIMATION_TYPES.WALK].push(texture);
+          this.textures[character][CHARACTER_ANIMATIONS.WALK].push(texture);
         }
 
         for (let i = 8; i < 12; i++) {
           const texture = PIXI.Texture.from(`${frameName}_${i}`);
-          this.textures[character][CHARACTER_ANIMATION_TYPES.ATTACK].push(texture);
+          this.textures[character][CHARACTER_ANIMATIONS.ATTACK].push(texture);
         }
 
         for (let i = 12; i < 15; i++) {
           const texture = PIXI.Texture.from(`${frameName}_${i}`);
-          this.textures[character][CHARACTER_ANIMATION_TYPES.HURT].push(texture);
+          this.textures[character][CHARACTER_ANIMATIONS.HURT].push(texture);
         }
       });
 
       this.sounds = { musics: {}, effects: {} };
       this.sounds.musics['main'] = sound.Sound.from(this.resources.main);
+      this.sounds.effects['player_step'] = sound.Sound.from(this.resources.player_step);
 
       emitter.emit(RESOURCE_EVENTS.RESOURCES_LOADED);
     });
