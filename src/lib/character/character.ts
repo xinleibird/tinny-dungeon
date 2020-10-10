@@ -1,5 +1,4 @@
-import gsap from 'gsap';
-import { PixiPlugin } from 'gsap/PixiPlugin';
+import { ease } from 'pixi-ease';
 import * as PIXI from 'pixi.js';
 
 import { DropShadowFilter } from '@pixi/filter-drop-shadow';
@@ -8,9 +7,6 @@ import { IPosition, Vector2 } from '../geometry';
 import Entity from '../objects/entity';
 import { DirectionIndicator, External } from '../objects/external';
 import { Loader } from '../system';
-
-gsap.registerPlugin(PixiPlugin);
-PixiPlugin.registerPIXI(PIXI);
 
 export enum PLAYER_TYPES {
   KNIGHT_M = 'knight_m',
@@ -149,15 +145,19 @@ export default class Character extends PIXI.Container {
     this._geometryPosition.combine(direction);
     const { x, y } = this._geometryPosition;
 
-    gsap.to(this, {
-      duration: 0.2,
-      pixi: {
+    const move = ease.add(
+      this,
+      {
         x: x * 16 + this._spriteOffset.x,
         y: y * 16 + this._spriteOffset.y,
       },
-      onStart: () => {
-        walk.play();
-      },
+      {
+        duration: 200,
+      }
+    );
+
+    move.once('complete', () => {
+      walk.play();
     });
 
     if (!this._stepSound.isPlaying) {

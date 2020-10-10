@@ -13,11 +13,12 @@ export enum ENTITY_TYPES {
   DOWNSTAIR,
 }
 
-export default class Entity extends PIXI.Container {
+export default class Entity {
   private _type: ENTITY_TYPES;
   private _direction: Vector2;
   private _geometryPosition: Vector2;
   private _abilities: Ability[] = [];
+  private _sprite: PIXI.Sprite;
 
   public constructor(
     geometryPosition: Vector2 | IPosition,
@@ -27,7 +28,6 @@ export default class Entity extends PIXI.Container {
     tileOffsetX = 24,
     tileOffsetY = 32
   ) {
-    super();
     this._type = entityType;
     this._direction = direction;
 
@@ -51,9 +51,8 @@ export default class Entity extends PIXI.Container {
       this._abilities.push(openable);
 
       const { x, y } = this._geometryPosition;
-      this.position.set(x * tileSize + tileOffsetX, y * tileSize + tileOffsetY);
-
-      this.addChild(openable.sprite);
+      this._sprite = openable.sprite;
+      this._sprite.position.set(x * tileSize + tileOffsetX, y * tileSize + tileOffsetY);
     }
 
     if (entityType === ENTITY_TYPES.UPSTAIR) {
@@ -61,8 +60,8 @@ export default class Entity extends PIXI.Container {
       this._abilities.push(respawnable);
 
       const { x, y } = this._geometryPosition;
-      this.position.set(x * tileSize + tileOffsetX, y * tileSize + tileOffsetY);
-      this.addChild(respawnable.sprite);
+      this._sprite = respawnable.sprite;
+      this._sprite.position.set(x * tileSize + tileOffsetX, y * tileSize + tileOffsetY);
     }
 
     if (entityType === ENTITY_TYPES.DOWNSTAIR) {
@@ -70,9 +69,13 @@ export default class Entity extends PIXI.Container {
       this._abilities.push(clearable);
 
       const { x, y } = this._geometryPosition;
-      this.position.set(x * tileSize + tileOffsetX, y * tileSize + tileOffsetY);
-      this.addChild(clearable.sprite);
+      this._sprite = clearable.sprite;
+      this._sprite.position.set(x * tileSize + tileOffsetX, y * tileSize + tileOffsetY);
     }
+  }
+
+  public get sprite() {
+    return this._sprite;
   }
 
   public get geometryPosition() {

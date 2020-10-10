@@ -9,6 +9,6 @@ export const CONTROLLED_KEYS = {
 };
 
 export const GAME_OPTIONS = {
-  GAME_PIXEL_SCALE: 2,
-  BACKGROUND_COLOR: 0x160c21,
+  PIXEL_SCALE: 2,
+  DEBUG: true,
 };

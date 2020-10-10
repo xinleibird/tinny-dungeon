@@ -13,7 +13,7 @@ export default class Dungeon extends PIXI.Container {
   private _entities: Entity[][] = [];
   private _decoratorsMap: number[][] = [];
 
-  public constructor(tilesX = 0, tilesY = 0, randomSeed?: number) {
+  public constructor(tilesX = 0, tilesY = 0) {
     super();
     this.initialize(tilesX, tilesY);
   }
@@ -68,7 +68,9 @@ export default class Dungeon extends PIXI.Container {
         const entity = new Entity({ x, y }, this._entitiesMap[y][x], direction);
 
         this._entities[y][x] = entity;
-        this.addChild(entity);
+        if (entity.sprite) {
+          this.addChild(entity.sprite);
+        }
 
         if (entity.hasAbility(ABILITY_NAMES.OPENABLE)) {
           const door = entity.getAbility(ABILITY_NAMES.OPENABLE);

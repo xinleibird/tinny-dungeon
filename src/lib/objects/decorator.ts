@@ -3,7 +3,7 @@ import * as PIXI from 'pixi.js';
 import { IPosition, Vector2 } from '../geometry';
 import { Loader } from '../system';
 
-export default class Entity {
+export default class Decorator {
   private _geometryPosition: Vector2;
   private _sprite: PIXI.Sprite;
 

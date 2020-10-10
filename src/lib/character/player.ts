@@ -4,7 +4,6 @@ import { CONTROLLED_KEYS } from '../config';
 import { IPosition, Vector2 } from '../geometry';
 import { CONTROL_ACTIONS, event, KEY_EVENTS, KEY_NAMES } from '../input';
 import { ABILITY_NAMES } from '../objects/ability';
-import Entity from '../objects/entity';
 import { Loader } from '../system';
 import Character, { PLAYER_TYPES } from './character';
 
