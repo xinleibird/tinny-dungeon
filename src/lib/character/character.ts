@@ -1,4 +1,5 @@
 import { ease } from 'pixi-ease';
+import { Viewport } from 'pixi-viewport';
 import * as PIXI from 'pixi.js';
 
 import { DropShadowFilter } from '@pixi/filter-drop-shadow';
@@ -35,10 +36,12 @@ export default class Character extends PIXI.Container {
   private _direction: Vector2 = Vector2.down;
   private _geometryPosition: Vector2;
   private _spriteOffset: { x: number; y: number };
+  private _viewport: Viewport;
 
   protected constructor(
     geometryPosition: Vector2 | IPosition,
     type: PLAYER_TYPES | NONPLAYER_TYPES,
+    viewport?: Viewport,
     spriteOffset = { x: 32, y: 24 }
   ) {
     super();
@@ -49,9 +52,22 @@ export default class Character extends PIXI.Container {
       this._geometryPosition = new Vector2(x, y);
     }
     this._type = type;
+    this._viewport = viewport;
     this._spriteOffset = spriteOffset;
 
     this.initialize(type);
+  }
+
+  public act() {
+    this._viewport.addChild(this);
+  }
+
+  public get viewport() {
+    return this._viewport;
+  }
+
+  public set viewport(viewport: Viewport) {
+    this._viewport = viewport;
   }
 
   public addExternal(enternal: External) {
@@ -258,6 +274,12 @@ export default class Character extends PIXI.Container {
     this.addChild(directionIndicator.sprite);
 
     // character's drop shadow
-    this.filters = [new DropShadowFilter({ blur: 0, distance: 5, rotation: -90 })];
+    this.filters = [
+      new DropShadowFilter({
+        blur: 0,
+        distance: 5,
+        rotation: -90,
+      }),
+    ];
   }
 }

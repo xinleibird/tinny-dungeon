@@ -2,6 +2,7 @@ import * as PIXI from 'pixi.js';
 
 import { IPosition, Vector2 } from '../geometry';
 import { Ability, ABILITY_NAMES, Clearable, Openable, Passable, Respawnable } from './ability';
+import { ABILITY_STATUS } from './ability/ability';
 
 export enum ENTITY_TYPES {
   EMPTY,
@@ -39,14 +40,19 @@ export default class Entity {
     }
 
     if (entityType !== ENTITY_TYPES.EMPTY) {
-      const passable = new Passable();
-      this._abilities.push(passable);
+      if (entityType === ENTITY_TYPES.DOOR) {
+        const passable = new Passable(ABILITY_STATUS.STOP);
+        this._abilities.push(passable);
+      } else {
+        const passable = new Passable(ABILITY_STATUS.PASS);
+        this._abilities.push(passable);
+      }
     }
 
     if (entityType === ENTITY_TYPES.DOOR) {
       const openable = direction.equals(Vector2.right)
-        ? new Openable('close', Vector2.right)
-        : new Openable('close', Vector2.up);
+        ? new Openable(ABILITY_STATUS.CLOSE, Vector2.right)
+        : new Openable(ABILITY_STATUS.CLOSE, Vector2.up);
 
       this._abilities.push(openable);
 
@@ -110,5 +116,15 @@ export default class Entity {
       }
     }
     return undefined;
+  }
+
+  public removeAbility(name: ABILITY_NAMES) {
+    for (let i = 0; i < this._abilities.length; i++) {
+      const ability = this._abilities[i];
+      if (ability.name === name) {
+        this._abilities.splice(i, 1);
+        break;
+      }
+    }
   }
 }

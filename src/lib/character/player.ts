@@ -1,9 +1,11 @@
+import { Viewport } from 'pixi-viewport';
 import * as PIXI from 'pixi.js';
 
 import { CONTROLLED_KEYS } from '../config';
 import { IPosition, Vector2 } from '../geometry';
 import { CONTROL_ACTIONS, event, KEY_EVENTS, KEY_NAMES } from '../input';
 import { ABILITY_NAMES } from '../objects/ability';
+import { ABILITY_STATUS } from '../objects/ability/ability';
 import { Loader } from '../system';
 import Character, { PLAYER_TYPES } from './character';
 
@@ -14,8 +16,12 @@ export default class Player extends Character {
   private _lastUpTimeStamp = 0;
   private _holdDelay = 300;
 
-  public constructor(geometryPosition: Vector2 | IPosition, type: PLAYER_TYPES) {
-    super(geometryPosition, type);
+  public constructor(
+    geometryPosition: Vector2 | IPosition,
+    type: PLAYER_TYPES,
+    viewport?: Viewport
+  ) {
+    super(geometryPosition, type, viewport);
 
     const stepSound = Loader.sounds.effects.player_step;
     stepSound.volume = 0.01;
@@ -50,7 +56,11 @@ export default class Player extends Character {
           this.direction = Vector2.left;
           this.showExternal();
 
-          if (entities[y][x - 1]?.hasAbility(ABILITY_NAMES.PASSABLE)) {
+          const entity = entities[y][x - 1];
+          if (
+            entity?.hasAbility(ABILITY_NAMES.PASSABLE) &&
+            entity?.getAbility(ABILITY_NAMES.PASSABLE).status === ABILITY_STATUS.PASS
+          ) {
             this.walk(Vector2.left);
           }
 
@@ -65,7 +75,11 @@ export default class Player extends Character {
           this.direction = Vector2.right;
           this.showExternal();
 
-          if (entities[y][x + 1]?.hasAbility(ABILITY_NAMES.PASSABLE)) {
+          const entity = entities[y][x + 1];
+          if (
+            entity?.hasAbility(ABILITY_NAMES.PASSABLE) &&
+            entity?.getAbility(ABILITY_NAMES.PASSABLE).status === ABILITY_STATUS.PASS
+          ) {
             this.walk(Vector2.right);
           }
 
@@ -80,7 +94,11 @@ export default class Player extends Character {
           this.direction = Vector2.up;
           this.showExternal();
 
-          if (entities[y - 1][x]?.hasAbility(ABILITY_NAMES.PASSABLE)) {
+          const entity = entities[y - 1][x];
+          if (
+            entity?.hasAbility(ABILITY_NAMES.PASSABLE) &&
+            entity?.getAbility(ABILITY_NAMES.PASSABLE).status === ABILITY_STATUS.PASS
+          ) {
             this.walk(Vector2.up);
           }
 
@@ -95,7 +113,11 @@ export default class Player extends Character {
           this.direction = Vector2.down;
           this.showExternal();
 
-          if (entities[y + 1][x]?.hasAbility(ABILITY_NAMES.PASSABLE)) {
+          const entity = entities[y + 1][x];
+          if (
+            entity?.hasAbility(ABILITY_NAMES.PASSABLE) &&
+            entity?.getAbility(ABILITY_NAMES.PASSABLE).status === ABILITY_STATUS.PASS
+          ) {
             this.walk(Vector2.down);
           }
 

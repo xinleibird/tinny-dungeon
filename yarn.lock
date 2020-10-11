@@ -182,6 +182,11 @@
   dependencies:
     "@pixi/core" "5.3.3"
 
+"@pixi/filter-old-film@^3.1.1":
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/@pixi/filter-old-film/-/filter-old-film-3.1.1.tgz#88d6b8a3ba73f47ee38add5c8a84dd472d1213a0"
+  integrity sha512-1kc6+mbFQahnkC9qqPCRscneSYcHjQI93fKqQuyzPxR5Wzkcaz6WlQfoeqUnZTA6YhnENxygJWk0KCCHG6mHKw==
+
 "@pixi/graphics@5.3.3":
   version "5.3.3"
   resolved "https://registry.yarnpkg.com/@pixi/graphics/-/graphics-5.3.3.tgz#cfaf5a0a94a811f7359c20875547c14095f1ecec"
@@ -4062,6 +4067,11 @@ pinkie@^2.0.0:
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/pinkie/-/pinkie-2.0.4.tgz#72556b80cfa0d48a974e80e77248e80ed4f7f870"
   integrity sha1-clVrgM+g1IqXToDnckjoDtT3+HA=
+
+pixi-cull@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/pixi-cull/-/pixi-cull-1.0.0.tgz#caa76fb3ce2544ba9aa24cd8a8f768a692d2522a"
+  integrity sha512-K0b0cI/Hd+yAbFRe0qrYr/XLUwYzFidNNCkFv/MH+SZt7rwJlKnO4xgID6tR7GvE/LyKDPn1Hfgaoer3NAc4/w==
 
 pixi-ease@^3.0.6:
   version "3.0.6"

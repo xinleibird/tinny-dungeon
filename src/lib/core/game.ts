@@ -1,7 +1,9 @@
+import Cull from 'pixi-cull';
 import { Viewport, ViewportOptions } from 'pixi-viewport';
 import * as PIXI from 'pixi.js';
 
 import { PixiStatsPlugin } from '@armathai/pixi-stats';
+import { OldFilmFilter } from '@pixi/filter-old-film';
 
 import { NonePlayer, Player, PLAYER_TYPES } from '../character';
 import { GAME_OPTIONS } from '../config';
@@ -30,7 +32,7 @@ export interface PIXIAppOption {
 
 PIXI.Application.registerPlugin(PixiStatsPlugin);
 const { PIXEL_SCALE, DEBUG } = GAME_OPTIONS;
-const MAX_DUNGEON_SIZE = 50;
+const MAX_DUNGEON_SIZE = 150;
 
 const defaultGameOptions: PIXIAppOption = {
   width: window.innerWidth / PIXEL_SCALE / window.devicePixelRatio,
@@ -110,6 +112,27 @@ export default class Game extends PIXI.Application {
     this.stage.addChild(background);
   }
 
+  private fillFilter() {
+    PIXI.Ticker.shared.add(() => {
+      this.stage.filters = [
+        new OldFilmFilter(
+          {
+            sepia: 0,
+            noise: 0.0618,
+            noiseSize: 1,
+            scratch: -1,
+            scratchDensity: 0,
+            scratchWidth: 1,
+            vignetting: 0.3,
+            vignettingAlpha: 1,
+            vignettingBlur: 0.3,
+          },
+          Math.random()
+        ),
+      ];
+    });
+  }
+
   private initialize() {
     const root = document.getElementById('root');
     root.appendChild(this.view);
@@ -127,32 +150,43 @@ export default class Game extends PIXI.Application {
     this._controller = new Controller();
     this._viewport = new Viewport(defaultViewportOptions);
     this.stage.addChild(this._viewport);
+
+    this.fillFilter();
   }
 
-  private renderLayers() {
-    if (this._currentDungeon) {
-      this._viewport.addChild(this._currentDungeon);
-    }
+  private cullViewport() {
+    const cull = new Cull.Simple({
+      dirtyTest: false,
+    });
 
-    if (this._player) {
-      this._viewport.addChild(this._player);
-    }
+    cull.addList(this._viewport.children);
+    cull.cull(this._viewport.getVisibleBounds());
+
+    PIXI.Ticker.shared.add(() => {
+      if (this._viewport.dirty) {
+        cull.cull(this._viewport.getVisibleBounds());
+        this._viewport.dirty = false;
+      }
+    });
   }
 
   private gameLoop() {
-    this._player = new Player({ x: 0, y: 0 }, PLAYER_TYPES.KNIGHT_M);
-    this._viewport.follow(this._player);
+    this._currentDungeon = new Dungeon(MAX_DUNGEON_SIZE, MAX_DUNGEON_SIZE, this._viewport);
 
-    this._currentDungeon = new Dungeon(MAX_DUNGEON_SIZE, MAX_DUNGEON_SIZE);
-
+    this._player = new Player({ x: 0, y: 0 }, PLAYER_TYPES.KNIGHT_M, this._viewport);
     this._player.geometryPosition = this._currentDungeon.getRespawnPosition();
     this._player.entities = this._currentDungeon.entities;
+
+    this._currentDungeon.draw();
+
+    this._player.act();
+    this._viewport.follow(this._player);
+
+    this.cullViewport();
 
     const mainTheme = Loader.sounds.musics.main;
     mainTheme.volume = 0.06;
     mainTheme.loop = true;
     mainTheme.play();
-
-    this.renderLayers();
   }
 }
