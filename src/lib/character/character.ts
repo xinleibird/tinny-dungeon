@@ -5,8 +5,8 @@ import * as PIXI from 'pixi.js';
 import { DropShadowFilter } from '@pixi/filter-drop-shadow';
 
 import { IPosition, Vector2 } from '../geometry';
-import Entity from '../objects/entity';
-import { DirectionIndicator, External } from '../objects/external';
+import Entity from '../object/entity';
+import { DirectionIndicator, External } from '../object/external';
 import { Loader } from '../system';
 
 export enum PLAYER_TYPES {

@@ -3,9 +3,9 @@ import { Viewport } from 'pixi-viewport';
 import * as PIXI from 'pixi.js';
 
 import { Vector2 } from '../geometry';
-import { ABILITY_NAMES } from '../objects/ability';
-import Decorator from '../objects/decorator';
-import Entity, { ENTITY_TYPES } from '../objects/entity';
+import { ABILITY_NAMES } from '../object/ability';
+import Decorator from '../object/decorator';
+import Entity, { ENTITY_TYPES } from '../object/entity';
 import { generateAutotile, generateDungeon } from '../utils';
 import Tile, { TILE_TYPES } from './tile';
 

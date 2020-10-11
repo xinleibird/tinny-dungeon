@@ -1,5 +1,4 @@
-import { Vector2 } from '../geometry';
-import Entity, { ENTITY_TYPES } from '../objects/entity';
+import Entity from '../object/entity';
 
 export const initialize2DArray = (
   w: number,

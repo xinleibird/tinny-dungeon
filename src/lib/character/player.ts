@@ -4,8 +4,8 @@ import * as PIXI from 'pixi.js';
 import { CONTROLLED_KEYS } from '../config';
 import { IPosition, Vector2 } from '../geometry';
 import { CONTROL_ACTIONS, event, KEY_EVENTS, KEY_NAMES } from '../input';
-import { ABILITY_NAMES } from '../objects/ability';
-import { ABILITY_STATUS } from '../objects/ability/ability';
+import { ABILITY_NAMES } from '../object/ability';
+import { ABILITY_STATUS } from '../object/ability/ability';
 import { Loader } from '../system';
 import Character, { PLAYER_TYPES } from './character';
 
@@ -29,16 +29,16 @@ export default class Player extends Character {
 
     this._stepSound = stepSound;
 
-    this.handleDown();
-    this.handleUp();
-    this.handleHold();
+    this.handleKeyDown();
+    this.handleKeyUp();
+    this.handleKeyHold();
   }
 
   public get type() {
     return this._type;
   }
 
-  public handleHold() {
+  public handleKeyHold() {
     ticker.add(() => {
       if (!this._someKeysDown && Date.now() > this._lastUpTimeStamp + this._holdDelay) {
         this.hold();
@@ -46,7 +46,7 @@ export default class Player extends Character {
     });
   }
 
-  private handleDown() {
+  private handleKeyDown() {
     event.on(KEY_EVENTS.KEY_DOWN, (keyName: KEY_NAMES) => {
       switch (KEY_NAMES[keyName]) {
         case CONTROLLED_KEYS[CONTROL_ACTIONS.WALK_LEFT]: {
@@ -137,7 +137,7 @@ export default class Player extends Character {
     });
   }
 
-  private handleUp() {
+  private handleKeyUp() {
     event.on(KEY_EVENTS.KEY_UP, (key: KEY_NAMES) => {
       switch (KEY_NAMES[key]) {
         case CONTROLLED_KEYS[CONTROL_ACTIONS.WALK_LEFT]: {

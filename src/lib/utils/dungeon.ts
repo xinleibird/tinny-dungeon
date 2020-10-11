@@ -1,7 +1,7 @@
 import * as ROT from 'rot-js';
 
 import { Vector2 } from '../geometry';
-import { ENTITY_TYPES } from '../objects/entity';
+import { ENTITY_TYPES } from '../object/entity';
 import { TILE_TYPES } from '../tilemap/tile';
 import { initialize2DArray } from './array';
 
