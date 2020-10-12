@@ -1,6 +1,5 @@
 import { Viewport } from 'pixi-viewport';
 import * as PIXI from 'pixi.js';
-
 import { CONTROLLED_KEYS } from '../config';
 import { IPosition, Vector2 } from '../geometry';
 import { CONTROL_ACTIONS, event, KEY_EVENTS, KEY_NAMES } from '../input';

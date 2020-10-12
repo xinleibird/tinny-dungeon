@@ -1,5 +1,4 @@
 import * as PIXI from 'pixi.js';
-
 import { Loader } from '../../system';
 import { Ability, ABILITY_NAMES } from './';
 

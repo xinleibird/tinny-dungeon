@@ -1,1 +1,1 @@
-export { Vector2, IPosition } from './vector2';
+export { IPosition, Vector2 } from './vector2';

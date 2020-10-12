@@ -1,10 +1,8 @@
+import { PixiStatsPlugin } from '@armathai/pixi-stats';
+import { OldFilmFilter } from '@pixi/filter-old-film';
 import Cull from 'pixi-cull';
 import { Viewport, ViewportOptions } from 'pixi-viewport';
 import * as PIXI from 'pixi.js';
-
-import { PixiStatsPlugin } from '@armathai/pixi-stats';
-import { OldFilmFilter } from '@pixi/filter-old-film';
-
 import { NonePlayer, Player, PLAYER_TYPES } from '../character';
 import { GAME_OPTIONS } from '../config';
 import Controller from '../input/controller';
@@ -61,7 +59,7 @@ export default class Game extends PIXI.Application {
   private _player: Player;
   private _noneplayers: NonePlayer[] = [];
   private _controller: Controller;
-  private _scene: Viewport;
+  private _viewport: Viewport;
 
   // for stats.js
   private stats: any;
@@ -97,7 +95,7 @@ export default class Game extends PIXI.Application {
     this.registFilter();
 
     this.registBackground();
-    this.registScene();
+    this.registViewport();
   }
 
   public get controller() {
@@ -112,15 +110,14 @@ export default class Game extends PIXI.Application {
     this._controller = new Controller();
   }
 
-  private registScene() {
-    this._scene = new Viewport(defaultViewportOptions);
-    this.stage.addChild(this._scene);
+  private registViewport() {
+    this._viewport = new Viewport(defaultViewportOptions);
+    this.stage.addChild(this._viewport);
   }
 
   private registBackground() {
     const background = new PIXI.Graphics();
-    // background.beginFill(0x160c21);
-    background.beginFill(0xf81111);
+    background.beginFill(0x160c21);
     background.drawRect(
       0,
       0,
@@ -139,7 +136,7 @@ export default class Game extends PIXI.Application {
         (window.innerWidth / GAME_PIXEL_SCALE) * window.devicePixelRatio,
         (window.innerHeight / GAME_PIXEL_SCALE) * window.devicePixelRatio
       );
-      this._scene.resize(
+      this._viewport.resize(
         (window.innerWidth / GAME_PIXEL_SCALE) * window.devicePixelRatio,
         (window.innerHeight / GAME_PIXEL_SCALE) * window.devicePixelRatio
       );
@@ -149,7 +146,7 @@ export default class Game extends PIXI.Application {
         (window.innerWidth / GAME_PIXEL_SCALE) * window.devicePixelRatio,
         (window.innerHeight / GAME_PIXEL_SCALE) * window.devicePixelRatio
       );
-      this._scene.resize(
+      this._viewport.resize(
         (window.innerWidth / GAME_PIXEL_SCALE) * window.devicePixelRatio,
         (window.innerHeight / GAME_PIXEL_SCALE) * window.devicePixelRatio
       );
@@ -182,28 +179,28 @@ export default class Game extends PIXI.Application {
       dirtyTest: false,
     });
 
-    cull.addList(this._scene.children);
-    cull.cull(this._scene.getVisibleBounds());
+    cull.addList(this._viewport.children);
+    cull.cull(this._viewport.getVisibleBounds());
 
     PIXI.Ticker.shared.add(() => {
-      if (this._scene.dirty) {
-        cull.cull(this._scene.getVisibleBounds());
-        this._scene.dirty = false;
+      if (this._viewport.dirty) {
+        cull.cull(this._viewport.getVisibleBounds());
+        this._viewport.dirty = false;
       }
     });
   }
 
   private gameLoop() {
-    this._currentDungeon = new Dungeon(MAX_DUNGEON_SIZE, MAX_DUNGEON_SIZE, this._scene);
+    this._currentDungeon = new Dungeon(MAX_DUNGEON_SIZE, MAX_DUNGEON_SIZE, this._viewport);
 
-    this._player = new Player({ x: 0, y: 0 }, PLAYER_TYPES.KNIGHT_M, this._scene);
+    this._player = new Player({ x: 0, y: 0 }, PLAYER_TYPES.KNIGHT_M, this._viewport);
     this._player.geometryPosition = this._currentDungeon.getRespawnPosition();
     this._player.entities = this._currentDungeon.entities;
 
     this._currentDungeon.draw();
 
     this._player.act();
-    this._scene.follow(this._player);
+    this._viewport.follow(this._player);
 
     this.cullViewport();
 

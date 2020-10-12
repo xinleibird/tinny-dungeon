@@ -1,5 +1,4 @@
 import * as PIXI from 'pixi.js';
-
 import { IPosition, Vector2 } from '../geometry';
 import { Ability, ABILITY_NAMES, Clearable, Openable, Passable, Respawnable } from './ability';
 import { ABILITY_STATUS } from './ability/ability';

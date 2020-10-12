@@ -1,5 +1,4 @@
 import * as PIXI from 'pixi.js';
-
 import { IPosition, Vector2 } from '../geometry';
 import { Loader } from '../system';
 

@@ -2,7 +2,7 @@ import { CleanWebpackPlugin } from 'clean-webpack-plugin';
 import CopyWebpackPlugin from 'copy-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import path from 'path';
-import { Configuration } from 'webpack';
+import { Configuration, ProvidePlugin } from 'webpack';
 
 const config: Configuration = {
   mode: 'production',
@@ -53,6 +53,7 @@ const config: Configuration = {
     new HtmlWebpackPlugin({ template: 'public/index.html' }),
     new CopyWebpackPlugin({ patterns: [{ from: 'src/assets/', to: 'assets/' }] }),
     new CleanWebpackPlugin(),
+    new ProvidePlugin({ PIXI: 'pixi.js' }),
   ],
 
   resolve: {

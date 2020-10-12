@@ -1,6 +1,5 @@
 import { Viewport } from 'pixi-viewport';
 import * as PIXI from 'pixi.js';
-
 import { Vector2 } from '../geometry';
 import { ABILITY_NAMES } from '../object/ability';
 import Decorator from '../object/decorator';

@@ -1,6 +1,5 @@
 import sound from 'pixi-sound';
 import * as PIXI from 'pixi.js';
-
 import { CHARACTER_ANIMATIONS, CHARACTER_CATEGORIES, PLAYER_TYPES } from '../character';
 import { emitter, RESOURCE_EVENTS } from './emitter';
 

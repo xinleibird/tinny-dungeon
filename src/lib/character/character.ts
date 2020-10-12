@@ -1,8 +1,7 @@
+import { DropShadowFilter } from '@pixi/filter-drop-shadow';
 import { ease } from 'pixi-ease';
 import { Viewport } from 'pixi-viewport';
 import * as PIXI from 'pixi.js';
-
-import { DropShadowFilter } from '@pixi/filter-drop-shadow';
 
 import { IPosition, Vector2 } from '../geometry';
 import Entity from '../object/entity';
