@@ -1,4 +1,3 @@
-import Cull from 'pixi-cull';
 import { Viewport } from 'pixi-viewport';
 import * as PIXI from 'pixi.js';
 
@@ -74,7 +73,6 @@ export default class Dungeon {
       for (let x = 0; x < tx; x++) {
         if (tileArray[y][x] !== TILE_TYPES.EMPTY) {
           const tile = new Tile({ x, y }, tileArray[y][x]);
-          // this._viewport.addChild(tile.sprite);
           this._renderPool.push(tile.sprite);
         }
       }
@@ -91,36 +89,21 @@ export default class Dungeon {
         const decorator = new Decorator({ x, y }, this._decoratorsMap[y][x]);
 
         if (decorator.sprite) {
-          // this._viewport.addChild(decorator.sprite);
           this._renderPool.push(decorator.sprite);
         }
 
-        const direction = this._entitiesMap[y][x - 1] ? Vector2.up : Vector2.right;
+        const direction =
+          this._entitiesMap[y][x - 1] && this.entitiesMap[y][x + 1]
+            ? Vector2.up
+            : Vector2.right;
 
         const entity = new Entity({ x, y }, this._entitiesMap[y][x], direction);
 
         this._entities[y][x] = entity;
         if (entity.sprite) {
-          // this._viewport.addChild(entity.sprite);
           this._renderPool.push(entity.sprite);
         }
       }
     }
-  }
-
-  private cullViewport() {
-    const cull = new Cull.Simple({
-      dirtyTest: false,
-    });
-
-    cull.addList(this._viewport.children);
-    cull.cull(this._viewport.getVisibleBounds());
-
-    PIXI.Ticker.shared.add(() => {
-      if (this._viewport.dirty) {
-        cull.cull(this._viewport.getVisibleBounds());
-        this._viewport.dirty = false;
-      }
-    });
   }
 }

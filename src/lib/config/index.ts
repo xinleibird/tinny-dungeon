@@ -9,6 +9,6 @@ export const CONTROLLED_KEYS = {
 };
 
 export const GAME_OPTIONS = {
-  PIXEL_SCALE: 2,
+  PIXEL_SCALE: 3,
   DEBUG: true,
 };

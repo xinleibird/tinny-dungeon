@@ -31,33 +31,39 @@ export interface PIXIAppOption {
 }
 
 PIXI.Application.registerPlugin(PixiStatsPlugin);
-const { PIXEL_SCALE, DEBUG } = GAME_OPTIONS;
-const MAX_DUNGEON_SIZE = 150;
+const { DEBUG, PIXEL_SCALE } = GAME_OPTIONS;
+const MAX_DUNGEON_SIZE = 30;
+
+console.log(~~window.devicePixelRatio);
+let GAME_PIXEL_SCALE =
+  PIXEL_SCALE * (~~window.devicePixelRatio === 0 ? 1 / 3 : ~~window.devicePixelRatio);
 
 const defaultGameOptions: PIXIAppOption = {
-  width: window.innerWidth / PIXEL_SCALE / window.devicePixelRatio,
-  height: window.innerHeight / PIXEL_SCALE / window.devicePixelRatio,
+  width: (window.innerWidth / GAME_PIXEL_SCALE) * window.devicePixelRatio,
+  height: (window.innerHeight / GAME_PIXEL_SCALE) * window.devicePixelRatio,
   antialias: false,
-  resolution: PIXEL_SCALE * window.devicePixelRatio,
+  resolution: GAME_PIXEL_SCALE / window.devicePixelRatio,
   backgroundColor: 0x160c21,
 };
 
 const defaultViewportOptions: ViewportOptions = {
-  screenWidth: window.innerWidth / PIXEL_SCALE / window.devicePixelRatio,
-  screenHeight: window.innerHeight / PIXEL_SCALE / window.devicePixelRatio,
-  worldHeight: MAX_DUNGEON_SIZE * 16 + defaultGameOptions.width,
-  worldWidth: MAX_DUNGEON_SIZE * 16 + defaultGameOptions.height,
+  screenWidth: (window.innerWidth / GAME_PIXEL_SCALE) * window.devicePixelRatio,
+  screenHeight: (window.innerHeight / GAME_PIXEL_SCALE) * window.devicePixelRatio,
+  worldHeight: MAX_DUNGEON_SIZE * 16 + window.innerWidth,
+  worldWidth: MAX_DUNGEON_SIZE * 16 + window.innerHeight,
 };
 
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 
 export default class Game extends PIXI.Application {
   private _currentDungeon: Dungeon;
+  private _background: PIXI.Graphics;
   private _player: Player;
   private _noneplayers: NonePlayer[] = [];
   private _controller: Controller;
-  private _viewport: Viewport;
-  private _background: PIXI.Graphics;
+  private _scene: Viewport;
+
+  // for stats.js
   private stats: any;
 
   public constructor(props?: PIXIAppOption) {
@@ -74,65 +80,6 @@ export default class Game extends PIXI.Application {
     });
   }
 
-  private registResizer() {
-    window.onorientationchange = () => {
-      this.renderer.resize(
-        window.innerWidth / PIXEL_SCALE / window.devicePixelRatio,
-        window.innerHeight / PIXEL_SCALE / window.devicePixelRatio
-      );
-      this._viewport.resize(
-        window.innerWidth / PIXEL_SCALE / window.devicePixelRatio,
-        window.innerHeight / PIXEL_SCALE / window.devicePixelRatio
-      );
-    };
-    window.onresize = () => {
-      this.renderer.resize(
-        window.innerWidth / PIXEL_SCALE / window.devicePixelRatio,
-        window.innerHeight / PIXEL_SCALE / window.devicePixelRatio
-      );
-      this._viewport.resize(
-        window.innerWidth / PIXEL_SCALE / window.devicePixelRatio,
-        window.innerHeight / PIXEL_SCALE / window.devicePixelRatio
-      );
-    };
-  }
-
-  private fillBackground() {
-    const background = new PIXI.Graphics();
-    background.beginFill(0x160c21);
-    background.drawRect(
-      0,
-      0,
-      MAX_DUNGEON_SIZE * 16 + defaultGameOptions.width,
-      MAX_DUNGEON_SIZE * 16 + defaultGameOptions.height
-    );
-    background.endFill();
-    this._background = background;
-
-    this.stage.addChild(background);
-  }
-
-  private fillFilter() {
-    PIXI.Ticker.shared.add(() => {
-      this.stage.filters = [
-        new OldFilmFilter(
-          {
-            sepia: 0,
-            noise: 0.0618,
-            noiseSize: 1,
-            scratch: -1,
-            scratchDensity: 0,
-            scratchWidth: 1,
-            vignetting: 0.3,
-            vignettingAlpha: 1,
-            vignettingBlur: 0.3,
-          },
-          Math.random()
-        ),
-      ];
-    });
-  }
-
   private initialize() {
     const root = document.getElementById('root');
     root.appendChild(this.view);
@@ -145,13 +92,89 @@ export default class Game extends PIXI.Application {
       });
     }
 
-    this.fillBackground();
+    this.registController();
     this.registResizer();
-    this._controller = new Controller();
-    this._viewport = new Viewport(defaultViewportOptions);
-    this.stage.addChild(this._viewport);
+    this.registFilter();
 
-    this.fillFilter();
+    this.registBackground();
+    this.registScene();
+  }
+
+  public get controller() {
+    return this._controller;
+  }
+
+  public set controller(controller: Controller) {
+    this._controller = controller;
+  }
+
+  private registController() {
+    this._controller = new Controller();
+  }
+
+  private registScene() {
+    this._scene = new Viewport(defaultViewportOptions);
+    this.stage.addChild(this._scene);
+  }
+
+  private registBackground() {
+    const background = new PIXI.Graphics();
+    // background.beginFill(0x160c21);
+    background.beginFill(0xf81111);
+    background.drawRect(
+      0,
+      0,
+      MAX_DUNGEON_SIZE * 16 + window.innerWidth * 2,
+      MAX_DUNGEON_SIZE * 16 + window.innerHeight * 2
+    );
+    background.endFill();
+
+    this._background = background;
+    this.stage.addChild(this._background);
+  }
+
+  private registResizer() {
+    window.onorientationchange = () => {
+      this.renderer.resize(
+        (window.innerWidth / GAME_PIXEL_SCALE) * window.devicePixelRatio,
+        (window.innerHeight / GAME_PIXEL_SCALE) * window.devicePixelRatio
+      );
+      this._scene.resize(
+        (window.innerWidth / GAME_PIXEL_SCALE) * window.devicePixelRatio,
+        (window.innerHeight / GAME_PIXEL_SCALE) * window.devicePixelRatio
+      );
+    };
+    window.onresize = () => {
+      this.renderer.resize(
+        (window.innerWidth / GAME_PIXEL_SCALE) * window.devicePixelRatio,
+        (window.innerHeight / GAME_PIXEL_SCALE) * window.devicePixelRatio
+      );
+      this._scene.resize(
+        (window.innerWidth / GAME_PIXEL_SCALE) * window.devicePixelRatio,
+        (window.innerHeight / GAME_PIXEL_SCALE) * window.devicePixelRatio
+      );
+    };
+  }
+
+  private registFilter() {
+    PIXI.Ticker.shared.add(() => {
+      this.stage.filters = [
+        new OldFilmFilter(
+          {
+            sepia: 0,
+            noise: 0.0618,
+            noiseSize: 1,
+            scratch: -1,
+            scratchDensity: 0.03,
+            scratchWidth: 1,
+            vignetting: 0.3,
+            vignettingAlpha: 0.618,
+            vignettingBlur: 0.3,
+          },
+          Math.random()
+        ),
+      ];
+    });
   }
 
   private cullViewport() {
@@ -159,28 +182,28 @@ export default class Game extends PIXI.Application {
       dirtyTest: false,
     });
 
-    cull.addList(this._viewport.children);
-    cull.cull(this._viewport.getVisibleBounds());
+    cull.addList(this._scene.children);
+    cull.cull(this._scene.getVisibleBounds());
 
     PIXI.Ticker.shared.add(() => {
-      if (this._viewport.dirty) {
-        cull.cull(this._viewport.getVisibleBounds());
-        this._viewport.dirty = false;
+      if (this._scene.dirty) {
+        cull.cull(this._scene.getVisibleBounds());
+        this._scene.dirty = false;
       }
     });
   }
 
   private gameLoop() {
-    this._currentDungeon = new Dungeon(MAX_DUNGEON_SIZE, MAX_DUNGEON_SIZE, this._viewport);
+    this._currentDungeon = new Dungeon(MAX_DUNGEON_SIZE, MAX_DUNGEON_SIZE, this._scene);
 
-    this._player = new Player({ x: 0, y: 0 }, PLAYER_TYPES.KNIGHT_M, this._viewport);
+    this._player = new Player({ x: 0, y: 0 }, PLAYER_TYPES.KNIGHT_M, this._scene);
     this._player.geometryPosition = this._currentDungeon.getRespawnPosition();
     this._player.entities = this._currentDungeon.entities;
 
     this._currentDungeon.draw();
 
     this._player.act();
-    this._viewport.follow(this._player);
+    this._scene.follow(this._player);
 
     this.cullViewport();
 
