@@ -9,6 +9,13 @@ export const CONTROLLED_KEYS = {
 };
 
 export const GAME_OPTIONS = {
-  PIXEL_SCALE: 3,
+  PIXEL_SCALE_NORMAL: 4,
+  PIXEL_SCALE_RETINA: 2,
   DEBUG: true,
+};
+
+export const ENTITY_OPTIONS = {
+  TILE_SIZE: 16,
+  TILE_OFFSET_X: 24,
+  TILE_OFFSET_Y: 32,
 };

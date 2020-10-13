@@ -6,6 +6,7 @@ import { CONTROL_ACTIONS, event, KEY_EVENTS, KEY_NAMES } from '../input';
 import { ABILITY_NAMES } from '../object/ability';
 import { ABILITY_STATUS } from '../object/ability/ability';
 import { Loader } from '../system';
+import Dungeon from '../tilemap/dungeon';
 import Character, { PLAYER_TYPES } from './character';
 
 const ticker = PIXI.Ticker.shared;
@@ -18,9 +19,10 @@ export default class Player extends Character {
   public constructor(
     geometryPosition: Vector2 | IPosition,
     type: PLAYER_TYPES,
+    currentDungeon: Dungeon,
     viewport?: Viewport
   ) {
-    super(geometryPosition, type, viewport);
+    super(geometryPosition, type, currentDungeon, viewport);
 
     const stepSound = Loader.sounds.effects.player_step;
     stepSound.volume = 0.01;

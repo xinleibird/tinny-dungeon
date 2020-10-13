@@ -29,11 +29,12 @@ export interface PIXIAppOption {
 }
 
 PIXI.Application.registerPlugin(PixiStatsPlugin);
-const { DEBUG, PIXEL_SCALE } = GAME_OPTIONS;
-const MAX_DUNGEON_SIZE = 30;
 
-console.log(~~window.devicePixelRatio);
-let GAME_PIXEL_SCALE =
+const MAX_DUNGEON_SIZE = 75;
+
+const { DEBUG, PIXEL_SCALE_NORMAL, PIXEL_SCALE_RETINA } = GAME_OPTIONS;
+const PIXEL_SCALE = window.devicePixelRatio >= 2 ? PIXEL_SCALE_RETINA : PIXEL_SCALE_NORMAL;
+const GAME_PIXEL_SCALE =
   PIXEL_SCALE * (~~window.devicePixelRatio === 0 ? 1 / 3 : ~~window.devicePixelRatio);
 
 const defaultGameOptions: PIXIAppOption = {
@@ -193,7 +194,13 @@ export default class Game extends PIXI.Application {
   private gameLoop() {
     this._currentDungeon = new Dungeon(MAX_DUNGEON_SIZE, MAX_DUNGEON_SIZE, this._viewport);
 
-    this._player = new Player({ x: 0, y: 0 }, PLAYER_TYPES.KNIGHT_M, this._viewport);
+    this._player = new Player(
+      { x: 0, y: 0 },
+      PLAYER_TYPES.KNIGHT_M,
+      this._currentDungeon,
+      this._viewport
+    );
+
     this._player.geometryPosition = this._currentDungeon.getRespawnPosition();
     this._player.entities = this._currentDungeon.entities;
 
@@ -201,12 +208,13 @@ export default class Game extends PIXI.Application {
 
     this._player.act();
     this._viewport.follow(this._player);
-
-    this.cullViewport();
+    this._currentDungeon.updateLightings(this._player.geometryPosition);
 
     const mainTheme = Loader.sounds.musics.main;
     mainTheme.volume = 0.06;
     mainTheme.loop = true;
     mainTheme.play();
+
+    this.cullViewport();
   }
 }

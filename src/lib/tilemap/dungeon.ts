@@ -1,28 +1,58 @@
 import { Viewport } from 'pixi-viewport';
 import * as PIXI from 'pixi.js';
-import { Vector2 } from '../geometry';
-import { ABILITY_NAMES } from '../object/ability';
-import Decorator from '../object/decorator';
+import { IPosition, Vector2 } from '../geometry';
+import { ABILITY_NAMES, Lightable, LIGHT_TYPES } from '../object/ability';
+import { ABILITY_STATUS } from '../object/ability/ability';
+import Decorateable from '../object/ability/decorateable';
 import Entity, { ENTITY_TYPES } from '../object/entity';
 import { generateAutotile, generateDungeon } from '../utils';
+import { updateDungeonDislightings, updateDungeonLightings } from '../utils/dungeon';
 import Tile, { TILE_TYPES } from './tile';
 
 export default class Dungeon {
   private _tilesMap: TILE_TYPES[][] = [];
-  private _entitiesMap: ENTITY_TYPES[][] = [];
+  private _tilesRenderPool: PIXI.Sprite[] = [];
+
   private _entities: Entity[][] = [];
+
+  private _floorsMap: ENTITY_TYPES[][] = [];
   private _decoratorsMap: number[][] = [];
+  private _lightingsMap: LIGHT_TYPES[][] = [];
+
+  // Entities Pools
+  private _floorRenderPool: PIXI.Sprite[] = [];
+  private _decoratorsRenderPool: PIXI.Sprite[] = [];
+
+  // Lighting
+  private _lightingRenderPool: PIXI.Sprite[] = [];
+
   private _viewport: Viewport;
-  private _renderPool: PIXI.Sprite[] = [];
 
   public constructor(tilesX = 0, tilesY = 0, viewport?: Viewport) {
     this.initialize(tilesX, tilesY, viewport);
   }
 
   public draw() {
-    for (const sprite of this._renderPool) {
-      this._viewport.addChild(sprite);
+    if (this._tilesRenderPool.length > 0) {
+      this._viewport.addChild(...this._tilesRenderPool);
     }
+    if (this._floorRenderPool.length > 0) {
+      this._viewport.addChild(...this._floorRenderPool);
+    }
+    if (this._decoratorsRenderPool.length > 0) {
+      this._viewport.addChild(...this._decoratorsRenderPool);
+    }
+    if (this._lightingRenderPool.length > 0) {
+      this._viewport.addChild(...this._lightingRenderPool);
+    }
+  }
+
+  public updateLightings(geometryPosition: IPosition | Vector2) {
+    updateDungeonLightings(geometryPosition, this._entities);
+  }
+
+  public updateDislightings(geometryPosition: IPosition | Vector2) {
+    updateDungeonDislightings(geometryPosition, this._entities);
   }
 
   public get viewport() {
@@ -31,10 +61,6 @@ export default class Dungeon {
 
   public set viewport(viewport: Viewport) {
     this._viewport = viewport;
-  }
-
-  public get entitiesMap() {
-    return this._entitiesMap;
   }
 
   public get entities() {
@@ -54,16 +80,17 @@ export default class Dungeon {
   private initialize(tx: number, ty: number, viewport: Viewport) {
     this._viewport = viewport;
 
-    const { tiles, entitiesMap, decoratorsMap } = generateDungeon(tx, ty);
-    this._tilesMap = tiles;
-    this._entitiesMap = entitiesMap;
+    const { tilesMap, floorsMap, decoratorsMap } = generateDungeon(tx, ty);
+    this._tilesMap = tilesMap;
+    this._floorsMap = floorsMap;
     this._decoratorsMap = decoratorsMap;
 
-    this.renderTiles();
-    this.renderEntities();
+    this.generateTilesPool();
+    this.generateEntitiesPool();
+    this.generateLightingsPool();
   }
 
-  private renderTiles() {
+  private generateTilesPool() {
     const tileArray = generateAutotile(this._tilesMap);
     const ty = this._tilesMap.length;
     const tx = this._tilesMap[0].length;
@@ -72,35 +99,52 @@ export default class Dungeon {
       for (let x = 0; x < tx; x++) {
         if (tileArray[y][x] !== TILE_TYPES.EMPTY) {
           const tile = new Tile({ x, y }, tileArray[y][x]);
-          this._renderPool.push(tile.sprite);
+          this._tilesRenderPool.push(tile.sprite);
         }
       }
     }
   }
 
-  private renderEntities() {
-    const cy = this.entitiesMap.length;
-    const cx = this.entitiesMap[0].length;
+  private generateEntitiesPool() {
+    const fy = this._floorsMap.length;
+    const fx = this._floorsMap[0].length;
 
-    for (let y = 0; y < cy; y++) {
+    for (let y = 0; y < fy; y++) {
       this._entities[y] = [];
-      for (let x = 0; x < cx; x++) {
-        const decorator = new Decorator({ x, y }, this._decoratorsMap[y][x]);
+      for (let x = 0; x < fx; x++) {
+        const direction =
+          this._floorsMap[y][x - 1] && this._floorsMap[y][x + 1] ? Vector2.up : Vector2.right;
+        const entity = new Entity({ x, y }, this._floorsMap[y][x], direction);
 
-        if (decorator.sprite) {
-          this._renderPool.push(decorator.sprite);
+        const decoratorIndex = this._decoratorsMap[y][x];
+        if (decoratorIndex !== 0) {
+          const decoratorable = new Decorateable(decoratorIndex);
+          entity.addAbility(decoratorable);
         }
 
-        const direction =
-          this._entitiesMap[y][x - 1] && this.entitiesMap[y][x + 1]
-            ? Vector2.up
-            : Vector2.right;
-
-        const entity = new Entity({ x, y }, this._entitiesMap[y][x], direction);
-
         this._entities[y][x] = entity;
-        if (entity.sprite) {
-          this._renderPool.push(entity.sprite);
+
+        if (entity.floorLayer.length > 0) {
+          this._floorRenderPool.push(...entity.floorLayer);
+        }
+
+        if (entity.decoratorLayer.length > 0) {
+          this._decoratorsRenderPool.push(...entity.decoratorLayer);
+        }
+      }
+    }
+  }
+
+  private generateLightingsPool() {
+    const ey = this._entities.length;
+    const ex = this._entities[0].length;
+    for (let y = 0; y < ey; y++) {
+      for (let x = 0; x < ex; x++) {
+        const entity = this._entities[y][x];
+        if (entity.getAbility(ABILITY_NAMES.PASSABLE)) {
+          const lightable = new Lightable(ABILITY_STATUS.UNVISIT);
+          entity.addAbility(lightable);
+          this._lightingRenderPool.push(...entity.lightingLayer);
         }
       }
     }

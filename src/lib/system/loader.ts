@@ -16,6 +16,7 @@ type TexturesTypes = {
   DOORS?: PIXI.Texture[];
   STAIRS?: PIXI.Texture[];
   FLOOR_DECORATORS?: PIXI.Texture[];
+  LIGHTING_MASK?: PIXI.Texture[];
 };
 
 interface SoundTypes {
@@ -39,6 +40,7 @@ export default class Loader {
     loader.add('assets/tiles/stairs.json');
     loader.add('assets/tiles/floor_decorators.json');
     loader.add('assets/tiles/ui.json');
+    loader.add('assets/tiles/lighting_mask.json');
 
     loader.add('assets/sprites/knight_m.json');
 
@@ -61,6 +63,7 @@ export default class Loader {
         DOORS: [],
         STAIRS: [],
         FLOOR_DECORATORS: [],
+        LIGHTING_MASK: [],
       };
       for (let i = 0; i < 4; i++) {
         const texture = PIXI.Texture.from(`doors_${i}`);
@@ -73,6 +76,11 @@ export default class Loader {
       for (let i = 0; i <= 20; i++) {
         const texture = PIXI.Texture.from(`floor_decorators_${i}`);
         this.textures.FLOOR_DECORATORS.push(texture);
+      }
+
+      {
+        const texture = PIXI.Texture.from(`lighting_mask_${0}`);
+        this.textures.LIGHTING_MASK.push(texture);
       }
 
       this.textures.UI['arrow_down'] = PIXI.Texture.from(`ui_arrow_down`);

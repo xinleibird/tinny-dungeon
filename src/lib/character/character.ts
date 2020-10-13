@@ -2,11 +2,11 @@ import { DropShadowFilter } from '@pixi/filter-drop-shadow';
 import { ease } from 'pixi-ease';
 import { Viewport } from 'pixi-viewport';
 import * as PIXI from 'pixi.js';
-
 import { IPosition, Vector2 } from '../geometry';
 import Entity from '../object/entity';
 import { DirectionIndicator, External } from '../object/external';
 import { Loader } from '../system';
+import Dungeon from '../tilemap/dungeon';
 
 export enum PLAYER_TYPES {
   KNIGHT_M = 'knight_m',
@@ -34,14 +34,16 @@ export default class Character extends PIXI.Container {
 
   private _direction: Vector2 = Vector2.down;
   private _geometryPosition: Vector2;
-  private _spriteOffset: { x: number; y: number };
+  private _spriteOffsetX = 32;
+  private _spriteOffsetY = 24;
   private _viewport: Viewport;
+  private _currentDungeon: Dungeon;
 
   protected constructor(
     geometryPosition: Vector2 | IPosition,
     type: PLAYER_TYPES | NONPLAYER_TYPES,
-    viewport?: Viewport,
-    spriteOffset = { x: 32, y: 24 }
+    currentDungeon?: Dungeon,
+    viewport?: Viewport
   ) {
     super();
     if (geometryPosition instanceof Vector2) {
@@ -51,8 +53,8 @@ export default class Character extends PIXI.Container {
       this._geometryPosition = new Vector2(x, y);
     }
     this._type = type;
+    this._currentDungeon = currentDungeon;
     this._viewport = viewport;
-    this._spriteOffset = spriteOffset;
 
     this.initialize(type);
   }
@@ -122,7 +124,7 @@ export default class Character extends PIXI.Container {
   public set geometryPosition(position: Vector2) {
     this._geometryPosition = position;
     const { x, y } = position;
-    this.position.set(x * 16 + this._spriteOffset.x, y * 16 + this._spriteOffset.y);
+    this.position.set(x * 16 + this._spriteOffsetX, y * 16 + this._spriteOffsetY);
   }
 
   public get geometryPosition() {
@@ -157,14 +159,16 @@ export default class Character extends PIXI.Container {
     attack.visible = false;
     hurt.visible = false;
 
+    this._currentDungeon.updateDislightings(this._geometryPosition);
+
     this._geometryPosition.combine(direction);
     const { x, y } = this._geometryPosition;
 
     const move = ease.add(
       this,
       {
-        x: x * 16 + this._spriteOffset.x,
-        y: y * 16 + this._spriteOffset.y,
+        x: x * 16 + this._spriteOffsetX,
+        y: y * 16 + this._spriteOffsetY,
       },
       {
         duration: 200,
@@ -174,6 +178,7 @@ export default class Character extends PIXI.Container {
     move.once('complete', () => {
       walk.play();
     });
+    this._currentDungeon.updateLightings(this._geometryPosition);
 
     if (!this._stepSound.isPlaying) {
       this._stepSound.play();
@@ -210,10 +215,10 @@ export default class Character extends PIXI.Container {
       this.scale.x = -1;
       const [hold, walk, attack, hurt] = this.children as PIXI.AnimatedSprite[];
 
-      hold.anchor.set(0.5625, 0.5);
-      walk.anchor.set(0.5625, 0.5);
-      attack.anchor.set(0.5625, 0.5);
-      hurt.anchor.set(0.5625, 0.5);
+      hold.anchor.set(0.5, 0.5);
+      walk.anchor.set(0.5, 0.5);
+      attack.anchor.set(0.5, 0.5);
+      hurt.anchor.set(0.5, 0.5);
     }
 
     if (direction.equals(Vector2.right)) {
@@ -264,7 +269,7 @@ export default class Character extends PIXI.Container {
     // prepare character's animations
     this.addChild(hold, walk, attack, hurt);
     const { x, y } = this._geometryPosition;
-    this.position.set(x * 16 + this._spriteOffset.x, y * 16 + this._spriteOffset.y);
+    this.position.set(x * 16 + this._spriteOffsetX, y * 16 + this._spriteOffsetY);
 
     // external composition
     const directionIndicator = new DirectionIndicator();

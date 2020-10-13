@@ -1,8 +1,11 @@
 export enum ABILITY_NAMES {
+  ABSTRACT_ABILITY = 'AbstractAbility',
   OPENABLE = 'Openable',
   PASSABLE = 'Passable',
   RESPAWNABLE = 'Respawnable',
   CLEARABLE = 'Clearable',
+  DECORATEABLE = 'Decorateable',
+  LIGHTABLE = 'Lightable',
 }
 
 export enum ABILITY_STATUS {
@@ -10,14 +13,16 @@ export enum ABILITY_STATUS {
   CLOSE = 'close',
   PASS = 'pass',
   STOP = 'stop',
+  LIGHTING = 'lighting',
+  DISLIGHTING = 'dislighting',
+  UNVISIT = 'unvisit',
 }
 export default class Ability {
-  protected _name: string;
+  protected _name: ABILITY_NAMES;
   protected _status: ABILITY_STATUS;
-  protected _event: Event;
 
   protected constructor() {
-    this._name = 'Abstract Status';
+    this._name = ABILITY_NAMES.ABSTRACT_ABILITY;
   }
 
   public get name() {
