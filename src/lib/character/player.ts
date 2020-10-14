@@ -1,8 +1,15 @@
 import { Viewport } from 'pixi-viewport';
 import * as PIXI from 'pixi.js';
-import { CONTROLLED_KEYS } from '../config';
+import { JOYSTICK_CONTROLLED_JOYS, KEYBOARD_CONTROLLED_KEYS } from '../config';
 import { IPosition, Vector2 } from '../geometry';
-import { CONTROL_ACTIONS, event, KEY_EVENTS, KEY_NAMES } from '../input';
+import {
+  CONTROL_ACTIONS,
+  event,
+  JOY_EVENTS,
+  JOY_NAMES,
+  KEY_EVENTS,
+  KEY_NAMES,
+} from '../input';
 import { ABILITY_NAMES } from '../object/ability';
 import { ABILITY_STATUS } from '../object/ability/ability';
 import { Loader } from '../system';
@@ -32,6 +39,10 @@ export default class Player extends Character {
 
     this.handleKeyDown();
     this.handleKeyUp();
+
+    this.handleJoyDown();
+    this.handleJoyUp();
+
     this.handleKeyFree();
   }
 
@@ -48,9 +59,9 @@ export default class Player extends Character {
   }
 
   private handleKeyDown() {
-    event.on(KEY_EVENTS.KEY_DOWN, (keyName: KEY_NAMES) => {
-      switch (KEY_NAMES[keyName]) {
-        case CONTROLLED_KEYS[CONTROL_ACTIONS.WALK_LEFT]: {
+    event.on(KEY_EVENTS.KEY_DOWN, (key: KEY_NAMES) => {
+      switch (KEY_NAMES[key]) {
+        case KEYBOARD_CONTROLLED_KEYS[CONTROL_ACTIONS.WALK_LEFT]: {
           const { x, y } = this.geometryPosition;
           const entities = this.entities;
 
@@ -69,7 +80,7 @@ export default class Player extends Character {
           break;
         }
 
-        case CONTROLLED_KEYS[CONTROL_ACTIONS.WALK_RIGHT]: {
+        case KEYBOARD_CONTROLLED_KEYS[CONTROL_ACTIONS.WALK_RIGHT]: {
           const { x, y } = this.geometryPosition;
           const entities = this.entities;
 
@@ -88,7 +99,7 @@ export default class Player extends Character {
           break;
         }
 
-        case CONTROLLED_KEYS[CONTROL_ACTIONS.WALK_UP]: {
+        case KEYBOARD_CONTROLLED_KEYS[CONTROL_ACTIONS.WALK_UP]: {
           const { x, y } = this.geometryPosition;
           const entities = this.entities;
 
@@ -107,7 +118,7 @@ export default class Player extends Character {
           break;
         }
 
-        case CONTROLLED_KEYS[CONTROL_ACTIONS.WALK_DOWN]: {
+        case KEYBOARD_CONTROLLED_KEYS[CONTROL_ACTIONS.WALK_DOWN]: {
           const { x, y } = this.geometryPosition;
           const entities = this.entities;
 
@@ -126,7 +137,7 @@ export default class Player extends Character {
           break;
         }
 
-        case CONTROLLED_KEYS[CONTROL_ACTIONS.SHOW_EXTERNAL]: {
+        case KEYBOARD_CONTROLLED_KEYS[CONTROL_ACTIONS.SHOW_EXTERNAL]: {
           this.showExternal();
           this._someKeysDown = true;
           break;
@@ -141,31 +152,149 @@ export default class Player extends Character {
   private handleKeyUp() {
     event.on(KEY_EVENTS.KEY_UP, (key: KEY_NAMES) => {
       switch (KEY_NAMES[key]) {
-        case CONTROLLED_KEYS[CONTROL_ACTIONS.WALK_LEFT]: {
+        case KEYBOARD_CONTROLLED_KEYS[CONTROL_ACTIONS.WALK_LEFT]: {
           this._someKeysDown = false;
           this._lastUpTimeStamp = Date.now();
           break;
         }
 
-        case CONTROLLED_KEYS[CONTROL_ACTIONS.WALK_RIGHT]: {
+        case KEYBOARD_CONTROLLED_KEYS[CONTROL_ACTIONS.WALK_RIGHT]: {
           this._someKeysDown = false;
           this._lastUpTimeStamp = Date.now();
           break;
         }
 
-        case CONTROLLED_KEYS[CONTROL_ACTIONS.WALK_UP]: {
+        case KEYBOARD_CONTROLLED_KEYS[CONTROL_ACTIONS.WALK_UP]: {
           this._someKeysDown = false;
           this._lastUpTimeStamp = Date.now();
           break;
         }
 
-        case CONTROLLED_KEYS[CONTROL_ACTIONS.WALK_DOWN]: {
+        case KEYBOARD_CONTROLLED_KEYS[CONTROL_ACTIONS.WALK_DOWN]: {
           this._someKeysDown = false;
           this._lastUpTimeStamp = Date.now();
           break;
         }
 
-        case CONTROLLED_KEYS[CONTROL_ACTIONS.SHOW_EXTERNAL]: {
+        case KEYBOARD_CONTROLLED_KEYS[CONTROL_ACTIONS.SHOW_EXTERNAL]: {
+          this._someKeysDown = false;
+          this._lastUpTimeStamp = Date.now();
+          break;
+        }
+
+        default:
+          break;
+      }
+    });
+  }
+
+  private handleJoyDown() {
+    event.on(JOY_EVENTS.JOY_DOWN, (joy: JOY_NAMES) => {
+      switch (JOY_NAMES[joy]) {
+        case JOYSTICK_CONTROLLED_JOYS[CONTROL_ACTIONS.WALK_LEFT]: {
+          const { x, y } = this.geometryPosition;
+          const entities = this.entities;
+
+          this.direction = Vector2.left;
+          this.showExternal();
+
+          const entity = entities[y][x - 1];
+          if (
+            entity?.hasAbility(ABILITY_NAMES.PASSABLE) &&
+            entity?.getAbility(ABILITY_NAMES.PASSABLE).status === ABILITY_STATUS.PASS
+          ) {
+            this.walk(Vector2.left);
+          }
+
+          this._someKeysDown = true;
+          break;
+        }
+
+        case JOYSTICK_CONTROLLED_JOYS[CONTROL_ACTIONS.WALK_RIGHT]: {
+          const { x, y } = this.geometryPosition;
+          const entities = this.entities;
+
+          this.direction = Vector2.right;
+          this.showExternal();
+
+          const entity = entities[y][x + 1];
+          if (
+            entity?.hasAbility(ABILITY_NAMES.PASSABLE) &&
+            entity?.getAbility(ABILITY_NAMES.PASSABLE).status === ABILITY_STATUS.PASS
+          ) {
+            this.walk(Vector2.right);
+          }
+
+          this._someKeysDown = true;
+          break;
+        }
+
+        case JOYSTICK_CONTROLLED_JOYS[CONTROL_ACTIONS.WALK_UP]: {
+          const { x, y } = this.geometryPosition;
+          const entities = this.entities;
+
+          this.direction = Vector2.up;
+          this.showExternal();
+
+          const entity = entities[y - 1][x];
+          if (
+            entity?.hasAbility(ABILITY_NAMES.PASSABLE) &&
+            entity?.getAbility(ABILITY_NAMES.PASSABLE).status === ABILITY_STATUS.PASS
+          ) {
+            this.walk(Vector2.up);
+          }
+
+          this._someKeysDown = true;
+          break;
+        }
+
+        case JOYSTICK_CONTROLLED_JOYS[CONTROL_ACTIONS.WALK_DOWN]: {
+          const { x, y } = this.geometryPosition;
+          const entities = this.entities;
+
+          this.direction = Vector2.down;
+          this.showExternal();
+
+          const entity = entities[y + 1][x];
+          if (
+            entity?.hasAbility(ABILITY_NAMES.PASSABLE) &&
+            entity?.getAbility(ABILITY_NAMES.PASSABLE).status === ABILITY_STATUS.PASS
+          ) {
+            this.walk(Vector2.down);
+          }
+
+          this._someKeysDown = true;
+          break;
+        }
+
+        default:
+          break;
+      }
+    });
+  }
+
+  private handleJoyUp() {
+    event.on(JOY_EVENTS.JOY_UP, (joy: JOY_NAMES) => {
+      switch (JOY_NAMES[joy]) {
+        case JOYSTICK_CONTROLLED_JOYS[CONTROL_ACTIONS.WALK_LEFT]: {
+          this._someKeysDown = false;
+          this._lastUpTimeStamp = Date.now();
+          break;
+        }
+
+        case JOYSTICK_CONTROLLED_JOYS[CONTROL_ACTIONS.WALK_RIGHT]: {
+          this._someKeysDown = false;
+          this._lastUpTimeStamp = Date.now();
+          break;
+        }
+
+        case JOYSTICK_CONTROLLED_JOYS[CONTROL_ACTIONS.WALK_UP]: {
+          this._someKeysDown = false;
+          this._lastUpTimeStamp = Date.now();
+          break;
+        }
+
+        case JOYSTICK_CONTROLLED_JOYS[CONTROL_ACTIONS.WALK_DOWN]: {
           this._someKeysDown = false;
           this._lastUpTimeStamp = Date.now();
           break;

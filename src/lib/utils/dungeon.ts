@@ -202,8 +202,6 @@ export const updateDungeonLightings = (
   geometryPosition: IPosition | Vector2,
   entities: Entity[][]
 ) => {
-  console.log(entities);
-
   const fov = new ROT.FOV.RecursiveShadowcasting((x, y) => {
     const entity = entities?.[y]?.[x];
     if (

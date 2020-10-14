@@ -154,4 +154,16 @@ export enum KEY_NAMES {
   Quote = "'",
 }
 
+export enum JOY_EVENTS {
+  JOY_DOWN = 'joyDown',
+  JOY_UP = 'joyUp',
+}
+
+export enum JOY_NAMES {
+  up = 'up',
+  down = 'down',
+  left = 'left',
+  right = 'right',
+}
+
 export const event = new EventEmitter();

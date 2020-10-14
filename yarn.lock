@@ -3663,6 +3663,11 @@ nice-try@^1.0.4:
   resolved "https://registry.yarnpkg.com/nice-try/-/nice-try-1.0.5.tgz#a3378a7696ce7d223e88fc9b764bd7ef1089e366"
   integrity sha512-1nh45deeb5olNY7eX82BkPO7SSxR5SSYJiPTrTdFUVYwAl8CKMA5N9PjTYkHiRjisVcxcQ1HXdLhx2qxxJzLNQ==
 
+nipplejs@^0.8.7:
+  version "0.8.7"
+  resolved "https://registry.yarnpkg.com/nipplejs/-/nipplejs-0.8.7.tgz#da14db793bbe22f9ccb98aad7dbea2d0abf7cdb6"
+  integrity sha512-B3uSKnWIGWHfrd6oDpLW1xiYleY8+ACVIlLNZeVChBBGDeDiKm4YjetVxlP3O2FvS3Fqf24E/9FrjM3Thc6WDg==
+
 no-case@^3.0.3:
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/no-case/-/no-case-3.0.3.tgz#c21b434c1ffe48b39087e86cfb4d2582e9df18f8"
