@@ -30,7 +30,6 @@ export default class Lightable extends Ability {
     const texture = Loader.textures.LIGHTING_MASK[0];
     const sprite = new PIXI.Sprite(texture);
     this._sprite = sprite;
-    this._sprite.blendMode = PIXI.BLEND_MODES.DARKEN;
 
     this._status = initStatus;
     this.initialize(initStatus);

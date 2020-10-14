@@ -32,14 +32,14 @@ export default class Player extends Character {
 
     this.handleKeyDown();
     this.handleKeyUp();
-    this.handleKeyHold();
+    this.handleKeyFree();
   }
 
   public get type() {
     return this._type;
   }
 
-  public handleKeyHold() {
+  public handleKeyFree() {
     ticker.add(() => {
       if (!this._someKeysDown && Date.now() > this._lastUpTimeStamp + this._holdDelay) {
         this.hold();

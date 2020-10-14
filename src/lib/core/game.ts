@@ -35,7 +35,8 @@ const MAX_DUNGEON_SIZE = 75;
 const { DEBUG, PIXEL_SCALE_NORMAL, PIXEL_SCALE_RETINA } = GAME_OPTIONS;
 const PIXEL_SCALE = window.devicePixelRatio >= 2 ? PIXEL_SCALE_RETINA : PIXEL_SCALE_NORMAL;
 const GAME_PIXEL_SCALE =
-  PIXEL_SCALE * (~~window.devicePixelRatio === 0 ? 1 / 3 : ~~window.devicePixelRatio);
+  PIXEL_SCALE *
+  (~~window.devicePixelRatio === 0 ? 1 / PIXEL_SCALE : ~~window.devicePixelRatio);
 
 const defaultGameOptions: PIXIAppOption = {
   width: (window.innerWidth / GAME_PIXEL_SCALE) * window.devicePixelRatio,
