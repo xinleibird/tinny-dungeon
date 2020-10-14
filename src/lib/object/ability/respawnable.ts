@@ -3,7 +3,7 @@ import { Loader } from '../../system';
 import { Ability, ABILITY_NAMES } from './';
 
 export default class Respawnable extends Ability {
-  private _sprite: PIXI.Sprite;
+  protected _sprite: PIXI.Sprite;
 
   public constructor() {
     super();
@@ -17,9 +17,5 @@ export default class Respawnable extends Ability {
     sprite.anchor.y = 0.5;
 
     this._sprite = sprite;
-  }
-
-  public get sprite() {
-    return this._sprite;
   }
 }

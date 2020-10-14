@@ -27,7 +27,7 @@ export const DecoratorTypesWeight = {
 };
 
 export default class Decorateable extends Ability {
-  private _sprite: PIXI.Sprite;
+  protected _sprite: PIXI.Sprite;
 
   public constructor(decoratorIndex: number) {
     super();
@@ -44,9 +44,5 @@ export default class Decorateable extends Ability {
 
       this._sprite = sprite;
     }
-  }
-
-  public get sprite() {
-    return this._sprite;
   }
 }

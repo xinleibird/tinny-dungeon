@@ -1,3 +1,4 @@
+import * as PIXI from 'pixi.js';
 export enum ABILITY_NAMES {
   ABSTRACT_ABILITY = 'AbstractAbility',
   OPENABLE = 'Openable',
@@ -21,8 +22,14 @@ export default class Ability {
   protected _name: ABILITY_NAMES;
   protected _status: ABILITY_STATUS;
 
+  protected _sprite: PIXI.Sprite;
+
   protected constructor() {
     this._name = ABILITY_NAMES.ABSTRACT_ABILITY;
+  }
+
+  public get sprite() {
+    return this._sprite;
   }
 
   public get name() {

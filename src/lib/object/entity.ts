@@ -29,6 +29,8 @@ export default class Entity {
   private _decoratorLayer: PIXI.Sprite[] = [];
   private _lightingLayer: PIXI.Sprite[] = [];
 
+  private _blockLight = false;
+
   public constructor(
     geometryPosition: Vector2 | IPosition,
     entityType: ENTITY_TYPES,
@@ -44,6 +46,14 @@ export default class Entity {
     this._direction = direction;
 
     this.initialize(entityType);
+  }
+
+  public get blockLight() {
+    return this._blockLight;
+  }
+
+  public set blockLight(block: boolean) {
+    this._blockLight = block;
   }
 
   public get floorLayer() {
@@ -124,8 +134,29 @@ export default class Entity {
   public removeAbility(name: ABILITY_NAMES) {
     for (let i = 0; i < this._abilities.length; i++) {
       const ability = this._abilities[i];
+      const sprite = ability?.sprite;
       if (ability.name === name) {
         this._abilities.splice(i, 1);
+
+        if (sprite) {
+          const floorIndex = this._floorLayer.indexOf(sprite);
+          const decoratorIndex = this._decoratorLayer.indexOf(sprite);
+          const lightingIndex = this._lightingLayer.indexOf(sprite);
+
+          if (floorIndex !== -1) {
+            this._floorLayer.splice(floorIndex, 1);
+          }
+
+          if (decoratorIndex !== -1) {
+            this._decoratorLayer.splice(floorIndex, 1);
+          }
+
+          if (lightingIndex !== -1) {
+            this._lightingLayer.splice(floorIndex, 1);
+          }
+
+          sprite.visible = false;
+        }
         break;
       }
     }
@@ -134,6 +165,7 @@ export default class Entity {
   private initialize(entityType: ENTITY_TYPES) {
     if (entityType === ENTITY_TYPES.EMPTY) {
       const passable = new Passable(ABILITY_STATUS.STOP);
+      this._blockLight = true;
       this._abilities.push(passable);
     }
 

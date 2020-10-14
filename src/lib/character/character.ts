@@ -215,10 +215,10 @@ export default class Character extends PIXI.Container {
       this.scale.x = -1;
       const [hold, walk, attack, hurt] = this.children as PIXI.AnimatedSprite[];
 
-      hold.anchor.set(0.5, 0.5);
-      walk.anchor.set(0.5, 0.5);
-      attack.anchor.set(0.5, 0.5);
-      hurt.anchor.set(0.5, 0.5);
+      hold.anchor.set(0.5625, 0.5);
+      walk.anchor.set(0.5625, 0.5);
+      attack.anchor.set(0.5625, 0.5);
+      hurt.anchor.set(0.5625, 0.5);
     }
 
     if (direction.equals(Vector2.right)) {

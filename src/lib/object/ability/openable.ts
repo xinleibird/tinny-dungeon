@@ -5,7 +5,7 @@ import Ability, { ABILITY_NAMES, ABILITY_STATUS } from './ability';
 
 export default class Openable extends Ability {
   protected _status: ABILITY_STATUS.CLOSE | ABILITY_STATUS.OPEN;
-  private _sprite: PIXI.AnimatedSprite;
+  protected _sprite: PIXI.AnimatedSprite;
   public constructor(
     initStatus: ABILITY_STATUS.CLOSE | ABILITY_STATUS.OPEN = ABILITY_STATUS.CLOSE,
     direction: Vector2
@@ -51,7 +51,7 @@ export default class Openable extends Ability {
     this._status = status;
   }
 
-  public get sprite() {
+  public get sprite(): PIXI.AnimatedSprite {
     return this._sprite;
   }
 }

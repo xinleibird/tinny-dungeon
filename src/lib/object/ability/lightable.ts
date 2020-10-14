@@ -10,13 +10,13 @@ export enum LIGHT_TYPES {
 }
 
 export default class Lightable extends Ability {
+  protected _sprite: PIXI.Sprite;
   protected _status:
     | ABILITY_STATUS.LIGHTING
     | ABILITY_STATUS.DISLIGHTING
     | ABILITY_STATUS.UNVISIT;
 
   private _entity: Entity;
-  private _sprite: PIXI.Sprite;
 
   public constructor(
     initStatus:
@@ -59,10 +59,6 @@ export default class Lightable extends Ability {
       default:
         break;
     }
-  }
-
-  public get sprite() {
-    return this._sprite;
   }
 
   public get status() {
