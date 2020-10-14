@@ -106,11 +106,11 @@ export const generateDungeon = (dungeonW: number, dungeonH: number) => {
   const decoratorsMap = initialize2DArray(dungeonW, dungeonH, 0);
 
   const dungeon = new ROT.Map.Digger(tilesW, tilesH, {
-    roomHeight: [2, 5],
-    roomWidth: [2, 5],
+    roomHeight: [2, 6],
+    roomWidth: [2, 6],
     dugPercentage: 0.618,
     corridorLength: [1, 2],
-    timeLimit: 1000,
+    timeLimit: 2000,
   }).create();
 
   const rooms = dungeon.getRooms();
@@ -206,8 +206,14 @@ export const updateDungeonLightings = (
 
   const fov = new ROT.FOV.RecursiveShadowcasting((x, y) => {
     const entity = entities?.[y]?.[x];
-    if (entity?.hasAbility(ABILITY_NAMES.LIGHTABLE)) {
-      return true;
+    if (
+      entity?.hasAbility(ABILITY_NAMES.LIGHTABLE) &&
+      entity?.hasAbility(ABILITY_NAMES.PASSABLE)
+    ) {
+      const passable = entity.getAbility(ABILITY_NAMES.PASSABLE);
+      if (passable.status === ABILITY_STATUS.PASS) {
+        return true;
+      }
     }
     return false;
   });

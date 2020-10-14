@@ -177,9 +177,9 @@ export default class Entity {
     if (entityType === ENTITY_TYPES.DOOR) {
       const { x, y } = this._geometryPosition;
       const openable = this._direction.equals(Vector2.right)
-        ? new Openable(ABILITY_STATUS.OPEN, Vector2.right)
-        : new Openable(ABILITY_STATUS.OPEN, Vector2.up);
-      const passable = new Passable(ABILITY_STATUS.PASS);
+        ? new Openable(ABILITY_STATUS.CLOSE, Vector2.right)
+        : new Openable(ABILITY_STATUS.CLOSE, Vector2.up);
+      const passable = new Passable(ABILITY_STATUS.STOP);
       const sprite = openable.sprite;
       sprite.position.set(x * TILE_SIZE + TILE_OFFSET_X, y * TILE_SIZE + TILE_OFFSET_Y);
 

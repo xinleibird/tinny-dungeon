@@ -10,7 +10,7 @@ export const CONTROLLED_KEYS = {
 
 export const GAME_OPTIONS = {
   PIXEL_SCALE_NORMAL: 4,
-  PIXEL_SCALE_RETINA: 2,
+  PIXEL_SCALE_RETINA: 3,
   DEBUG: true,
 };
 
