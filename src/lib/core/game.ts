@@ -33,7 +33,10 @@ PIXI.Application.registerPlugin(PixiStatsPlugin);
 const MAX_DUNGEON_SIZE = 75;
 
 const { DEBUG, PIXEL_SCALE_NORMAL, PIXEL_SCALE_RETINA } = GAME_OPTIONS;
-const PIXEL_SCALE = window.devicePixelRatio >= 2 ? PIXEL_SCALE_RETINA : PIXEL_SCALE_NORMAL;
+const PIXEL_SCALE =
+  window.devicePixelRatio >= 2
+    ? PIXEL_SCALE_RETINA * window.devicePixelRatio
+    : PIXEL_SCALE_NORMAL * window.devicePixelRatio;
 const GAME_PIXEL_SCALE =
   PIXEL_SCALE *
   (~~window.devicePixelRatio === 0 ? 1 / PIXEL_SCALE : ~~window.devicePixelRatio);
@@ -52,6 +55,8 @@ const defaultViewportOptions: ViewportOptions = {
   worldHeight: MAX_DUNGEON_SIZE * 16 + window.innerWidth,
   worldWidth: MAX_DUNGEON_SIZE * 16 + window.innerHeight,
 };
+
+console.log(GAME_PIXEL_SCALE);
 
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 
@@ -164,7 +169,7 @@ export default class Game extends PIXI.Application {
             noise: 0.0618,
             noiseSize: 1,
             scratch: -1,
-            scratchDensity: 0.03,
+            scratchDensity: 0.0382,
             scratchWidth: 1,
             vignetting: 0.3,
             vignettingAlpha: 0.618,

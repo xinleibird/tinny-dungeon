@@ -13,6 +13,7 @@ export default class Joystick {
   private _delay = 100;
 
   private _nipple: JoystickManager;
+
   private _burstIDs: any[] = [];
 
   public constructor() {
@@ -30,27 +31,25 @@ export default class Joystick {
     this._nipple = nipple.create({ zone: document.getElementById('root') });
     this._handleJoys = {};
 
-    this._nipple.on('dir', this.processJoyDown.bind(this));
+    this._nipple.on('move', this.processJoyDown.bind(this));
     this._nipple.on('end', this.processJoyUp.bind(this));
   }
 
   private processJoyDown(event: nipple.EventData, data: nipple.JoystickOutputData) {
+    const joy = data?.direction?.angle as JOY_NAMES;
+    const inHandleJoy = this._handleJoys?.[joy];
+
     this._burstIDs.push(
       setInterval(() => {
         const timeStamp = Date.now();
-        const joy = data?.direction?.angle as JOY_NAMES;
 
-        const inHandle = this._handleJoys?.[joy];
-
-        if (inHandle) {
-          const currentJoy = data.direction.angle;
-
+        if (inHandleJoy) {
           if (
-            currentJoy === this._lastJoy ||
-            (currentJoy !== this._lastJoy && timeStamp > this._lastDown + this._delay)
+            joy === this._lastJoy ||
+            (joy !== this._lastJoy && timeStamp > this._lastDown + this._delay)
           ) {
             const event: IJoyEventType = { timeStamp, joy };
-            inHandle.processJoyDown(event);
+            inHandleJoy.processJoyDown(event);
             this._lastJoy = joy as JOY_NAMES;
             this._lastDown = timeStamp;
           }

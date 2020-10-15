@@ -217,7 +217,7 @@ export const updateDungeonLightings = (
   });
 
   const { x, y } = geometryPosition;
-  fov.compute(x, y, 5, (ex, ey, r) => {
+  fov.compute(x, y, 6, (ex, ey, r) => {
     const entity = entities?.[ey]?.[ex];
 
     if (entity?.hasAbility(ABILITY_NAMES.LIGHTABLE)) {

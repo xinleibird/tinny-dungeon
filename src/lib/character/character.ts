@@ -171,7 +171,7 @@ export default class Character extends PIXI.Container {
         y: y * 16 + this._spriteOffsetY,
       },
       {
-        duration: 200,
+        duration: 150,
       }
     );
 
