@@ -17,12 +17,18 @@ export const JOYSTICK_CONTROLLED_JOYS = {
 
 export const GAME_OPTIONS = {
   PIXEL_SCALE_NORMAL: 3,
-  PIXEL_SCALE_RETINA: 1,
+  PIXEL_SCALE_RETINA: 1.5,
   DEBUG: true,
 };
 
-export const ENTITY_OPTIONS = {
+export const TILE_OPTIONS = {
   TILE_SIZE: 16,
   TILE_OFFSET_X: 24,
   TILE_OFFSET_Y: 32,
+};
+
+export const SPRITE_OPTIONS = {
+  SPRITE_SIZE: 16,
+  SPRITE_OFFSET_X: 32,
+  SPRITE_OFFSET_Y: 24,
 };

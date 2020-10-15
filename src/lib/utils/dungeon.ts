@@ -1,7 +1,6 @@
 import * as ROT from 'rot-js';
 import { IPosition, Vector2 } from '../geometry';
-import { ABILITY_NAMES } from '../object/ability';
-import { ABILITY_STATUS } from '../object/ability/ability';
+import { ABILITY_NAMES, ABILITY_STATUS } from '../object/ability';
 import { DecoratorTypesWeight } from '../object/ability/decorateable';
 import Entity, { ENTITY_TYPES } from '../object/entity';
 import { TILE_TYPES } from '../tilemap/tile';
@@ -198,7 +197,7 @@ export const generateDungeon = (dungeonW: number, dungeonH: number) => {
   return { tilesMap, floorsMap, decoratorsMap };
 };
 
-export const updateDungeonLightings = (
+export const updateEntitiesLightings = (
   geometryPosition: IPosition | Vector2,
   entities: Entity[][]
 ) => {
@@ -227,7 +226,7 @@ export const updateDungeonLightings = (
   });
 };
 
-export const updateDungeonDislightings = (
+export const updateEntitiesDislightings = (
   geometryPosition: IPosition | Vector2,
   entities: Entity[][]
 ) => {

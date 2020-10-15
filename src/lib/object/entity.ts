@@ -1,12 +1,19 @@
 import * as PIXI from 'pixi.js';
-import { ENTITY_OPTIONS } from '../config';
+import { TILE_OPTIONS } from '../config';
 import { IPosition, Vector2 } from '../geometry';
-import { Ability, ABILITY_NAMES, Clearable, Openable, Passable, Respawnable } from './ability';
-import { ABILITY_STATUS } from './ability/ability';
-import Decorateable from './ability/decorateable';
-import Lightable from './ability/lightable';
+import {
+  Ability,
+  ABILITY_NAMES,
+  ABILITY_STATUS,
+  Clearable,
+  Decorateable,
+  Lightable,
+  Openable,
+  Passable,
+  Respawnable,
+} from './ability';
 
-const { TILE_OFFSET_X, TILE_OFFSET_Y, TILE_SIZE } = ENTITY_OPTIONS;
+const { TILE_OFFSET_X, TILE_OFFSET_Y, TILE_SIZE } = TILE_OPTIONS;
 
 export enum ENTITY_TYPES {
   EMPTY,

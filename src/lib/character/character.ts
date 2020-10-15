@@ -1,12 +1,14 @@
 import { DropShadowFilter } from '@pixi/filter-drop-shadow';
-import { ease } from 'pixi-ease';
 import { Viewport } from 'pixi-viewport';
 import * as PIXI from 'pixi.js';
-import { IPosition, Vector2 } from '../geometry';
+import { Behavior, Movement, Open } from '../behavior';
+import { SPRITE_OPTIONS } from '../config';
+import { Vector2 } from '../geometry';
 import Entity from '../object/entity';
 import { DirectionIndicator, External } from '../object/external';
 import { Loader } from '../system';
-import Dungeon from '../tilemap/dungeon';
+
+const { SPRITE_OFFSET_X, SPRITE_OFFSET_Y } = SPRITE_OPTIONS;
 
 export enum PLAYER_TYPES {
   KNIGHT_M = 'knight_m',
@@ -34,29 +36,24 @@ export default class Character extends PIXI.Container {
 
   private _direction: Vector2 = Vector2.down;
   private _geometryPosition: Vector2;
-  private _spriteOffsetX = 32;
-  private _spriteOffsetY = 24;
   private _viewport: Viewport;
-  private _currentDungeon: Dungeon;
+
+  private _behaviors: Behavior[] = [];
 
   protected constructor(
-    geometryPosition: Vector2 | IPosition,
     type: PLAYER_TYPES | NONPLAYER_TYPES,
-    currentDungeon?: Dungeon,
-    viewport?: Viewport
+    entities: Entity[][],
+    viewport: Viewport
   ) {
     super();
-    if (geometryPosition instanceof Vector2) {
-      this._geometryPosition = geometryPosition;
-    } else {
-      const { x, y } = geometryPosition;
-      this._geometryPosition = new Vector2(x, y);
-    }
     this._type = type;
-    this._currentDungeon = currentDungeon;
+    this._entities = entities;
     this._viewport = viewport;
 
+    this._geometryPosition = new Vector2();
+
     this.initialize(type);
+    this.registBehaviors();
   }
 
   public act() {
@@ -124,7 +121,7 @@ export default class Character extends PIXI.Container {
   public set geometryPosition(position: Vector2) {
     this._geometryPosition = position;
     const { x, y } = position;
-    this.position.set(x * 16 + this._spriteOffsetX, y * 16 + this._spriteOffsetY);
+    this.position.set(x * 16 + SPRITE_OFFSET_X, y * 16 + SPRITE_OFFSET_Y);
   }
 
   public get geometryPosition() {
@@ -159,30 +156,13 @@ export default class Character extends PIXI.Container {
     attack.visible = false;
     hurt.visible = false;
 
-    this._currentDungeon.updateDislightings(this._geometryPosition);
-
-    this._geometryPosition.combine(direction);
-    const { x, y } = this._geometryPosition;
-
-    const move = ease.add(
-      this,
-      {
-        x: x * 16 + this._spriteOffsetX,
-        y: y * 16 + this._spriteOffsetY,
-      },
-      {
-        duration: 150,
-      }
-    );
-
-    move.once('complete', () => {
-      walk.play();
-    });
-    this._currentDungeon.updateLightings(this._geometryPosition);
+    walk.play();
 
     if (!this._stepSound.isPlaying) {
       this._stepSound.play();
     }
+
+    this.rollBehaviors(direction);
   }
 
   public attack(direction: Vector2) {
@@ -269,7 +249,7 @@ export default class Character extends PIXI.Container {
     // prepare character's animations
     this.addChild(hold, walk, attack, hurt);
     const { x, y } = this._geometryPosition;
-    this.position.set(x * 16 + this._spriteOffsetX, y * 16 + this._spriteOffsetY);
+    this.position.set(x * 16 + SPRITE_OFFSET_X, y * 16 + SPRITE_OFFSET_Y);
 
     // external composition
     const directionIndicator = new DirectionIndicator();
@@ -285,5 +265,20 @@ export default class Character extends PIXI.Container {
         rotation: -90,
       }),
     ];
+  }
+
+  private registBehaviors() {
+    const movement = new Movement(this._entities, this);
+    const open = new Open(this._entities, this);
+    this._behaviors.push(open, movement);
+  }
+
+  private rollBehaviors(direction: Vector2) {
+    for (const behavior of this._behaviors) {
+      if (behavior.canDo(direction)) {
+        behavior.do(direction);
+        break;
+      }
+    }
   }
 }

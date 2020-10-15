@@ -8,6 +8,7 @@ import { GAME_OPTIONS } from '../config';
 import Controller from '../input/controller';
 import { emitter, Loader, RESOURCE_EVENTS } from '../system';
 import Dungeon from '../tilemap/dungeon';
+import { updateEntitiesLightings } from '../utils';
 
 export interface PIXIAppOption {
   autoStart?: boolean;
@@ -56,12 +57,9 @@ const defaultViewportOptions: ViewportOptions = {
   worldWidth: MAX_DUNGEON_SIZE * 16 + window.innerHeight,
 };
 
-console.log(GAME_PIXEL_SCALE);
-
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 
 export default class Game extends PIXI.Application {
-  private _currentDungeon: Dungeon;
   private _background: PIXI.Graphics;
   private _player: Player;
   private _noneplayers: NonePlayer[] = [];
@@ -88,6 +86,11 @@ export default class Game extends PIXI.Application {
   private initialize() {
     const root = document.getElementById('root');
     root.appendChild(this.view);
+
+    // prevent contextmenu
+    window.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+    });
 
     // stats.js
     if (DEBUG) {
@@ -198,23 +201,18 @@ export default class Game extends PIXI.Application {
   }
 
   private gameLoop() {
-    this._currentDungeon = new Dungeon(MAX_DUNGEON_SIZE, MAX_DUNGEON_SIZE, this._viewport);
+    const dungeon = new Dungeon(MAX_DUNGEON_SIZE, MAX_DUNGEON_SIZE, this._viewport);
 
-    this._player = new Player(
-      { x: 0, y: 0 },
-      PLAYER_TYPES.KNIGHT_M,
-      this._currentDungeon,
-      this._viewport
-    );
+    this._player = new Player(PLAYER_TYPES.KNIGHT_M, dungeon.entities, this._viewport);
 
-    this._player.geometryPosition = this._currentDungeon.getRespawnPosition();
-    this._player.entities = this._currentDungeon.entities;
+    this._player.geometryPosition = dungeon.getRespawnPosition();
+    this._player.entities = dungeon.entities;
+    updateEntitiesLightings(this._player.geometryPosition, this._player.entities);
 
-    this._currentDungeon.draw();
+    dungeon.draw();
 
     this._player.act();
     this._viewport.follow(this._player);
-    this._currentDungeon.updateLightings(this._player.geometryPosition);
 
     const mainTheme = Loader.sounds.musics.main;
     mainTheme.volume = 0.06;

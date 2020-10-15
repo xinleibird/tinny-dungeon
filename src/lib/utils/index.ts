@@ -1,3 +1,7 @@
 export { initialize2DArray } from './array';
-export { generateDungeon } from './dungeon';
+export {
+  generateDungeon,
+  updateEntitiesDislightings,
+  updateEntitiesLightings,
+} from './dungeon';
 export { generateAutotile } from './tile';

@@ -1,12 +1,16 @@
 import { Viewport } from 'pixi-viewport';
 import * as PIXI from 'pixi.js';
-import { IPosition, Vector2 } from '../geometry';
-import { ABILITY_NAMES, Lightable, LIGHT_TYPES } from '../object/ability';
-import { ABILITY_STATUS } from '../object/ability/ability';
-import Decorateable from '../object/ability/decorateable';
+import { Vector2 } from '../geometry';
+import {
+  ABILITY_NAMES,
+  ABILITY_STATUS,
+  Decorateable,
+  Lightable,
+  LIGHT_TYPES,
+} from '../object/ability';
 import Entity, { ENTITY_TYPES } from '../object/entity';
 import { generateAutotile, generateDungeon } from '../utils';
-import { updateDungeonDislightings, updateDungeonLightings } from '../utils/dungeon';
+// import { updateEntitiesDislightings, updateEntitiesLightings } from '../utils/dungeon';
 import Tile, { TILE_TYPES } from './tile';
 
 export default class Dungeon {
@@ -47,13 +51,13 @@ export default class Dungeon {
     }
   }
 
-  public updateLightings(geometryPosition: IPosition | Vector2) {
-    updateDungeonLightings(geometryPosition, this._entities);
-  }
+  // public updateLightings(geometryPosition: IPosition | Vector2) {
+  //   updateEntitiesLightings(geometryPosition, this._entities);
+  // }
 
-  public updateDislightings(geometryPosition: IPosition | Vector2) {
-    updateDungeonDislightings(geometryPosition, this._entities);
-  }
+  // public updateDislightings(geometryPosition: IPosition | Vector2) {
+  //   updateEntitiesDislightings(geometryPosition, this._entities);
+  // }
 
   public get viewport() {
     return this._viewport;
