@@ -23,6 +23,10 @@ export class Vector2 {
     return new Vector2(0, 1);
   }
 
+  public static get center() {
+    return new Vector2(0, 0);
+  }
+
   public static equals(v1: Vector2, v2: Vector2) {
     return v1.x === v2.x && v1.y === v2.y;
   }
@@ -36,7 +40,7 @@ export class Vector2 {
   private _x = 0;
   private _y = 0;
 
-  public constructor(x?: number, y?: number) {
+  public constructor(x = 0, y = 0) {
     this._x = x;
     this._y = y;
   }

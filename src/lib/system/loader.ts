@@ -45,8 +45,10 @@ export default class Loader {
     loader.add('assets/sprites/knight_m.json');
 
     loader.add('main', 'assets/sounds/musics/平坡の道.mp3');
+
     loader.add('player_step', 'assets/sounds/effects/sfx_movement_footsteps1a.wav');
     loader.add('door_open', 'assets/sounds/effects/sfx_movement_dooropen2.wav');
+    loader.add('cave_airflow', 'assets/sounds/effects/cave_airflow.wav');
 
     loader.load((loader, resources) => {
       this.resources = resources;
@@ -66,7 +68,7 @@ export default class Loader {
         FLOOR_DECORATORS: [],
         LIGHTING_MASK: [],
       };
-      for (let i = 0; i < 4; i++) {
+      for (let i = 0; i < 6; i++) {
         const texture = PIXI.Texture.from(`doors_${i}`);
         this.textures.DOORS.push(texture);
       }
@@ -123,6 +125,7 @@ export default class Loader {
       this.sounds.musics['main'] = sound.Sound.from(this.resources.main);
       this.sounds.effects['player_step'] = sound.Sound.from(this.resources.player_step);
       this.sounds.effects['door_open'] = sound.Sound.from(this.resources.door_open);
+      this.sounds.effects['cave_airflow'] = sound.Sound.from(this.resources.cave_airflow);
 
       emitter.emit(RESOURCE_EVENTS.RESOURCES_LOADED);
     });

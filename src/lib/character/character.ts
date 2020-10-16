@@ -145,7 +145,6 @@ export default class Character extends PIXI.Container {
 
     hold.play();
 
-    this._stepSound.stop();
     this.hideExternal();
   }
 
@@ -157,10 +156,7 @@ export default class Character extends PIXI.Container {
     hurt.visible = false;
 
     walk.play();
-
-    if (!this._stepSound.isPlaying) {
-      this._stepSound.play();
-    }
+    this._stepSound.play();
 
     this.rollBehaviors(direction);
   }

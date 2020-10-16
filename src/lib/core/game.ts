@@ -6,6 +6,7 @@ import * as PIXI from 'pixi.js';
 import { NonePlayer, Player, PLAYER_TYPES } from '../character';
 import { GAME_OPTIONS } from '../config';
 import Controller from '../input/controller';
+import { Music, SoundEffect } from '../sound';
 import { emitter, Loader, RESOURCE_EVENTS } from '../system';
 import Dungeon from '../tilemap/dungeon';
 import { updateEntitiesLightings } from '../utils';
@@ -38,21 +39,18 @@ const PIXEL_SCALE =
   window.devicePixelRatio >= 2
     ? PIXEL_SCALE_RETINA * window.devicePixelRatio
     : PIXEL_SCALE_NORMAL * window.devicePixelRatio;
-const GAME_PIXEL_SCALE =
-  PIXEL_SCALE *
-  (~~window.devicePixelRatio === 0 ? 1 / PIXEL_SCALE : ~~window.devicePixelRatio);
 
 const defaultGameOptions: PIXIAppOption = {
-  width: (window.innerWidth / GAME_PIXEL_SCALE) * window.devicePixelRatio,
-  height: (window.innerHeight / GAME_PIXEL_SCALE) * window.devicePixelRatio,
+  width: (window.innerWidth / PIXEL_SCALE) * window.devicePixelRatio,
+  height: (window.innerHeight / PIXEL_SCALE) * window.devicePixelRatio,
   antialias: false,
-  resolution: GAME_PIXEL_SCALE / window.devicePixelRatio,
+  resolution: PIXEL_SCALE / window.devicePixelRatio,
   backgroundColor: 0x160c21,
 };
 
 const defaultViewportOptions: ViewportOptions = {
-  screenWidth: (window.innerWidth / GAME_PIXEL_SCALE) * window.devicePixelRatio,
-  screenHeight: (window.innerHeight / GAME_PIXEL_SCALE) * window.devicePixelRatio,
+  screenWidth: (window.innerWidth / PIXEL_SCALE) * window.devicePixelRatio,
+  screenHeight: (window.innerHeight / PIXEL_SCALE) * window.devicePixelRatio,
   worldHeight: MAX_DUNGEON_SIZE * 16 + window.innerWidth,
   worldWidth: MAX_DUNGEON_SIZE * 16 + window.innerHeight,
 };
@@ -72,9 +70,9 @@ export default class Game extends PIXI.Application {
   public constructor(props?: PIXIAppOption) {
     super({ ...defaultGameOptions, ...props });
 
-    this.initialize();
-
     Loader.load();
+
+    this.initialize();
   }
 
   public play() {
@@ -143,22 +141,22 @@ export default class Game extends PIXI.Application {
   private registResizer() {
     window.onorientationchange = () => {
       this.renderer.resize(
-        (window.innerWidth / GAME_PIXEL_SCALE) * window.devicePixelRatio,
-        (window.innerHeight / GAME_PIXEL_SCALE) * window.devicePixelRatio
+        (window.innerWidth / PIXEL_SCALE) * window.devicePixelRatio,
+        (window.innerHeight / PIXEL_SCALE) * window.devicePixelRatio
       );
       this._viewport.resize(
-        (window.innerWidth / GAME_PIXEL_SCALE) * window.devicePixelRatio,
-        (window.innerHeight / GAME_PIXEL_SCALE) * window.devicePixelRatio
+        (window.innerWidth / PIXEL_SCALE) * window.devicePixelRatio,
+        (window.innerHeight / PIXEL_SCALE) * window.devicePixelRatio
       );
     };
     window.onresize = () => {
       this.renderer.resize(
-        (window.innerWidth / GAME_PIXEL_SCALE) * window.devicePixelRatio,
-        (window.innerHeight / GAME_PIXEL_SCALE) * window.devicePixelRatio
+        (window.innerWidth / PIXEL_SCALE) * window.devicePixelRatio,
+        (window.innerHeight / PIXEL_SCALE) * window.devicePixelRatio
       );
       this._viewport.resize(
-        (window.innerWidth / GAME_PIXEL_SCALE) * window.devicePixelRatio,
-        (window.innerHeight / GAME_PIXEL_SCALE) * window.devicePixelRatio
+        (window.innerWidth / PIXEL_SCALE) * window.devicePixelRatio,
+        (window.innerHeight / PIXEL_SCALE) * window.devicePixelRatio
       );
     };
   }
@@ -201,6 +199,8 @@ export default class Game extends PIXI.Application {
   }
 
   private gameLoop() {
+    Music.play('main');
+    SoundEffect.play('cave_airflow', 0.02, true);
     const dungeon = new Dungeon(MAX_DUNGEON_SIZE, MAX_DUNGEON_SIZE, this._viewport);
 
     this._player = new Player(PLAYER_TYPES.KNIGHT_M, dungeon.entities, this._viewport);
@@ -213,11 +213,6 @@ export default class Game extends PIXI.Application {
 
     this._player.act();
     this._viewport.follow(this._player);
-
-    const mainTheme = Loader.sounds.musics.main;
-    mainTheme.volume = 0.06;
-    mainTheme.loop = true;
-    mainTheme.play();
 
     this.cullViewport();
   }

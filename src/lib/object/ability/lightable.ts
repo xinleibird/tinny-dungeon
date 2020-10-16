@@ -10,13 +10,14 @@ export enum LIGHT_TYPES {
 }
 
 export default class Lightable extends Ability {
-  protected _sprite: PIXI.Sprite;
   protected _status:
     | ABILITY_STATUS.LIGHTING
     | ABILITY_STATUS.DISLIGHTING
     | ABILITY_STATUS.UNVISIT;
 
   private _entity: Entity;
+
+  private _lightingLevel: number;
 
   public constructor(
     initStatus:
@@ -35,6 +36,38 @@ export default class Lightable extends Ability {
     this.initialize(initStatus);
   }
 
+  public get lightingLevel() {
+    return this._lightingLevel;
+  }
+
+  public set lightingLevel(level: number) {
+    switch (level) {
+      case 0:
+        break;
+      case 1:
+        this._sprite.alpha = 0;
+        break;
+      case 2:
+        this._sprite.alpha = 0.05;
+        break;
+      case 3:
+        this._sprite.alpha = 0.1;
+        break;
+      case 4:
+        this._sprite.alpha = 0.18;
+        break;
+      case 5:
+        this._sprite.alpha = 0.3;
+        break;
+      case 6:
+        this._sprite.alpha = 0.46;
+        break;
+
+      default:
+        break;
+    }
+  }
+
   private initialize(
     initStatus: ABILITY_STATUS.LIGHTING | ABILITY_STATUS.DISLIGHTING | ABILITY_STATUS.UNVISIT
   ) {
@@ -50,7 +83,7 @@ export default class Lightable extends Ability {
         break;
 
       case ABILITY_STATUS.DISLIGHTING:
-        this._sprite.alpha = 0.618;
+        this._sprite.alpha = 0.75;
         break;
       case ABILITY_STATUS.UNVISIT:
         this._sprite.alpha = 1;

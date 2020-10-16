@@ -1,4 +1,6 @@
-import { ease } from 'pixi-ease';
+import { gsap } from 'gsap';
+import { PixiPlugin } from 'gsap/PixiPlugin';
+import * as PIXI from 'pixi.js';
 import { Character } from '../character';
 import { SPRITE_OPTIONS } from '../config';
 import { Vector2 } from '../geometry';
@@ -6,6 +8,9 @@ import { ABILITY_NAMES, ABILITY_STATUS } from '../object/ability';
 import Entity from '../object/entity';
 import { updateEntitiesDislightings, updateEntitiesLightings } from '../utils';
 import Behavior from './behavior';
+
+gsap.registerPlugin(PixiPlugin);
+PixiPlugin.registerPIXI(PIXI);
 
 const { SPRITE_OFFSET_X, SPRITE_OFFSET_Y } = SPRITE_OPTIONS;
 
@@ -21,16 +26,10 @@ export default class Movement extends Behavior {
     geometryPosition.combine(direction);
     const { x, y } = geometryPosition;
 
-    ease.add(
-      this._character,
-      {
-        x: x * 16 + SPRITE_OFFSET_X,
-        y: y * 16 + SPRITE_OFFSET_Y,
-      },
-      {
-        duration: 150,
-      }
-    );
+    gsap.to(this._character, {
+      duration: 0.15,
+      pixi: { x: x * 16 + SPRITE_OFFSET_X, y: y * 16 + SPRITE_OFFSET_Y },
+    });
 
     updateEntitiesLightings(geometryPosition, this._entities);
   }

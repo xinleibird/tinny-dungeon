@@ -10,7 +10,6 @@ import {
 } from '../object/ability';
 import Entity, { ENTITY_TYPES } from '../object/entity';
 import { generateAutotile, generateDungeon } from '../utils';
-// import { updateEntitiesDislightings, updateEntitiesLightings } from '../utils/dungeon';
 import Tile, { TILE_TYPES } from './tile';
 
 export default class Dungeon {
@@ -24,8 +23,8 @@ export default class Dungeon {
   private _lightingsMap: LIGHT_TYPES[][] = [];
 
   // Entities Pools
-  private _floorRenderPool: PIXI.Sprite[] = [];
   private _decoratorsRenderPool: PIXI.Sprite[] = [];
+  private _floorRenderPool: PIXI.Sprite[] = [];
 
   // Lighting
   private _lightingRenderPool: PIXI.Sprite[] = [];
@@ -40,24 +39,16 @@ export default class Dungeon {
     if (this._tilesRenderPool.length > 0) {
       this._viewport.addChild(...this._tilesRenderPool);
     }
-    if (this._floorRenderPool.length > 0) {
-      this._viewport.addChild(...this._floorRenderPool);
-    }
     if (this._decoratorsRenderPool.length > 0) {
       this._viewport.addChild(...this._decoratorsRenderPool);
+    }
+    if (this._floorRenderPool.length > 0) {
+      this._viewport.addChild(...this._floorRenderPool);
     }
     if (this._lightingRenderPool.length > 0) {
       this._viewport.addChild(...this._lightingRenderPool);
     }
   }
-
-  // public updateLightings(geometryPosition: IPosition | Vector2) {
-  //   updateEntitiesLightings(geometryPosition, this._entities);
-  // }
-
-  // public updateDislightings(geometryPosition: IPosition | Vector2) {
-  //   updateEntitiesDislightings(geometryPosition, this._entities);
-  // }
 
   public get viewport() {
     return this._viewport;
@@ -116,8 +107,24 @@ export default class Dungeon {
     for (let y = 0; y < fy; y++) {
       this._entities[y] = [];
       for (let x = 0; x < fx; x++) {
-        const direction =
-          this._floorsMap[y][x - 1] && this._floorsMap[y][x + 1] ? Vector2.up : Vector2.right;
+        let direction = Vector2.center;
+
+        if (this._floorsMap?.[y]?.[x - 1] && this._floorsMap?.[y]?.[x + 1]) {
+          direction = Vector2.right;
+
+          if (this._floorsMap?.[y - 1]?.[x] || this._floorsMap?.[y + 1]?.[x]) {
+            direction = Vector2.center;
+          }
+        }
+
+        if (this._floorsMap?.[y - 1]?.[x] && this._floorsMap?.[y + 1]?.[x]) {
+          direction = Vector2.up;
+
+          if (this._floorsMap?.[y]?.[x - 1] && this._floorsMap?.[y]?.[x + 1]) {
+            direction = Vector2.center;
+          }
+        }
+
         const entity = new Entity({ x, y }, this._floorsMap[y][x], direction);
 
         const decoratorIndex = this._decoratorsMap[y][x];

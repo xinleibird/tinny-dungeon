@@ -36,8 +36,6 @@ export default class Entity {
   private _decoratorLayer: PIXI.Sprite[] = [];
   private _lightingLayer: PIXI.Sprite[] = [];
 
-  private _blockLight = false;
-
   public constructor(
     geometryPosition: Vector2 | IPosition,
     entityType: ENTITY_TYPES,
@@ -53,14 +51,6 @@ export default class Entity {
     this._direction = direction;
 
     this.initialize(entityType);
-  }
-
-  public get blockLight() {
-    return this._blockLight;
-  }
-
-  public set blockLight(block: boolean) {
-    this._blockLight = block;
   }
 
   public get floorLayer() {
@@ -172,7 +162,6 @@ export default class Entity {
   private initialize(entityType: ENTITY_TYPES) {
     if (entityType === ENTITY_TYPES.EMPTY) {
       const passable = new Passable(ABILITY_STATUS.STOP);
-      this._blockLight = true;
       this._abilities.push(passable);
     }
 
@@ -183,9 +172,7 @@ export default class Entity {
 
     if (entityType === ENTITY_TYPES.DOOR) {
       const { x, y } = this._geometryPosition;
-      const openable = this._direction.equals(Vector2.right)
-        ? new Openable(ABILITY_STATUS.CLOSE, Vector2.right)
-        : new Openable(ABILITY_STATUS.CLOSE, Vector2.up);
+      const openable = new Openable(ABILITY_STATUS.CLOSE, this._direction);
       const passable = new Passable(ABILITY_STATUS.STOP);
       const sprite = openable.sprite;
       sprite.position.set(x * TILE_SIZE + TILE_OFFSET_X, y * TILE_SIZE + TILE_OFFSET_Y);

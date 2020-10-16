@@ -1,21 +1,14 @@
-import * as PIXI from 'pixi.js';
 import { Character } from '../character';
 import { Vector2 } from '../geometry';
 import { ABILITY_NAMES, ABILITY_STATUS } from '../object/ability';
 import Entity from '../object/entity';
-import { Loader } from '../system';
+import { SoundEffect } from '../sound';
 import { updateEntitiesLightings } from '../utils';
 import Behavior from './behavior';
 
 export default class Open extends Behavior {
-  private _doorOpenSound: PIXI.sound.Sound;
   public constructor(entities: Entity[][], character: Character) {
     super('Open', entities, character);
-    const doorOpenSound = Loader.sounds.effects.door_open;
-    doorOpenSound.volume = 0.1;
-    doorOpenSound.loop = false;
-
-    this._doorOpenSound = doorOpenSound;
   }
 
   public do(direction: Vector2) {
@@ -29,7 +22,8 @@ export default class Open extends Behavior {
     const passable = tarEntity.getAbility(ABILITY_NAMES.PASSABLE);
     passable.status = ABILITY_STATUS.PASS;
 
-    this._doorOpenSound.play();
+    SoundEffect.play('door_open');
+
     updateEntitiesLightings(this._character.geometryPosition, this._entities);
   }
 

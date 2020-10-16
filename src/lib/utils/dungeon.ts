@@ -1,6 +1,6 @@
 import * as ROT from 'rot-js';
 import { IPosition, Vector2 } from '../geometry';
-import { ABILITY_NAMES, ABILITY_STATUS } from '../object/ability';
+import { ABILITY_NAMES, ABILITY_STATUS, Lightable } from '../object/ability';
 import { DecoratorTypesWeight } from '../object/ability/decorateable';
 import Entity, { ENTITY_TYPES } from '../object/entity';
 import { TILE_TYPES } from '../tilemap/tile';
@@ -220,8 +220,9 @@ export const updateEntitiesLightings = (
     const entity = entities?.[ey]?.[ex];
 
     if (entity?.hasAbility(ABILITY_NAMES.LIGHTABLE)) {
-      const lightable = entity.getAbility(ABILITY_NAMES.LIGHTABLE);
+      const lightable = entity.getAbility(ABILITY_NAMES.LIGHTABLE) as Lightable;
       lightable.status = ABILITY_STATUS.LIGHTING;
+      lightable.lightingLevel = r;
     }
   });
 };

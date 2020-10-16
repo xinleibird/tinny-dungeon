@@ -17,7 +17,7 @@
       "duration": 100
     },
     "doors_2": {
-      "frame": { "x": 0, "y": 32, "w": 16, "h": 32 },
+      "frame": { "x": 32, "y": 0, "w": 16, "h": 32 },
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 32 },
@@ -25,7 +25,23 @@
       "duration": 100
     },
     "doors_3": {
+      "frame": { "x": 0, "y": 32, "w": 16, "h": 32 },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 32 },
+      "sourceSize": { "w": 16, "h": 32 },
+      "duration": 100
+    },
+    "doors_4": {
       "frame": { "x": 16, "y": 32, "w": 16, "h": 32 },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 32 },
+      "sourceSize": { "w": 16, "h": 32 },
+      "duration": 100
+    },
+    "doors_5": {
+      "frame": { "x": 32, "y": 32, "w": 16, "h": 32 },
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 32 },
@@ -38,7 +54,7 @@
     "version": "1.2.25-x64",
     "image": "doors.png",
     "format": "RGBA8888",
-    "size": { "w": 32, "h": 64 },
+    "size": { "w": 48, "h": 64 },
     "scale": "1",
     "frameTags": [],
     "layers": [{ "name": "Flattened", "opacity": 255, "blendMode": "normal" }],

@@ -3,8 +3,6 @@ import { Loader } from '../../system';
 import { Ability, ABILITY_NAMES } from './';
 
 export default class Respawnable extends Ability {
-  protected _sprite: PIXI.Sprite;
-
   public constructor() {
     super();
 

@@ -11,7 +11,7 @@ import {
   KEY_NAMES,
 } from '../input';
 import Entity from '../object/entity';
-import { Loader } from '../system';
+import { SoundEffect } from '../sound';
 import Character, { PLAYER_TYPES } from './character';
 
 const ticker = PIXI.Ticker.shared;
@@ -40,11 +40,7 @@ export default class Player extends Character {
   }
 
   private registSounds() {
-    const stepSound = Loader.sounds.effects.player_step;
-    stepSound.volume = 0.1;
-    stepSound.loop = false;
-
-    this._stepSound = stepSound;
+    this._stepSound = SoundEffect.get('player_step');
   }
 
   private handleKeyFree() {

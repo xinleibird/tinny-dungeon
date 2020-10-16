@@ -28,10 +28,10 @@ export default class Joystick {
   }
 
   private initialize() {
-    this._nipple = nipple.create({ zone: document.getElementById('root') });
+    this._nipple = nipple.create({ zone: document.body });
     this._handleJoys = {};
 
-    this._nipple.on('move', this.processJoyDown.bind(this));
+    this._nipple.on('plain', this.processJoyDown.bind(this));
     this._nipple.on('end', this.processJoyUp.bind(this));
   }
 

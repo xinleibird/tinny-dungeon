@@ -21,10 +21,17 @@ export default class Openable extends Ability {
     initStatus: ABILITY_STATUS.CLOSE | ABILITY_STATUS.OPEN,
     direction: Vector2
   ) {
-    const sprite =
-      direction.equals(Vector2.right) || direction.equals(Vector2.left)
-        ? new PIXI.AnimatedSprite([Loader.textures.DOORS[0], Loader.textures.DOORS[1]])
-        : new PIXI.AnimatedSprite([Loader.textures.DOORS[2], Loader.textures.DOORS[3]]);
+    let sprite = null;
+
+    if (direction.equals(Vector2.center)) {
+      sprite = new PIXI.AnimatedSprite([Loader.textures.DOORS[4], Loader.textures.DOORS[5]]);
+    } else {
+      if (direction.equals(Vector2.right) || direction.equals(Vector2.left)) {
+        sprite = new PIXI.AnimatedSprite([Loader.textures.DOORS[2], Loader.textures.DOORS[3]]);
+      } else {
+        sprite = new PIXI.AnimatedSprite([Loader.textures.DOORS[0], Loader.textures.DOORS[1]]);
+      }
+    }
 
     sprite.anchor.y = 0.5;
     sprite.loop = false;

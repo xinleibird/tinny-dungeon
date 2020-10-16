@@ -17,7 +17,7 @@ export const JOYSTICK_CONTROLLED_JOYS = {
 
 export const GAME_OPTIONS = {
   PIXEL_SCALE_NORMAL: 3,
-  PIXEL_SCALE_RETINA: 1.5,
+  PIXEL_SCALE_RETINA: 3,
   DEBUG: true,
 };
 
