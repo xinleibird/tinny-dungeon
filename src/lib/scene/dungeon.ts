@@ -56,9 +56,14 @@ export default class Dungeon {
     if (this._floorsRenderPool.length > 0) {
       this._viewport.addChild(...this._floorsRenderPool);
     }
+
+    if (this._characters.length > 0) {
+      this._viewport.addChild(...this._characters);
+    }
     if (this._lightingsRenderPool.length > 0) {
       this._viewport.addChild(...this._lightingsRenderPool);
     }
+
     Music.play('main');
     SoundEffect.play('cave_airflow', 0.02, true);
   }

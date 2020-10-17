@@ -3,8 +3,9 @@ import { OldFilmFilter } from '@pixi/filter-old-film';
 import Cull from 'pixi-cull';
 import { Viewport, ViewportOptions } from 'pixi-viewport';
 import * as PIXI from 'pixi.js';
-import { NonePlayer, Player, PLAYER_TYPES } from '../character';
+import { NonPlayer, NONPLAYER_TYPES, Player, PLAYER_TYPES } from '../character';
 import { GAME_OPTIONS } from '../config';
+import { Vector2 } from '../geometry';
 import Controller from '../input/controller';
 import Dungeon from '../scene/dungeon';
 import { emitter, Loader, RESOURCE_EVENTS } from '../system';
@@ -31,7 +32,7 @@ export interface PIXIAppOption {
 
 PIXI.Application.registerPlugin(PixiStatsPlugin);
 
-const MAX_DUNGEON_SIZE = 75;
+const MAX_DUNGEON_SIZE = 35;
 
 const { DEBUG, PIXEL_SCALE } = GAME_OPTIONS;
 
@@ -55,7 +56,7 @@ PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 export default class Game extends PIXI.Application {
   private _background: PIXI.Graphics;
   private _player: Player;
-  private _noneplayers: NonePlayer[] = [];
+  private _noneplayers: NonPlayer[] = [];
   private _controller: Controller;
   private _viewport: Viewport;
 
@@ -85,7 +86,7 @@ export default class Game extends PIXI.Application {
       e.preventDefault();
     });
 
-    // stats.js
+    // stats.js;
     if (DEBUG) {
       root.appendChild(this.stats.dom);
       PIXI.Ticker.shared.add(() => {
@@ -198,14 +199,18 @@ export default class Game extends PIXI.Application {
     const player = new Player(PLAYER_TYPES.KNIGHT_M, dungeon.entities, this._viewport);
     this._player = player;
 
-    // player.geometryPosition = dungeon.getRespawnPosition();
+    const skeleton = new NonPlayer(NONPLAYER_TYPES.SKELETON, dungeon.entities, this._viewport);
+
+    const { x, y } = dungeon.respawnPosition;
+    skeleton.geometryPosition = new Vector2(x + 1, y);
+
     player.entities = dungeon.entities;
 
     dungeon.addCharacter(player);
+    dungeon.addCharacter(skeleton);
     updateEntitiesLightings(player.geometryPosition, player.entities);
 
     dungeon.draw();
-    player.act();
 
     this._viewport.follow(this._player);
 

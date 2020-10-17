@@ -43,6 +43,7 @@ export default class Loader {
     loader.add('assets/tiles/lighting_mask.json');
 
     loader.add('assets/sprites/knight_m.json');
+    loader.add('assets/sprites/skeleton.json');
 
     loader.add('main', 'assets/sounds/musics/平坡の道.mp3');
 
@@ -116,7 +117,7 @@ export default class Loader {
           this.textures[character][CHARACTER_ANIMATIONS.ATTACK].push(texture);
         }
 
-        for (let i = 12; i < 15; i++) {
+        for (let i = 12; i < 16; i++) {
           const texture = PIXI.Texture.from(`${frameName}_${i}`);
           this.textures[character][CHARACTER_ANIMATIONS.HURT].push(texture);
         }

@@ -56,6 +56,7 @@ export default class DirectionIndicator extends External {
     batch.push(Loader.textures.UI.arrow_right);
 
     const sprite = new PIXI.AnimatedSprite(batch);
+    sprite.visible = false;
     this._sprite = sprite;
 
     this._sprite.anchor.set(0.5, 0.5);

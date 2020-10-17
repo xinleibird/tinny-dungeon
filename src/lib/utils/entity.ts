@@ -1,4 +1,5 @@
 import * as ROT from 'rot-js';
+import { NonPlayer } from '../character';
 import { Vector2 } from '../geometry';
 import { ABILITY_NAMES, ABILITY_STATUS, Lightable } from '../object/ability';
 import Entity from '../object/entity';
@@ -26,6 +27,12 @@ export const updateEntitiesLightings = (geometryPosition: Vector2, entities: Ent
       const lightable = entity.getAbility(ABILITY_NAMES.LIGHTABLE) as Lightable;
       lightable.status = ABILITY_STATUS.LIGHTING;
       lightable.lightingLevel = r;
+
+      const character = entity?.character;
+
+      if (character instanceof NonPlayer) {
+        character.show();
+      }
     }
   });
 };
@@ -40,6 +47,11 @@ export const updateEntitiesDislightings = (
         const lightable = entity.getAbility(ABILITY_NAMES.LIGHTABLE);
         if (lightable.status === ABILITY_STATUS.LIGHTING) {
           lightable.status = ABILITY_STATUS.DISLIGHTING;
+
+          const character = entity?.character;
+          if (character instanceof NonPlayer) {
+            character.hide();
+          }
         }
       }
     }

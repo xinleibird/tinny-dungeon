@@ -15,7 +15,9 @@ export enum PLAYER_TYPES {
   KNIGHT_M = 'knight_m',
 }
 
-export enum NONPLAYER_TYPES {}
+export enum NONPLAYER_TYPES {
+  SKELETON = 'skeleton',
+}
 
 export const CHARACTER_CATEGORIES = {
   ...PLAYER_TYPES,
@@ -144,7 +146,7 @@ export default class Character extends PIXI.Container {
     this._entities = entities;
   }
 
-  public hold() {
+  protected hold() {
     const [hold, walk, attack, hurt] = this.children as PIXI.AnimatedSprite[];
     hold.visible = true;
     walk.visible = false;
@@ -156,7 +158,7 @@ export default class Character extends PIXI.Container {
     this.hideExternal();
   }
 
-  public walk(direction: Vector2) {
+  protected walk(direction: Vector2) {
     const [hold, walk, attack, hurt] = this.children as PIXI.AnimatedSprite[];
     hold.visible = false;
     walk.visible = true;
@@ -169,7 +171,7 @@ export default class Character extends PIXI.Container {
     this.rollBehaviors(direction);
   }
 
-  public attack(direction: Vector2) {
+  protected attack(direction: Vector2) {
     const [hold, walk, attack, hurt] = this.children as PIXI.AnimatedSprite[];
     hold.visible = false;
     walk.visible = false;
@@ -180,7 +182,7 @@ export default class Character extends PIXI.Container {
     this._attackSound.play();
   }
 
-  public hurt() {
+  protected hurt() {
     const [hold, walk, attack, hurt] = this.children as PIXI.AnimatedSprite[];
     hold.visible = false;
     walk.visible = false;
@@ -188,6 +190,14 @@ export default class Character extends PIXI.Container {
     hurt.visible = true;
 
     hurt.play();
+  }
+
+  protected hide() {
+    this._viewport.removeChild(this);
+  }
+
+  protected show() {
+    this._viewport.addChild(this);
   }
 
   protected get Entities() {
