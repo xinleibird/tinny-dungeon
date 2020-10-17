@@ -8,6 +8,7 @@ export enum CONTROL_ACTIONS {
   WALK_UP = 'walkUp',
   WALK_DOWN = 'walkDown',
   SHOW_EXTERNAL = 'showExternal',
+  ATTACK = 'attack',
 }
 
 export default class Controller {

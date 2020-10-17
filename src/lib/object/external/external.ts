@@ -1,12 +1,21 @@
 import * as PIXI from 'pixi.js';
 import { Vector2 } from '../../geometry';
 
+export enum EXTERNAL_NAMES {
+  ABSTRACT_EXTERNAL = 'AbstractExternal',
+  DIRECTION_INDICATOR = 'DirectionIndicator',
+}
+
 export default class External {
   protected _sprite: PIXI.Sprite;
   protected _direction: Vector2;
-  protected _name = 'External';
+  protected _name: EXTERNAL_NAMES;
 
   private _visiable = true;
+
+  protected constructor() {
+    this._name = EXTERNAL_NAMES.ABSTRACT_EXTERNAL;
+  }
 
   public get direction() {
     return this._direction;

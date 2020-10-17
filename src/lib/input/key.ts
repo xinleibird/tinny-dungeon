@@ -17,14 +17,14 @@ export default class Key {
   public processKeyDown(event: KeyboardEvent) {
     if (this._isDown) {
       if (event.timeStamp > this._lastDown + this._delay) {
-        this.onDown.emit(KEY_EVENTS.KEY_DOWN, this._keyName);
+        this.onDown.emit(KEY_EVENTS.KEY_DOWN, this._keyName, Date.now());
         this._lastDown = event.timeStamp;
       }
     } else {
       this._isDown = true;
       this._isUp = false;
 
-      this.onDown.emit(KEY_EVENTS.KEY_DOWN, this._keyName);
+      this.onDown.emit(KEY_EVENTS.KEY_DOWN, this._keyName, Date.now());
       this._lastDown = event.timeStamp;
     }
   }
@@ -34,6 +34,6 @@ export default class Key {
     this._isUp = true;
     this._lastUp = event.timeStamp;
 
-    this.onUp.emit(KEY_EVENTS.KEY_UP, this._keyName);
+    this.onUp.emit(KEY_EVENTS.KEY_UP, this._keyName, Date.now());
   }
 }

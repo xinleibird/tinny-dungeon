@@ -1,9 +1,10 @@
 import { DropShadowFilter } from '@pixi/filter-drop-shadow';
 import { Viewport } from 'pixi-viewport';
 import * as PIXI from 'pixi.js';
-import { Behavior, Movement, Open } from '../behavior';
 import { SPRITE_OPTIONS } from '../config';
 import { Vector2 } from '../geometry';
+import { Ability, ABILITY_STATUS, Passable } from '../object/ability';
+import { Behavior, Movement, Opening } from '../object/behavior';
 import Entity from '../object/entity';
 import { DirectionIndicator, External } from '../object/external';
 import { Loader } from '../system';
@@ -32,13 +33,15 @@ export default class Character extends PIXI.Container {
   protected _type: PLAYER_TYPES | NONPLAYER_TYPES;
   protected _entities: Entity[][];
   protected _stepSound: PIXI.sound.Sound;
+  protected _attackSound: PIXI.sound.Sound;
   protected _externals: External[] = [];
+  protected _direction: Vector2 = Vector2.down;
 
-  private _direction: Vector2 = Vector2.down;
   private _geometryPosition: Vector2;
   private _viewport: Viewport;
 
   private _behaviors: Behavior[] = [];
+  private _abilities: Ability[] = [];
 
   protected constructor(
     type: PLAYER_TYPES | NONPLAYER_TYPES,
@@ -54,10 +57,15 @@ export default class Character extends PIXI.Container {
 
     this.initialize(type);
     this.registBehaviors();
+    this.registAbilities();
   }
 
   public act() {
     this._viewport.addChild(this);
+  }
+
+  public get abilities() {
+    return this._abilities;
   }
 
   public get viewport() {
@@ -168,8 +176,8 @@ export default class Character extends PIXI.Container {
     attack.visible = true;
     hurt.visible = false;
 
-    this._geometryPosition.combine(direction);
-    attack.play();
+    attack.gotoAndPlay(0);
+    this._attackSound.play();
   }
 
   public hurt() {
@@ -226,11 +234,14 @@ export default class Character extends PIXI.Container {
     attack.visible = false;
     hurt.visible = false;
 
+    attack.loop = false;
+    hurt.loop = false;
+
     const duringSecond = 0.5;
     const speed = 1 / (duringSecond / (4 / 60));
 
     hold.animationSpeed = speed;
-    walk.animationSpeed = speed;
+    walk.animationSpeed = speed * 1.45;
     attack.animationSpeed = speed;
     hurt.animationSpeed = speed;
 
@@ -265,8 +276,13 @@ export default class Character extends PIXI.Container {
 
   private registBehaviors() {
     const movement = new Movement(this._entities, this);
-    const open = new Open(this._entities, this);
-    this._behaviors.push(open, movement);
+    const opening = new Opening(this._entities, this);
+    this._behaviors.push(opening, movement);
+  }
+
+  private registAbilities() {
+    const passable = new Passable(ABILITY_STATUS.STOP);
+    this._abilities.push(passable);
   }
 
   private rollBehaviors(direction: Vector2) {

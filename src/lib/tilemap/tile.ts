@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js';
-import { IPosition, Vector2 } from '../geometry';
+import { Vector2 } from '../geometry';
 import { Loader } from '../system';
 
 export enum TILE_TYPES {
@@ -13,7 +13,7 @@ export default class Tile {
   private _sprite: PIXI.Sprite;
   private _tilePosition: Vector2 = new Vector2(0, 0);
 
-  public constructor(tilePosition: Vector2 | IPosition, tileIndex: number, tileSize = 32) {
+  public constructor(tilePosition: Vector2, tileIndex: number, tileSize = 32) {
     if (tilePosition instanceof Vector2) {
       this._tilePosition = tilePosition;
     } else {

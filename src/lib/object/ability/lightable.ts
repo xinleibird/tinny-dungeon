@@ -83,7 +83,7 @@ export default class Lightable extends Ability {
         break;
 
       case ABILITY_STATUS.DISLIGHTING:
-        this._sprite.alpha = 0.75;
+        this._sprite.alpha = 0.8;
         break;
       case ABILITY_STATUS.UNVISIT:
         this._sprite.alpha = 1;

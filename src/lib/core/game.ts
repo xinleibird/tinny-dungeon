@@ -6,9 +6,8 @@ import * as PIXI from 'pixi.js';
 import { NonePlayer, Player, PLAYER_TYPES } from '../character';
 import { GAME_OPTIONS } from '../config';
 import Controller from '../input/controller';
-import { Music, SoundEffect } from '../sound';
+import Dungeon from '../scene/dungeon';
 import { emitter, Loader, RESOURCE_EVENTS } from '../system';
-import Dungeon from '../tilemap/dungeon';
 import { updateEntitiesLightings } from '../utils';
 
 export interface PIXIAppOption {
@@ -34,11 +33,7 @@ PIXI.Application.registerPlugin(PixiStatsPlugin);
 
 const MAX_DUNGEON_SIZE = 75;
 
-const { DEBUG, PIXEL_SCALE_NORMAL, PIXEL_SCALE_RETINA } = GAME_OPTIONS;
-const PIXEL_SCALE =
-  window.devicePixelRatio >= 2
-    ? PIXEL_SCALE_RETINA * window.devicePixelRatio
-    : PIXEL_SCALE_NORMAL * window.devicePixelRatio;
+const { DEBUG, PIXEL_SCALE } = GAME_OPTIONS;
 
 const defaultGameOptions: PIXIAppOption = {
   width: (window.innerWidth / PIXEL_SCALE) * window.devicePixelRatio,
@@ -199,19 +194,19 @@ export default class Game extends PIXI.Application {
   }
 
   private gameLoop() {
-    Music.play('main');
-    SoundEffect.play('cave_airflow', 0.02, true);
     const dungeon = new Dungeon(MAX_DUNGEON_SIZE, MAX_DUNGEON_SIZE, this._viewport);
+    const player = new Player(PLAYER_TYPES.KNIGHT_M, dungeon.entities, this._viewport);
+    this._player = player;
 
-    this._player = new Player(PLAYER_TYPES.KNIGHT_M, dungeon.entities, this._viewport);
+    // player.geometryPosition = dungeon.getRespawnPosition();
+    player.entities = dungeon.entities;
 
-    this._player.geometryPosition = dungeon.getRespawnPosition();
-    this._player.entities = dungeon.entities;
-    updateEntitiesLightings(this._player.geometryPosition, this._player.entities);
+    dungeon.addCharacter(player);
+    updateEntitiesLightings(player.geometryPosition, player.entities);
 
     dungeon.draw();
+    player.act();
 
-    this._player.act();
     this._viewport.follow(this._player);
 
     this.cullViewport();

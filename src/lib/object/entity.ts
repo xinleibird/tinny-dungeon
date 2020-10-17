@@ -1,6 +1,7 @@
 import * as PIXI from 'pixi.js';
+import { Character } from '../character';
 import { TILE_OPTIONS } from '../config';
-import { IPosition, Vector2 } from '../geometry';
+import { Vector2 } from '../geometry';
 import {
   Ability,
   ABILITY_NAMES,
@@ -31,13 +32,14 @@ export default class Entity {
   private _direction: Vector2;
   private _geometryPosition: Vector2;
   private _abilities: Ability[] = [];
+  private _character: Character;
 
   private _floorLayer: PIXI.Sprite[] = [];
   private _decoratorLayer: PIXI.Sprite[] = [];
   private _lightingLayer: PIXI.Sprite[] = [];
 
   public constructor(
-    geometryPosition: Vector2 | IPosition,
+    geometryPosition: Vector2,
     entityType: ENTITY_TYPES,
     direction = Vector2.right
   ) {
@@ -51,6 +53,18 @@ export default class Entity {
     this._direction = direction;
 
     this.initialize(entityType);
+  }
+
+  public get character() {
+    return this._character;
+  }
+
+  public set character(character: Character) {
+    this._character = character;
+  }
+
+  public removeCharacter() {
+    this._character = null;
   }
 
   public get floorLayer() {
@@ -111,6 +125,14 @@ export default class Entity {
   }
 
   public hasAbility(name: ABILITY_NAMES) {
+    if (this._character) {
+      for (const ability of this._character?.abilities) {
+        if (ability.name === name) {
+          return true;
+        }
+      }
+    }
+
     for (const ability of this._abilities) {
       if (ability.name === name) {
         return true;
@@ -120,6 +142,14 @@ export default class Entity {
   }
 
   public getAbility(name: ABILITY_NAMES) {
+    if (this._character) {
+      for (const ability of this._character?.abilities) {
+        if (ability.name === name) {
+          return ability;
+        }
+      }
+    }
+
     for (const ability of this._abilities) {
       if (ability.name === name) {
         return ability;

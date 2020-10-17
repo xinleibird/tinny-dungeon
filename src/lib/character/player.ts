@@ -14,12 +14,10 @@ import Entity from '../object/entity';
 import { SoundEffect } from '../sound';
 import Character, { PLAYER_TYPES } from './character';
 
-const ticker = PIXI.Ticker.shared;
-
 export default class Player extends Character {
   private _someKeysDown = false;
   private _lastUpTimeStamp = 0;
-  private _holdDelay = 300;
+  private _holdDelay = 150;
 
   public constructor(type: PLAYER_TYPES, entities: Entity[][], viewport?: Viewport) {
     super(type, entities, viewport);
@@ -41,10 +39,11 @@ export default class Player extends Character {
 
   private registSounds() {
     this._stepSound = SoundEffect.get('player_step');
+    this._attackSound = SoundEffect.get('player_attack');
   }
 
   private handleKeyFree() {
-    ticker.add(() => {
+    PIXI.Ticker.shared.add(() => {
       if (!this._someKeysDown && Date.now() > this._lastUpTimeStamp + this._holdDelay) {
         this.hold();
       }
@@ -52,7 +51,7 @@ export default class Player extends Character {
   }
 
   private handleKeyDown() {
-    event.on(KEY_EVENTS.KEY_DOWN, (key: KEY_NAMES) => {
+    event.on(KEY_EVENTS.KEY_DOWN, (key: KEY_NAMES, timeStamp: number) => {
       switch (KEY_NAMES[key]) {
         case KEYBOARD_CONTROLLED_KEYS[CONTROL_ACTIONS.WALK_LEFT]: {
           this.direction = Vector2.left;
@@ -100,6 +99,12 @@ export default class Player extends Character {
           break;
         }
 
+        case KEYBOARD_CONTROLLED_KEYS[CONTROL_ACTIONS.ATTACK]: {
+          this.attack(this._direction);
+          this._someKeysDown = true;
+          break;
+        }
+
         default:
           break;
       }
@@ -107,35 +112,41 @@ export default class Player extends Character {
   }
 
   private handleKeyUp() {
-    event.on(KEY_EVENTS.KEY_UP, (key: KEY_NAMES) => {
+    event.on(KEY_EVENTS.KEY_UP, (key: KEY_NAMES, timeStamp: number) => {
       switch (KEY_NAMES[key]) {
         case KEYBOARD_CONTROLLED_KEYS[CONTROL_ACTIONS.WALK_LEFT]: {
           this._someKeysDown = false;
-          this._lastUpTimeStamp = Date.now();
+          this._lastUpTimeStamp = timeStamp;
           break;
         }
 
         case KEYBOARD_CONTROLLED_KEYS[CONTROL_ACTIONS.WALK_RIGHT]: {
           this._someKeysDown = false;
-          this._lastUpTimeStamp = Date.now();
+          this._lastUpTimeStamp = timeStamp;
           break;
         }
 
         case KEYBOARD_CONTROLLED_KEYS[CONTROL_ACTIONS.WALK_UP]: {
           this._someKeysDown = false;
-          this._lastUpTimeStamp = Date.now();
+          this._lastUpTimeStamp = timeStamp;
           break;
         }
 
         case KEYBOARD_CONTROLLED_KEYS[CONTROL_ACTIONS.WALK_DOWN]: {
           this._someKeysDown = false;
-          this._lastUpTimeStamp = Date.now();
+          this._lastUpTimeStamp = timeStamp;
           break;
         }
 
         case KEYBOARD_CONTROLLED_KEYS[CONTROL_ACTIONS.SHOW_EXTERNAL]: {
           this._someKeysDown = false;
-          this._lastUpTimeStamp = Date.now();
+          this._lastUpTimeStamp = timeStamp;
+          break;
+        }
+
+        case KEYBOARD_CONTROLLED_KEYS[CONTROL_ACTIONS.ATTACK]: {
+          this._someKeysDown = false;
+          this._lastUpTimeStamp = timeStamp;
           break;
         }
 

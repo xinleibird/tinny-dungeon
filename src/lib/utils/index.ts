@@ -1,7 +1,4 @@
 export { initialize2DArray } from './array';
-export {
-  generateDungeon,
-  updateEntitiesDislightings,
-  updateEntitiesLightings,
-} from './dungeon';
-export { generateAutotile } from './tile';
+export { generateAutoTile } from './autotile';
+export { generateDungeonMapToAutoTile } from './dungeon';
+export { updateEntitiesDislightings, updateEntitiesLightings } from './entity';

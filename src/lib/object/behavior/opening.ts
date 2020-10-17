@@ -1,14 +1,15 @@
-import { Character } from '../character';
-import { Vector2 } from '../geometry';
-import { ABILITY_NAMES, ABILITY_STATUS } from '../object/ability';
-import Entity from '../object/entity';
-import { SoundEffect } from '../sound';
-import { updateEntitiesLightings } from '../utils';
-import Behavior from './behavior';
+import { Character } from '../../character';
+import { Vector2 } from '../../geometry';
+import { SoundEffect } from '../../sound';
+import { updateEntitiesLightings } from '../../utils';
+import { ABILITY_NAMES, ABILITY_STATUS } from '../ability';
+import Entity from '../entity';
+import Behavior, { BEHAVIOR_NAMES } from './behavior';
 
 export default class Open extends Behavior {
   public constructor(entities: Entity[][], character: Character) {
-    super('Open', entities, character);
+    super(entities, character);
+    this._name = BEHAVIOR_NAMES.OPENING;
   }
 
   public do(direction: Vector2) {

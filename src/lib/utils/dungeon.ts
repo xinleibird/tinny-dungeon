@@ -1,8 +1,7 @@
 import * as ROT from 'rot-js';
-import { IPosition, Vector2 } from '../geometry';
-import { ABILITY_NAMES, ABILITY_STATUS, Lightable } from '../object/ability';
+import { Vector2 } from '../geometry';
 import { DecoratorTypesWeight } from '../object/ability/decorateable';
-import Entity, { ENTITY_TYPES } from '../object/entity';
+import { ENTITY_TYPES } from '../object/entity';
 import { TILE_TYPES } from '../tilemap/tile';
 import { initialize2DArray } from './array';
 
@@ -96,7 +95,7 @@ const normalize = (top: number, bottom: number, left: number, right: number) => 
 };
 
 // eslint-disable-next-line complexity
-export const generateDungeon = (dungeonW: number, dungeonH: number) => {
+export const generateDungeonMapToAutoTile = (dungeonW: number, dungeonH: number) => {
   const tilesW = ~~(dungeonW / 2) + 1;
   const tilesH = ~~(dungeonH / 2) + 1;
 
@@ -195,50 +194,4 @@ export const generateDungeon = (dungeonW: number, dungeonH: number) => {
   fillFloorsMap(floorsMap, cy, cy, cx, cx, ENTITY_TYPES.DOWNSTAIR);
 
   return { tilesMap, floorsMap, decoratorsMap };
-};
-
-export const updateEntitiesLightings = (
-  geometryPosition: IPosition | Vector2,
-  entities: Entity[][]
-) => {
-  const fov = new ROT.FOV.RecursiveShadowcasting((x, y) => {
-    const entity = entities?.[y]?.[x];
-    if (
-      entity?.hasAbility(ABILITY_NAMES.LIGHTABLE) &&
-      entity?.hasAbility(ABILITY_NAMES.PASSABLE)
-    ) {
-      const passable = entity.getAbility(ABILITY_NAMES.PASSABLE);
-      if (passable.status === ABILITY_STATUS.PASS) {
-        return true;
-      }
-    }
-    return false;
-  });
-
-  const { x, y } = geometryPosition;
-  fov.compute(x, y, 6, (ex, ey, r) => {
-    const entity = entities?.[ey]?.[ex];
-
-    if (entity?.hasAbility(ABILITY_NAMES.LIGHTABLE)) {
-      const lightable = entity.getAbility(ABILITY_NAMES.LIGHTABLE) as Lightable;
-      lightable.status = ABILITY_STATUS.LIGHTING;
-      lightable.lightingLevel = r;
-    }
-  });
-};
-
-export const updateEntitiesDislightings = (
-  geometryPosition: IPosition | Vector2,
-  entities: Entity[][]
-) => {
-  for (const row of entities) {
-    for (const entity of row) {
-      if (entity?.hasAbility(ABILITY_NAMES.LIGHTABLE)) {
-        const lightable = entity.getAbility(ABILITY_NAMES.LIGHTABLE);
-        if (lightable.status === ABILITY_STATUS.LIGHTING) {
-          lightable.status = ABILITY_STATUS.DISLIGHTING;
-        }
-      }
-    }
-  }
 };

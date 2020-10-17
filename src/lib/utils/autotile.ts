@@ -1,3 +1,7 @@
+/**
+ * Algorithm from https://gamedevelopment.tutsplus.com/tutorials/how-to-use-tile-bitmasking-to-auto-tile-your-level-layouts--cms-25673
+ */
+
 const NW = 0b00000001;
 const NN = 0b00000010;
 const NE = 0b00000100;
@@ -57,76 +61,59 @@ const BITMASK = {
   0: 47,
 };
 
-// eslint-disable-next-line complexity
-const lookAround = (
-  map: number[][],
-  x_boundary: number,
-  y_boundary: number,
-  x: number,
-  y: number
-) => {
-  let sum = 0;
-  let n = false;
-  let e = false;
-  let s = false;
-  let w = false;
+export const generateAutoTile = (map: number[][]) => {
+  const tiles: number[][] = [];
+  const height = map.length;
+  const width = map[0].length;
+
+  for (let y = 0; y < height; y++) {
+    tiles[y] = [];
+    for (let x = 0; x < width; x++) {
+      tiles[y][x] = lookAround(map, x, y);
+    }
+  }
+
+  return tiles;
+};
+
+const lookAround = (map: number[][], x: number, y: number) => {
+  let currentDir = 0b00000000;
 
   if (!map[y][x]) {
     return 0;
   }
 
-  if (y > 0 && map[y - 1][x]) {
-    n = true;
-    sum |= NN;
+  if (map[y - 1][x]) {
+    currentDir |= NN;
   }
 
-  if (x > 0 && map[y][x - 1]) {
-    w = true;
-    sum |= WW;
+  if (map[y][x - 1]) {
+    currentDir |= WW;
   }
 
-  if (x < x_boundary && map[y][x + 1]) {
-    e = true;
-    sum |= EE;
+  if (map[y][x + 1]) {
+    currentDir |= EE;
   }
 
-  if (y < y_boundary && map[y + 1][x]) {
-    s = true;
-    sum |= SS;
+  if (map[y + 1][x]) {
+    currentDir |= SS;
   }
 
-  if (n && w && y > 0 && x > 0 && map[y - 1][x - 1]) {
-    sum |= NW;
+  if (currentDir & NN && currentDir & WW && map[y - 1][x - 1]) {
+    currentDir |= NW;
   }
 
-  if (n && e && y > 0 && x < x_boundary && map[y - 1][x + 1]) {
-    sum |= NE;
+  if (currentDir & NN && currentDir & EE && map[y - 1][x + 1]) {
+    currentDir |= NE;
   }
 
-  if (s && w && y < y_boundary && x > 0 && map[y + 1][x - 1]) {
-    sum |= SW;
+  if (currentDir & SS && currentDir & WW && map[y + 1][x - 1]) {
+    currentDir |= SW;
   }
 
-  if (s && e && x < x_boundary && y < y_boundary && map[y + 1][x + 1]) {
-    sum |= SE;
+  if (currentDir & SS && currentDir & EE && map[y + 1][x + 1]) {
+    currentDir |= SE;
   }
 
-  return BITMASK[sum];
-};
-
-export const generateAutotile = (map: number[][]) => {
-  const tiles: number[][] = [];
-  const height = map.length;
-  const width = map[0].length;
-  const x_boundary = width - 1;
-  const y_boundary = height - 1;
-
-  for (let y = 0; y < height; y++) {
-    tiles[y] = [];
-    for (let x = 0; x < width; x++) {
-      tiles[y][x] = lookAround(map, x_boundary, y_boundary, x, y);
-    }
-  }
-
-  return tiles;
+  return BITMASK[currentDir];
 };

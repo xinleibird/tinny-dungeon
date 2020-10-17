@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
 import { Vector2 } from '../../geometry';
 import { Loader } from '../../system';
-import External from './external';
+import External, { EXTERNAL_NAMES } from './external';
 
 export default class DirectionIndicator extends External {
   protected _sprite: PIXI.AnimatedSprite;
@@ -9,7 +9,7 @@ export default class DirectionIndicator extends External {
 
   public constructor(direction: Vector2 = Vector2.down) {
     super();
-    this._name = 'DirectionIndicator';
+    this._name = EXTERNAL_NAMES.DIRECTION_INDICATOR;
     this.initialize(direction);
   }
 

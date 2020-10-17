@@ -4083,14 +4083,6 @@ pixi-cull@^1.0.0:
   resolved "https://registry.yarnpkg.com/pixi-cull/-/pixi-cull-1.0.0.tgz#caa76fb3ce2544ba9aa24cd8a8f768a692d2522a"
   integrity sha512-K0b0cI/Hd+yAbFRe0qrYr/XLUwYzFidNNCkFv/MH+SZt7rwJlKnO4xgID6tR7GvE/LyKDPn1Hfgaoer3NAc4/w==
 
-pixi-ease@^3.0.6:
-  version "3.0.6"
-  resolved "https://registry.yarnpkg.com/pixi-ease/-/pixi-ease-3.0.6.tgz#5746c11e7e436d07f0f28ed0dff5d940d88a1642"
-  integrity sha512-IP22mj53Pr9/TKNKUOEFtSpb2zBS8IN+nmDlzORAA4jidsmUTCMT/cwqS75OgqX5+E9teSTVpAhQUJy0ikXV6Q==
-  dependencies:
-    eventemitter3 "^4.0.0"
-    penner "^0.1.3"
-
 pixi-sound@^3.0.5:
   version "3.0.5"
   resolved "https://registry.yarnpkg.com/pixi-sound/-/pixi-sound-3.0.5.tgz#b9edc12ee543ac3470c763484e1d1f7c4e842e2b"
