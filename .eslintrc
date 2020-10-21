@@ -1,6 +1,7 @@
 {
   "extends": ["alloy", "alloy/typescript"],
   "rules": {
-    "max-params": 0
+    "max-params": 0,
+    "@typescript-eslint/class-literal-property-style": 0
   }
 }

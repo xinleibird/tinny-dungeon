@@ -3,7 +3,6 @@ import { PixiPlugin } from 'gsap/PixiPlugin';
 import * as PIXI from 'pixi.js';
 import { Character, Player } from '../../character';
 import { SPRITE_OPTIONS } from '../../config';
-import StaticSystem from '../../core/static';
 import { Vector2 } from '../../geometry';
 import { updateEntitiesDislightings, updateEntitiesLightings } from '../../utils';
 import { ABILITY_NAMES, ABILITY_STATUS } from '../ability';
@@ -14,7 +13,7 @@ PixiPlugin.registerPIXI(PIXI);
 
 const { SPRITE_OFFSET_X, SPRITE_OFFSET_Y } = SPRITE_OPTIONS;
 
-export default class Movement extends Behavior {
+export default class Tracing extends Behavior {
   public constructor(character: Character) {
     super(character);
     this._name = BEHAVIOR_NAMES.MOVEMENT;
@@ -32,12 +31,7 @@ export default class Movement extends Behavior {
 
     const { x: tarX, y: tarY } = geometryPosition;
 
-    const characterGroup = StaticSystem.characterGroup;
-
-    characterGroup.setCharacter(tarX, tarY, this._character);
-    characterGroup.setCharacter(x, y, null);
-
-    gsap.to(this._character.rendering, {
+    gsap.to(this._character, {
       duration: 0.15,
       pixi: { x: tarX * 16 + SPRITE_OFFSET_X, y: tarY * 16 + SPRITE_OFFSET_Y },
     });
@@ -55,7 +49,7 @@ export default class Movement extends Behavior {
     const tarPosition = Vector2.merge(this._character.geometryPosition, direction);
     const { x, y } = tarPosition;
 
-    const tarEntity = StaticSystem.entityGroup.getEntity(x, y);
+    const tarEntity = null;
 
     if (tarEntity.hasAbility(ABILITY_NAMES.PASSABLE)) {
       const passable = tarEntity.getAbility(ABILITY_NAMES.PASSABLE);

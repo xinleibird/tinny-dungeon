@@ -1,4 +1,6 @@
-import * as PIXI from 'pixi.js';
+import { Renderable } from '../../abstraction';
+import { TILE_OPTIONS } from '../../config';
+import { Vector2 } from '../../geometry';
 export enum ABILITY_NAMES {
   ABSTRACT_ABILITY = 'AbstractAbility',
   OPENABLE = 'Openable',
@@ -7,6 +9,7 @@ export enum ABILITY_NAMES {
   CLEARABLE = 'Clearable',
   DECORATEABLE = 'Decorateable',
   LIGHTABLE = 'Lightable',
+  HURTABLE = 'Hurtable',
 }
 
 export enum ABILITY_STATUS {
@@ -17,20 +20,37 @@ export enum ABILITY_STATUS {
   LIGHTING = 'lighting',
   DISLIGHTING = 'dislighting',
   UNVISIT = 'unvisit',
+  CANHURT = 'canhurt',
+  NOHURT = 'nohurt',
 }
-export default class Ability {
+
+const { TILE_SIZE, TILE_OFFSET_X, TILE_OFFSET_Y } = TILE_OPTIONS;
+export default abstract class Ability extends Renderable {
   protected _name: ABILITY_NAMES;
   protected _status: ABILITY_STATUS;
+  protected _geometryPosition: Vector2;
 
-  protected _sprite: PIXI.Sprite;
-
-  protected constructor() {
+  protected constructor(geometryPosition: Vector2) {
+    super();
     this._name = ABILITY_NAMES.ABSTRACT_ABILITY;
+    this._geometryPosition = geometryPosition;
+    const { x, y } = geometryPosition;
+    this._rendering?.position?.set(
+      x * TILE_SIZE + TILE_OFFSET_X,
+      y * TILE_SIZE + TILE_OFFSET_Y
+    );
   }
 
-  public get sprite() {
-    return this._sprite;
+  public get geometryPosition() {
+    return this._geometryPosition;
   }
+
+  public set geometryPosition(geometryPosition: Vector2) {
+    const { x, y } = geometryPosition;
+    this._rendering.position.set(x * TILE_SIZE + TILE_OFFSET_X, y * TILE_SIZE + TILE_OFFSET_Y);
+  }
+
+  public exert(direction: Vector2) {}
 
   public get name() {
     return this._name;

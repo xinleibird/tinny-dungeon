@@ -1,39 +1,39 @@
 import * as PIXI from 'pixi.js';
+import StaticSystem from '../../core/static';
+import { Vector2 } from '../../geometry';
 import { Loader } from '../../system';
-import Entity from '../entity';
 import Ability, { ABILITY_NAMES, ABILITY_STATUS } from './ability';
 
-export enum LIGHT_TYPES {
-  UNVISIT,
-  LIGHTING,
-  DISLIGHTING,
-}
-
+type LightableStatus =
+  | ABILITY_STATUS.LIGHTING
+  | ABILITY_STATUS.DISLIGHTING
+  | ABILITY_STATUS.UNVISIT;
 export default class Lightable extends Ability {
-  protected _status:
-    | ABILITY_STATUS.LIGHTING
-    | ABILITY_STATUS.DISLIGHTING
-    | ABILITY_STATUS.UNVISIT;
-
-  private _entity: Entity;
+  protected _rendering: PIXI.Sprite;
+  protected _status: LightableStatus;
 
   private _lightingLevel: number;
 
   public constructor(
-    initStatus:
-      | ABILITY_STATUS.LIGHTING
-      | ABILITY_STATUS.DISLIGHTING
-      | ABILITY_STATUS.UNVISIT = ABILITY_STATUS.UNVISIT
+    geometryPosition: Vector2,
+    initStatus: LightableStatus = ABILITY_STATUS.UNVISIT
   ) {
-    super();
+    super(geometryPosition);
     this._name = ABILITY_NAMES.LIGHTABLE;
 
     const texture = Loader.textures.LIGHTING_MASK[0];
     const sprite = new PIXI.Sprite(texture);
-    this._sprite = sprite;
+    this._rendering = sprite;
+    this.geometryPosition = geometryPosition;
 
     this._status = initStatus;
     this.initialize(initStatus);
+
+    StaticSystem.renderer.add(this);
+  }
+
+  public get rendering() {
+    return this._rendering;
   }
 
   public get lightingLevel() {
@@ -45,22 +45,23 @@ export default class Lightable extends Ability {
       case 0:
         break;
       case 1:
-        this._sprite.alpha = 0;
+        this._rendering.alpha = 0;
+
         break;
       case 2:
-        this._sprite.alpha = 0.05;
+        this._rendering.alpha = 0.05;
         break;
       case 3:
-        this._sprite.alpha = 0.1;
+        this._rendering.alpha = 0.1;
         break;
       case 4:
-        this._sprite.alpha = 0.18;
+        this._rendering.alpha = 0.18;
         break;
       case 5:
-        this._sprite.alpha = 0.3;
+        this._rendering.alpha = 0.3;
         break;
       case 6:
-        this._sprite.alpha = 0.46;
+        this._rendering.alpha = 0.46;
         break;
 
       default:
@@ -68,25 +69,21 @@ export default class Lightable extends Ability {
     }
   }
 
-  private initialize(
-    initStatus: ABILITY_STATUS.LIGHTING | ABILITY_STATUS.DISLIGHTING | ABILITY_STATUS.UNVISIT
-  ) {
+  private initialize(initStatus: LightableStatus) {
     this.switchStatus(initStatus);
   }
 
-  private switchStatus(
-    status: ABILITY_STATUS.LIGHTING | ABILITY_STATUS.DISLIGHTING | ABILITY_STATUS.UNVISIT
-  ) {
+  private switchStatus(status: LightableStatus) {
     switch (status) {
       case ABILITY_STATUS.LIGHTING:
-        this._sprite.alpha = 0;
+        this._rendering.alpha = 0;
         break;
 
       case ABILITY_STATUS.DISLIGHTING:
-        this._sprite.alpha = 0.8;
+        this._rendering.alpha = 0.8;
         break;
       case ABILITY_STATUS.UNVISIT:
-        this._sprite.alpha = 1;
+        this._rendering.alpha = 1;
         break;
 
       default:
@@ -98,9 +95,7 @@ export default class Lightable extends Ability {
     return this._status;
   }
 
-  public set status(
-    status: ABILITY_STATUS.LIGHTING | ABILITY_STATUS.DISLIGHTING | ABILITY_STATUS.UNVISIT
-  ) {
+  public set status(status: LightableStatus) {
     this.switchStatus(status);
     this._status = status;
   }

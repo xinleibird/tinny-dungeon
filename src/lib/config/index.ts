@@ -23,6 +23,7 @@ const PIXEL_SCALE = {
 
 export const GAME_OPTIONS = {
   DEBUG: true,
+  MAX_DUNGEON_SIZE: 75,
   PIXEL_SCALE:
     window.devicePixelRatio >= 2
       ? PIXEL_SCALE.PIXEL_SCALE_RETINA * window.devicePixelRatio

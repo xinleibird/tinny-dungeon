@@ -1,13 +1,15 @@
 import { DropShadowFilter } from '@pixi/filter-drop-shadow';
-import { Viewport } from 'pixi-viewport';
 import * as PIXI from 'pixi.js';
+import { Renderable } from '../abstraction';
 import { SPRITE_OPTIONS } from '../config';
+import StaticSystem from '../core/static';
 import { Vector2 } from '../geometry';
-import { Ability, ABILITY_STATUS, Passable } from '../object/ability';
+import { Ability, ABILITY_STATUS, Hurtable, Passable } from '../object/ability';
 import { Behavior, Movement, Opening } from '../object/behavior';
-import Entity from '../object/entity';
+import Attacking from '../object/behavior/attacking';
 import { DirectionIndicator, External } from '../object/external';
 import { Loader } from '../system';
+import TurnBase from './turnbase';
 
 const { SPRITE_OFFSET_X, SPRITE_OFFSET_Y } = SPRITE_OPTIONS;
 
@@ -31,56 +33,62 @@ export enum CHARACTER_ANIMATIONS {
   HURT = 'hurt',
 }
 
-export default class Character extends PIXI.Container {
+export default abstract class Character extends Renderable {
   protected _type: PLAYER_TYPES | NONPLAYER_TYPES;
-  protected _entities: Entity[][];
+  protected _direction: Vector2 = Vector2.down;
+  protected _rendering: PIXI.Container;
+  protected _geometryPosition: Vector2;
+
   protected _stepSound: PIXI.sound.Sound;
   protected _attackSound: PIXI.sound.Sound;
-  protected _externals: External[] = [];
-  protected _direction: Vector2 = Vector2.down;
 
-  private _geometryPosition: Vector2;
-  private _viewport: Viewport;
+  protected _externals: External[] = [];
+  protected _internals: External[] = [];
 
   private _behaviors: Behavior[] = [];
   private _abilities: Ability[] = [];
 
-  protected constructor(
-    type: PLAYER_TYPES | NONPLAYER_TYPES,
-    entities: Entity[][],
-    viewport: Viewport
-  ) {
+  private _turnBase: TurnBase;
+
+  protected constructor(type: PLAYER_TYPES | NONPLAYER_TYPES) {
     super();
     this._type = type;
-    this._entities = entities;
-    this._viewport = viewport;
+    this._rendering = new PIXI.Container();
 
     this._geometryPosition = new Vector2();
+    this._turnBase = TurnBase.regist(this);
 
     this.initialize(type);
     this.registBehaviors();
     this.registAbilities();
+    this.registShadowFilter();
+
+    StaticSystem.renderer.add(this);
   }
 
-  public act() {
-    this._viewport.addChild(this);
+  public get rendering() {
+    return this._rendering;
+  }
+
+  public get type() {
+    return this._type;
+  }
+
+  public get stepSound() {
+    return this._stepSound;
+  }
+
+  public get attackSound() {
+    return this._attackSound;
   }
 
   public get abilities() {
     return this._abilities;
   }
 
-  public get viewport() {
-    return this._viewport;
-  }
-
-  public set viewport(viewport: Viewport) {
-    this._viewport = viewport;
-  }
-
-  public addExternal(enternal: External) {
-    this._externals.push(enternal);
-    this.addChild(enternal.sprite);
+  public addExternal(external: External) {
+    this._externals.push(external);
+    this._rendering.addChild(external.sprite);
   }
 
   public showExternal(externalName?: string) {
@@ -131,23 +139,17 @@ export default class Character extends PIXI.Container {
   public set geometryPosition(position: Vector2) {
     this._geometryPosition = position;
     const { x, y } = position;
-    this.position.set(x * 16 + SPRITE_OFFSET_X, y * 16 + SPRITE_OFFSET_Y);
+    this._rendering.position.set(x * 16 + SPRITE_OFFSET_X, y * 16 + SPRITE_OFFSET_Y);
+
+    this.updateLighting();
   }
 
   public get geometryPosition() {
     return this._geometryPosition;
   }
 
-  public get entities() {
-    return this._entities;
-  }
-
-  public set entities(entities: Entity[][]) {
-    this._entities = entities;
-  }
-
-  protected hold() {
-    const [hold, walk, attack, hurt] = this.children as PIXI.AnimatedSprite[];
+  public hold() {
+    const [hold, walk, attack, hurt] = this._rendering.children as PIXI.AnimatedSprite[];
     hold.visible = true;
     walk.visible = false;
     attack.visible = false;
@@ -158,32 +160,28 @@ export default class Character extends PIXI.Container {
     this.hideExternal();
   }
 
-  protected walk(direction: Vector2) {
-    const [hold, walk, attack, hurt] = this.children as PIXI.AnimatedSprite[];
+  public walk(direction: Vector2) {
+    const [hold, walk, attack, hurt] = this._rendering.children as PIXI.AnimatedSprite[];
     hold.visible = false;
     walk.visible = true;
     attack.visible = false;
     hurt.visible = false;
 
     walk.play();
-    this._stepSound.play();
-
-    this.rollBehaviors(direction);
   }
 
-  protected attack(direction: Vector2) {
-    const [hold, walk, attack, hurt] = this.children as PIXI.AnimatedSprite[];
+  public attack(direction: Vector2) {
+    const [hold, walk, attack, hurt] = this._rendering.children as PIXI.AnimatedSprite[];
     hold.visible = false;
     walk.visible = false;
     attack.visible = true;
     hurt.visible = false;
 
     attack.gotoAndPlay(0);
-    this._attackSound.play();
   }
 
-  protected hurt() {
-    const [hold, walk, attack, hurt] = this.children as PIXI.AnimatedSprite[];
+  public hurt() {
+    const [hold, walk, attack, hurt] = this._rendering.children as PIXI.AnimatedSprite[];
     hold.visible = false;
     walk.visible = false;
     attack.visible = false;
@@ -192,22 +190,10 @@ export default class Character extends PIXI.Container {
     hurt.play();
   }
 
-  protected hide() {
-    this._viewport.removeChild(this);
-  }
-
-  protected show() {
-    this._viewport.addChild(this);
-  }
-
-  protected get Entities() {
-    return this.Entities;
-  }
-
-  protected changeSpriteDirection(direction: Vector2) {
+  public changeSpriteDirection(direction: Vector2) {
     if (direction.equals(Vector2.left)) {
-      this.scale.x = -1;
-      const [hold, walk, attack, hurt] = this.children as PIXI.AnimatedSprite[];
+      this._rendering.scale.x = -1;
+      const [hold, walk, attack, hurt] = this._rendering.children as PIXI.AnimatedSprite[];
 
       hold.anchor.set(0.5625, 0.5);
       walk.anchor.set(0.5625, 0.5);
@@ -216,14 +202,31 @@ export default class Character extends PIXI.Container {
     }
 
     if (direction.equals(Vector2.right)) {
-      this.scale.x = 1;
-      const [hold, walk, attack, hurt] = this.children as PIXI.AnimatedSprite[];
+      this._rendering.scale.x = 1;
+      const [hold, walk, attack, hurt] = this._rendering.children as PIXI.AnimatedSprite[];
 
       hold.anchor.set(0.5, 0.5);
       walk.anchor.set(0.5, 0.5);
       attack.anchor.set(0.5, 0.5);
       hurt.anchor.set(0.5, 0.5);
     }
+  }
+
+  public rollBehaviors(direction: Vector2) {
+    for (const behavior of this._behaviors) {
+      if (behavior.canDo(direction)) {
+        behavior.do(direction);
+        break;
+      }
+    }
+  }
+
+  protected hide() {
+    this._rendering.visible = false;
+  }
+
+  protected show() {
+    this._rendering.visible = true;
   }
 
   private initialize(type: PLAYER_TYPES | NONPLAYER_TYPES) {
@@ -264,43 +267,40 @@ export default class Character extends PIXI.Container {
     hold.play();
 
     // prepare character's animations
-    this.addChild(hold, walk, attack, hurt);
+    this._rendering.addChild(hold, walk, attack, hurt);
     const { x, y } = this._geometryPosition;
-    this.position.set(x * 16 + SPRITE_OFFSET_X, y * 16 + SPRITE_OFFSET_Y);
+    this._rendering.position.set(x * 16 + SPRITE_OFFSET_X, y * 16 + SPRITE_OFFSET_Y);
 
     // external composition
     const directionIndicator = new DirectionIndicator();
     directionIndicator.direction = this.direction;
     this._externals.push(directionIndicator);
-    this.addChild(directionIndicator.sprite);
+    this._rendering.addChild(directionIndicator.sprite);
+  }
 
-    // character's drop shadow
-    this.filters = [
+  private registShadowFilter() {
+    this._rendering.filters = [
       new DropShadowFilter({
         blur: 0,
         distance: 5,
+        alpha: 0.6,
         rotation: -90,
       }),
     ];
   }
 
   private registBehaviors() {
-    const movement = new Movement(this._entities, this);
-    const opening = new Opening(this._entities, this);
-    this._behaviors.push(opening, movement);
+    const movement = new Movement(this);
+    const opening = new Opening(this);
+    const attacting = new Attacking(this);
+    this._behaviors.push(attacting, opening, movement);
   }
 
   private registAbilities() {
-    const passable = new Passable(ABILITY_STATUS.STOP);
-    this._abilities.push(passable);
+    const passable = new Passable(this.geometryPosition, ABILITY_STATUS.STOP);
+    const hurtable = new Hurtable(this.geometryPosition);
+    this._abilities.push(passable, hurtable);
   }
 
-  private rollBehaviors(direction: Vector2) {
-    for (const behavior of this._behaviors) {
-      if (behavior.canDo(direction)) {
-        behavior.do(direction);
-        break;
-      }
-    }
-  }
+  protected abstract updateLighting(): void;
 }

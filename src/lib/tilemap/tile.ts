@@ -1,4 +1,5 @@
 import * as PIXI from 'pixi.js';
+import { Renderable } from '../abstraction';
 import { Vector2 } from '../geometry';
 import { Loader } from '../system';
 
@@ -9,11 +10,13 @@ export enum TILE_TYPES {
   DOOR,
 }
 
-export default class Tile {
-  private _sprite: PIXI.Sprite;
+export default class Tile extends Renderable {
+  protected _rendering: PIXI.Sprite;
+
   private _tilePosition: Vector2 = new Vector2(0, 0);
 
   public constructor(tilePosition: Vector2, tileIndex: number, tileSize = 32) {
+    super();
     if (tilePosition instanceof Vector2) {
       this._tilePosition = tilePosition;
     } else {
@@ -22,11 +25,11 @@ export default class Tile {
     }
 
     if (tileIndex !== 0) {
-      const sprite = new PIXI.Sprite(Loader.tileset[tileIndex]);
       const { x, y } = this._tilePosition;
-      sprite.position.set(x * tileSize, y * tileSize);
 
-      this._sprite = sprite;
+      const sprite = new PIXI.Sprite(Loader.tileset[tileIndex]);
+      sprite.position.set(x * tileSize, y * tileSize);
+      this._rendering = sprite;
     }
   }
 
@@ -34,7 +37,7 @@ export default class Tile {
     return this._tilePosition;
   }
 
-  public get sprite() {
-    return this._sprite;
+  public get rendering() {
+    return this._rendering;
   }
 }

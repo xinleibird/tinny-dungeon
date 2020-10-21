@@ -21,7 +21,7 @@ const fillTilesMap = (
 };
 
 const fillFloorsMap = (
-  entities: ENTITY_TYPES[][],
+  entitiesMap: ENTITY_TYPES[][],
   top: number,
   bottom: number,
   left: number,
@@ -31,33 +31,33 @@ const fillFloorsMap = (
   if (entity === ENTITY_TYPES.CORRIDOR || entity === ENTITY_TYPES.DOOR) {
     for (let y = top; y <= bottom; y++) {
       for (let x = left; x <= right; x++) {
-        entities[y][x] = entity;
+        entitiesMap[y][x] = entity;
 
-        const ppy = entities?.[y - 2]?.[x];
+        const ppy = entitiesMap?.[y - 2]?.[x];
         if (ppy) {
-          entities[y - 1][x] = ENTITY_TYPES.CORRIDOR;
+          entitiesMap[y - 1][x] = ENTITY_TYPES.CORRIDOR;
         }
 
-        const nny = entities?.[y + 2]?.[x];
+        const nny = entitiesMap?.[y + 2]?.[x];
         if (nny) {
-          entities[y + 1][x] = ENTITY_TYPES.CORRIDOR;
+          entitiesMap[y + 1][x] = ENTITY_TYPES.CORRIDOR;
         }
 
-        const ppx = entities?.[y]?.[x - 2];
+        const ppx = entitiesMap?.[y]?.[x - 2];
         if (ppx) {
-          entities[y][x - 1] = ENTITY_TYPES.CORRIDOR;
+          entitiesMap[y][x - 1] = ENTITY_TYPES.CORRIDOR;
         }
 
-        const nnx = entities?.[y]?.[x + 2];
+        const nnx = entitiesMap?.[y]?.[x + 2];
         if (nnx) {
-          entities[y][x + 1] = ENTITY_TYPES.CORRIDOR;
+          entitiesMap[y][x + 1] = ENTITY_TYPES.CORRIDOR;
         }
       }
     }
   } else {
     for (let y = top; y <= bottom; y++) {
       for (let x = left; x <= right; x++) {
-        entities[y][x] = entity;
+        entitiesMap[y][x] = entity;
       }
     }
   }
@@ -94,7 +94,6 @@ const normalize = (top: number, bottom: number, left: number, right: number) => 
   return { top: swapY1, bottom: swapY2, left: swapX1, right: swapX2 };
 };
 
-// eslint-disable-next-line complexity
 export const generateDungeonMapToAutoTile = (dungeonW: number, dungeonH: number) => {
   const tilesW = ~~(dungeonW / 2) + 1;
   const tilesH = ~~(dungeonH / 2) + 1;

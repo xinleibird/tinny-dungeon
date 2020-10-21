@@ -1,12 +1,13 @@
-import { Viewport } from 'pixi-viewport';
-import Entity from '../object/entity';
+import { Scene } from '../scene';
 import Character, { NONPLAYER_TYPES } from './character';
 
 export default class NonPlayer extends Character {
-  public constructor(type: NONPLAYER_TYPES, entities: Entity[][], viewport: Viewport) {
-    super(type, entities, viewport);
+  public constructor(type: NONPLAYER_TYPES, scene?: Scene) {
+    super(type);
     this.hide();
   }
+
+  public updateLighting() {}
 
   public hide() {
     super.hide();

@@ -1,27 +1,32 @@
 import * as PIXI from 'pixi.js';
+import StaticSystem from '../../core/static';
 import { Vector2 } from '../../geometry';
 import { Loader } from '../../system';
 import Ability, { ABILITY_NAMES, ABILITY_STATUS } from './ability';
 
+type OpenableStatus = ABILITY_STATUS.CLOSE | ABILITY_STATUS.OPEN;
+
 export default class Openable extends Ability {
   protected _status: ABILITY_STATUS.CLOSE | ABILITY_STATUS.OPEN;
-  protected _sprite: PIXI.AnimatedSprite;
+  protected _rendering: PIXI.AnimatedSprite;
   public constructor(
-    initStatus: ABILITY_STATUS.CLOSE | ABILITY_STATUS.OPEN = ABILITY_STATUS.CLOSE,
+    geometryPosition: Vector2,
+    initStatus: OpenableStatus = ABILITY_STATUS.CLOSE,
     direction: Vector2
   ) {
-    super();
+    super(geometryPosition);
     this._name = ABILITY_NAMES.OPENABLE;
     this._status = initStatus;
 
-    this.initialize(initStatus, direction);
+    this.initialize(geometryPosition, initStatus, direction);
   }
 
   private initialize(
-    initStatus: ABILITY_STATUS.CLOSE | ABILITY_STATUS.OPEN,
+    geometryPosition: Vector2,
+    initStatus: OpenableStatus,
     direction: Vector2
   ) {
-    let sprite = null;
+    let sprite: PIXI.AnimatedSprite = null;
 
     if (direction.equals(Vector2.center)) {
       sprite = new PIXI.AnimatedSprite([Loader.textures.DOORS[4], Loader.textures.DOORS[5]]);
@@ -42,23 +47,30 @@ export default class Openable extends Ability {
       sprite.gotoAndStop(1);
     }
 
-    this._sprite = sprite;
+    this._rendering = sprite;
+    this.geometryPosition = geometryPosition;
+
+    StaticSystem.renderer.add(this);
   }
 
   public get status() {
     return this._status;
   }
 
-  public set status(status: ABILITY_STATUS.CLOSE | ABILITY_STATUS.OPEN) {
-    if (status === 'close') {
-      this._sprite.gotoAndStop(0);
+  public set status(status: OpenableStatus) {
+    if (status === ABILITY_STATUS.CLOSE) {
+      this._rendering.gotoAndStop(0);
     } else {
-      this._sprite.gotoAndStop(1);
+      this._rendering.gotoAndStop(1);
     }
     this._status = status;
   }
 
   public get sprite(): PIXI.AnimatedSprite {
-    return this._sprite;
+    return this._rendering;
+  }
+
+  public get rendering() {
+    return this._rendering;
   }
 }

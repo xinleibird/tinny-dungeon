@@ -1,15 +1,15 @@
 import { PixiStatsPlugin } from '@armathai/pixi-stats';
 import { OldFilmFilter } from '@pixi/filter-old-film';
-import Cull from 'pixi-cull';
-import { Viewport, ViewportOptions } from 'pixi-viewport';
 import * as PIXI from 'pixi.js';
-import { NonPlayer, NONPLAYER_TYPES, Player, PLAYER_TYPES } from '../character';
+import { Player, PLAYER_TYPES } from '../character';
 import { GAME_OPTIONS } from '../config';
-import { Vector2 } from '../geometry';
 import Controller from '../input/controller';
+import { Scene } from '../scene';
 import Dungeon from '../scene/dungeon';
+import { Music, SoundEffect } from '../sound';
 import { emitter, Loader, RESOURCE_EVENTS } from '../system';
-import { updateEntitiesLightings } from '../utils';
+import Camera from './camera';
+import Renderer from './renderer';
 
 export interface PIXIAppOption {
   autoStart?: boolean;
@@ -32,7 +32,7 @@ export interface PIXIAppOption {
 
 PIXI.Application.registerPlugin(PixiStatsPlugin);
 
-const MAX_DUNGEON_SIZE = 35;
+const MAX_DUNGEON_SIZE = 75;
 
 const { DEBUG, PIXEL_SCALE } = GAME_OPTIONS;
 
@@ -44,21 +44,15 @@ const defaultGameOptions: PIXIAppOption = {
   backgroundColor: 0x160c21,
 };
 
-const defaultViewportOptions: ViewportOptions = {
-  screenWidth: (window.innerWidth / PIXEL_SCALE) * window.devicePixelRatio,
-  screenHeight: (window.innerHeight / PIXEL_SCALE) * window.devicePixelRatio,
-  worldHeight: MAX_DUNGEON_SIZE * 16 + window.innerWidth,
-  worldWidth: MAX_DUNGEON_SIZE * 16 + window.innerHeight,
-};
-
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 
 export default class Game extends PIXI.Application {
   private _background: PIXI.Graphics;
-  private _player: Player;
-  private _noneplayers: NonPlayer[] = [];
   private _controller: Controller;
-  private _viewport: Viewport;
+  private _camera: Camera;
+  private _renderer: Renderer;
+  private _scene: Scene;
+  private _player: Player;
 
   // for stats.js
   private stats: any;
@@ -74,6 +68,7 @@ export default class Game extends PIXI.Application {
   public play() {
     emitter.on(RESOURCE_EVENTS.RESOURCES_LOADED, () => {
       this.gameLoop();
+      this._renderer.render();
     });
   }
 
@@ -99,7 +94,8 @@ export default class Game extends PIXI.Application {
     this.registFilter();
 
     this.registBackground();
-    this.registViewport();
+    this.registCamera();
+    this.registRenderer();
   }
 
   public get controller() {
@@ -114,9 +110,13 @@ export default class Game extends PIXI.Application {
     this._controller = new Controller();
   }
 
-  private registViewport() {
-    this._viewport = new Viewport(defaultViewportOptions);
-    this.stage.addChild(this._viewport);
+  private registCamera() {
+    this._camera = new Camera();
+    this.stage.addChild(this._camera.viewport);
+  }
+
+  private registRenderer() {
+    this._renderer = new Renderer();
   }
 
   private registBackground() {
@@ -140,7 +140,7 @@ export default class Game extends PIXI.Application {
         (window.innerWidth / PIXEL_SCALE) * window.devicePixelRatio,
         (window.innerHeight / PIXEL_SCALE) * window.devicePixelRatio
       );
-      this._viewport.resize(
+      this._camera.viewport.resize(
         (window.innerWidth / PIXEL_SCALE) * window.devicePixelRatio,
         (window.innerHeight / PIXEL_SCALE) * window.devicePixelRatio
       );
@@ -150,7 +150,7 @@ export default class Game extends PIXI.Application {
         (window.innerWidth / PIXEL_SCALE) * window.devicePixelRatio,
         (window.innerHeight / PIXEL_SCALE) * window.devicePixelRatio
       );
-      this._viewport.resize(
+      this._camera.viewport.resize(
         (window.innerWidth / PIXEL_SCALE) * window.devicePixelRatio,
         (window.innerHeight / PIXEL_SCALE) * window.devicePixelRatio
       );
@@ -178,42 +178,18 @@ export default class Game extends PIXI.Application {
     });
   }
 
-  private cullViewport() {
-    const cull = new Cull.Simple({
-      dirtyTest: false,
-    });
-
-    cull.addList(this._viewport.children);
-    cull.cull(this._viewport.getVisibleBounds());
-
-    PIXI.Ticker.shared.add(() => {
-      if (this._viewport.dirty) {
-        cull.cull(this._viewport.getVisibleBounds());
-        this._viewport.dirty = false;
-      }
-    });
-  }
-
   private gameLoop() {
-    const dungeon = new Dungeon(MAX_DUNGEON_SIZE, MAX_DUNGEON_SIZE, this._viewport);
-    const player = new Player(PLAYER_TYPES.KNIGHT_M, dungeon.entities, this._viewport);
-    this._player = player;
+    Music.play('main');
+    SoundEffect.play('cave_airflow', 0.02, true);
 
-    const skeleton = new NonPlayer(NONPLAYER_TYPES.SKELETON, dungeon.entities, this._viewport);
+    this._scene = new Dungeon(MAX_DUNGEON_SIZE, MAX_DUNGEON_SIZE);
+    this._player = new Player(PLAYER_TYPES.KNIGHT_M);
+    this._camera.follow(this._player.rendering);
 
-    const { x, y } = dungeon.respawnPosition;
-    skeleton.geometryPosition = new Vector2(x + 1, y);
+    this._player.geometryPosition = this._scene.playerRespawnPosition;
 
-    player.entities = dungeon.entities;
-
-    dungeon.addCharacter(player);
-    dungeon.addCharacter(skeleton);
-    updateEntitiesLightings(player.geometryPosition, player.entities);
-
-    dungeon.draw();
-
-    this._viewport.follow(this._player);
-
-    this.cullViewport();
+    // const skeleton = new NonPlayer(NONPLAYER_TYPES.SKELETON, dungeon);
+    // const { x, y } = dungeon.respawnPosition;
+    // skeleton.geometryPosition = new Vector2(x + 1, y);
   }
 }

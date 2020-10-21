@@ -25,14 +25,6 @@
       "duration": 100
     },
     "skeleton_3": {
-      "frame": { "x": 16, "y": 0, "w": 16, "h": 32 },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 32 },
-      "sourceSize": { "w": 16, "h": 32 },
-      "duration": 100
-    },
-    "skeleton_4": {
       "frame": { "x": 48, "y": 0, "w": 16, "h": 32 },
       "rotated": false,
       "trimmed": false,
@@ -40,7 +32,7 @@
       "sourceSize": { "w": 16, "h": 32 },
       "duration": 100
     },
-    "skeleton_5": {
+    "skeleton_4": {
       "frame": { "x": 0, "y": 32, "w": 16, "h": 32 },
       "rotated": false,
       "trimmed": false,
@@ -48,7 +40,7 @@
       "sourceSize": { "w": 16, "h": 32 },
       "duration": 100
     },
-    "skeleton_6": {
+    "skeleton_5": {
       "frame": { "x": 16, "y": 32, "w": 16, "h": 32 },
       "rotated": false,
       "trimmed": false,
@@ -56,7 +48,7 @@
       "sourceSize": { "w": 16, "h": 32 },
       "duration": 100
     },
-    "skeleton_7": {
+    "skeleton_6": {
       "frame": { "x": 32, "y": 32, "w": 16, "h": 32 },
       "rotated": false,
       "trimmed": false,
@@ -64,7 +56,7 @@
       "sourceSize": { "w": 16, "h": 32 },
       "duration": 100
     },
-    "skeleton_8": {
+    "skeleton_7": {
       "frame": { "x": 48, "y": 32, "w": 16, "h": 32 },
       "rotated": false,
       "trimmed": false,
@@ -72,7 +64,7 @@
       "sourceSize": { "w": 16, "h": 32 },
       "duration": 100
     },
-    "skeleton_9": {
+    "skeleton_8": {
       "frame": { "x": 0, "y": 64, "w": 16, "h": 32 },
       "rotated": false,
       "trimmed": false,
@@ -80,7 +72,7 @@
       "sourceSize": { "w": 16, "h": 32 },
       "duration": 100
     },
-    "skeleton_10": {
+    "skeleton_9": {
       "frame": { "x": 16, "y": 64, "w": 16, "h": 32 },
       "rotated": false,
       "trimmed": false,
@@ -88,7 +80,7 @@
       "sourceSize": { "w": 16, "h": 32 },
       "duration": 100
     },
-    "skeleton_11": {
+    "skeleton_10": {
       "frame": { "x": 32, "y": 64, "w": 16, "h": 32 },
       "rotated": false,
       "trimmed": false,
@@ -96,15 +88,7 @@
       "sourceSize": { "w": 16, "h": 32 },
       "duration": 100
     },
-    "skeleton_12": {
-      "frame": { "x": 32, "y": 0, "w": 16, "h": 32 },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 32 },
-      "sourceSize": { "w": 16, "h": 32 },
-      "duration": 100
-    },
-    "skeleton_13": {
+    "skeleton_11": {
       "frame": { "x": 48, "y": 64, "w": 16, "h": 32 },
       "rotated": false,
       "trimmed": false,
@@ -112,7 +96,7 @@
       "sourceSize": { "w": 16, "h": 32 },
       "duration": 100
     },
-    "skeleton_14": {
+    "skeleton_12": {
       "frame": { "x": 0, "y": 96, "w": 16, "h": 32 },
       "rotated": false,
       "trimmed": false,
@@ -120,8 +104,24 @@
       "sourceSize": { "w": 16, "h": 32 },
       "duration": 100
     },
+    "skeleton_13": {
+      "frame": { "x": 16, "y": 96, "w": 16, "h": 32 },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 32 },
+      "sourceSize": { "w": 16, "h": 32 },
+      "duration": 100
+    },
+    "skeleton_14": {
+      "frame": { "x": 32, "y": 96, "w": 16, "h": 32 },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 32 },
+      "sourceSize": { "w": 16, "h": 32 },
+      "duration": 100
+    },
     "skeleton_15": {
-      "frame": { "x": 48, "y": 64, "w": 16, "h": 32 },
+      "frame": { "x": 16, "y": 96, "w": 16, "h": 32 },
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 32 },
@@ -137,10 +137,7 @@
     "size": { "w": 64, "h": 128 },
     "scale": "1",
     "frameTags": [],
-    "layers": [
-      { "name": "Layer 1", "opacity": 255, "blendMode": "normal" },
-      { "name": "图层 1", "opacity": 255, "blendMode": "normal" }
-    ],
+    "layers": [{ "name": "Flattened", "opacity": 255, "blendMode": "normal" }],
     "slices": []
   }
 }

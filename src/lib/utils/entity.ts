@@ -1,12 +1,12 @@
 import * as ROT from 'rot-js';
-import { NonPlayer } from '../character';
+import StaticSystem from '../core/static';
 import { Vector2 } from '../geometry';
 import { ABILITY_NAMES, ABILITY_STATUS, Lightable } from '../object/ability';
-import Entity from '../object/entity';
 
-export const updateEntitiesLightings = (geometryPosition: Vector2, entities: Entity[][]) => {
+export const updateEntitiesLightings = (geometryPosition: Vector2, radius = 6) => {
+  const entityGroup = StaticSystem.entityGroup;
   const fov = new ROT.FOV.RecursiveShadowcasting((x, y) => {
-    const entity = entities?.[y]?.[x];
+    const entity = entityGroup.getEntity(x, y);
     if (
       entity?.hasAbility(ABILITY_NAMES.LIGHTABLE) &&
       entity?.hasAbility(ABILITY_NAMES.PASSABLE)
@@ -19,41 +19,62 @@ export const updateEntitiesLightings = (geometryPosition: Vector2, entities: Ent
     return false;
   });
 
-  const { x, y } = geometryPosition;
-  fov.compute(x, y, 6, (ex, ey, r) => {
-    const entity = entities?.[ey]?.[ex];
+  const { x: sx, y: sy } = geometryPosition;
+  fov.compute(sx, sy, radius, (x, y, r) => {
+    const entityGroup = StaticSystem.entityGroup;
+    const entity = entityGroup.getEntity(x, y);
 
     if (entity?.hasAbility(ABILITY_NAMES.LIGHTABLE)) {
       const lightable = entity.getAbility(ABILITY_NAMES.LIGHTABLE) as Lightable;
       lightable.status = ABILITY_STATUS.LIGHTING;
+
       lightable.lightingLevel = r;
+    }
+  });
+};
 
-      const character = entity?.character;
-
-      if (character instanceof NonPlayer) {
-        character.show();
+export const updateEntitiesDislightings = (geometryPosition: Vector2) => {
+  const entityGroup = StaticSystem.entityGroup;
+  entityGroup.forLoop((x, y) => {
+    const entity = entityGroup.getEntity(x, y);
+    if (entity?.hasAbility(ABILITY_NAMES.LIGHTABLE)) {
+      const lightable = entity.getAbility(ABILITY_NAMES.LIGHTABLE);
+      if (lightable.status === ABILITY_STATUS.LIGHTING) {
+        lightable.status = ABILITY_STATUS.DISLIGHTING;
       }
     }
   });
 };
 
-export const updateEntitiesDislightings = (
-  geometryPosition: Vector2,
-  entities: Entity[][]
-) => {
-  for (const row of entities) {
-    for (const entity of row) {
-      if (entity?.hasAbility(ABILITY_NAMES.LIGHTABLE)) {
-        const lightable = entity.getAbility(ABILITY_NAMES.LIGHTABLE);
-        if (lightable.status === ABILITY_STATUS.LIGHTING) {
-          lightable.status = ABILITY_STATUS.DISLIGHTING;
+export const findEntitiesPath = (sourcePosition: Vector2, targetPosition: Vector2) => {
+  const { x: sx, y: sy } = sourcePosition;
+  const entityGroup = StaticSystem.entityGroup;
 
-          const character = entity?.character;
-          if (character instanceof NonPlayer) {
-            character.hide();
-          }
+  const dijkstra = new ROT.Path.Dijkstra(
+    sx,
+    sy,
+    (x, y) => {
+      const entity = entityGroup.getEntity(x, y);
+      if (
+        entity?.hasAbility(ABILITY_NAMES.LIGHTABLE) &&
+        entity?.hasAbility(ABILITY_NAMES.PASSABLE)
+      ) {
+        const passable = entity.getAbility(ABILITY_NAMES.PASSABLE);
+        if (passable.status === ABILITY_STATUS.PASS) {
+          return true;
         }
       }
-    }
-  }
+      return false;
+    },
+    { topology: 4 }
+  );
+
+  const { x: tx, y: ty } = targetPosition;
+
+  const pathStack = [];
+  dijkstra.compute(tx, ty, (x, y) => {
+    pathStack.push(new Vector2(x, y));
+  });
+
+  return pathStack;
 };

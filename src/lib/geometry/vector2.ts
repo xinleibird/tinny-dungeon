@@ -1,4 +1,33 @@
 export class Vector2 {
+  public static flip(vector: Vector2) {
+    return new Vector2(-vector.x, -vector.y);
+  }
+
+  public static minus(vector1: Vector2, vector2: Vector2) {
+    const { x: x1, y: y1 } = vector1;
+    const { x: x2, y: y2 } = vector2;
+
+    const dir = new Vector2(x1 - x2, y1 - y2);
+
+    if (dir.equals(this.left)) {
+      return this.left;
+    }
+
+    if (dir.equals(this.right)) {
+      return this.right;
+    }
+
+    if (dir.equals(this.up)) {
+      return this.up;
+    }
+
+    if (dir.equals(this.down)) {
+      return this.down;
+    }
+
+    return Vector2.center;
+  }
+
   public static merge(v1: Vector2, v2: Vector2) {
     return new Vector2(v1.x + v2.x, v1.y + v2.y);
   }
