@@ -1,3 +1,3 @@
-export { default as Controller } from './controller';
-export { JOY_NAMES } from './joy';
-export { KEY_NAMES } from './key';
+export { default as Controller } from './Controller';
+export { JOY_NAMES } from './Joy';
+export { KEY_NAMES } from './Key';

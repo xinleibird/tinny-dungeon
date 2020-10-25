@@ -1,6 +1,6 @@
 import * as ROT from 'rot-js';
 import { NonPlayer } from '../character';
-import StaticSystem from '../core/static';
+import { StaticSystem } from '../core';
 import { Vector2 } from '../geometry';
 import { ABILITY_NAMES, ABILITY_STATUS, Lightable } from '../object/ability';
 
@@ -69,17 +69,24 @@ export const findEntitiesPath = (
   const currentCharacter = characterGroup.getCharacter(sx, sy);
   currentCharacter.inTick = true;
 
+  let threshold = 0;
+
   const dijkstra = new ROT.Path.Dijkstra(
     sx,
     sy,
     (x, y) => {
       const entity = entityGroup.getEntity(x, y);
 
+      if (threshold > 200) {
+        return false;
+      }
+
       if (entity?.hasAbility(ABILITY_NAMES.PASSABLE)) {
         const passable = entity.getAbility(ABILITY_NAMES.PASSABLE);
         const char = characterGroup.getCharacter(x, y);
         const inTick = char?.inTick;
 
+        threshold += 1;
         if (isStay) {
           if (passable.status === ABILITY_STATUS.PASS && !inTick) {
             return true;

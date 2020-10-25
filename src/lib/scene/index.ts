@@ -1,2 +1,2 @@
-export { default as Dungeon } from './dungeon';
-export { default as Scene } from './scene';
+export { default as Dungeon } from './Dungeon';
+export { default as Scene } from './Scene';

@@ -1,3 +1,3 @@
-export { default as Effect } from './effect';
-export { default as Firing } from './firing';
-export { default as Poisoning } from './poisoning';
+export { default as Effect } from './Effect';
+export { default as Firing } from './Firing';
+export { default as Poisoning } from './Poisoning';

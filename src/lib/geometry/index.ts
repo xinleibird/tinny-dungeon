@@ -1,1 +1,1 @@
-export { Vector2 } from './vector2';
+export { Vector2 } from './Vector2';

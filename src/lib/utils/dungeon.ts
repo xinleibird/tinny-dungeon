@@ -1,8 +1,8 @@
 import * as ROT from 'rot-js';
+import { ENTITY_TYPES } from '../entity';
 import { Vector2 } from '../geometry';
-import { DecoratorTypesWeight } from '../object/ability/decorateable';
-import { ENTITY_TYPES } from '../object/entity';
-import { TILE_TYPES } from '../tilemap/tile';
+import { DecoratorTypesWeight } from '../object/ability/Decorateable';
+import { TILE_TYPES } from '../tilemap';
 import { initialize2DArray } from './array';
 
 const fillTilesMap = (

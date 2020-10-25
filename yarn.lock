@@ -454,11 +454,6 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-14.6.4.tgz#a145cc0bb14ef9c4777361b7bbafa5cf8e3acb5a"
   integrity sha512-Wk7nG1JSaMfMpoMJDKUsWYugliB2Vy55pdjLpmLixeyMi7HizW2I/9QoxsPCkXl3dO+ZOVqPumKaDUv5zJu2uQ==
 
-"@types/socket.io-client@^1.4.33":
-  version "1.4.33"
-  resolved "https://registry.yarnpkg.com/@types/socket.io-client/-/socket.io-client-1.4.33.tgz#8e705b9b3f7fba6cb329d27cd2eda222812adbf1"
-  integrity sha512-m4LnxkljsI9fMsjwpW5QhRpMixo2BeeLpFmg0AE+sS4H1pzAd/cs/ftTiL60FLZgfFa8PFRPx5KsHu8O0bADKQ==
-
 "@types/source-list-map@*":
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/@types/source-list-map/-/source-list-map-0.1.2.tgz#0078836063ffaf17412349bba364087e0ac02ec9"
@@ -4082,11 +4077,6 @@ pixi-cull@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/pixi-cull/-/pixi-cull-1.0.0.tgz#caa76fb3ce2544ba9aa24cd8a8f768a692d2522a"
   integrity sha512-K0b0cI/Hd+yAbFRe0qrYr/XLUwYzFidNNCkFv/MH+SZt7rwJlKnO4xgID6tR7GvE/LyKDPn1Hfgaoer3NAc4/w==
-
-pixi-layers@^0.3.1:
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/pixi-layers/-/pixi-layers-0.3.1.tgz#44457e14dad7b341a48b7b92c8bb3bb9c88d3338"
-  integrity sha512-sLqkg4xnlKKjKceTgyNEvb2Fh7A1OmbsZRTHVnnsqMmhkVLVUgRNZX6ZflTne0pgGOal6EXp1bmns4geXZsY7A==
 
 pixi-sound@^3.0.5:
   version "3.0.5"

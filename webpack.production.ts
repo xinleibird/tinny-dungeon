@@ -51,7 +51,12 @@ const config: Configuration = {
 
   plugins: [
     new HtmlWebpackPlugin({ template: 'public/index.html' }),
-    new CopyWebpackPlugin({ patterns: [{ from: 'src/assets/', to: 'assets/' }] }),
+    new CopyWebpackPlugin({
+      patterns: [
+        { from: 'src/assets/', to: 'assets/' },
+        { from: 'public', to: '' },
+      ],
+    }),
     new CleanWebpackPlugin(),
   ],
 

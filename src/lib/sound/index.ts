@@ -1,2 +1,2 @@
-export { default as SoundEffect } from './effect';
-export { default as Music } from './music';
+export { default as GameMusic } from './GameMusic';
+export { default as GameSound } from './GameSound';

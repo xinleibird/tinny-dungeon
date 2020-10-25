@@ -31,7 +31,7 @@ const PIXEL_SCALE = {
 };
 
 export const GAME_OPTIONS = {
-  DEBUG: true,
+  DEBUG: false,
   MAX_DUNGEON_SIZE: 75,
   PIXEL_SCALE:
     window.devicePixelRatio >= 2

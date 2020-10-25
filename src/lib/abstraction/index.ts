@@ -1,2 +1,2 @@
-export { default as Groupable } from './groupable';
-export { default as Renderable } from './renderable';
+export { default as Groupable } from './Groupable';
+export { default as Renderable } from './Renderable';

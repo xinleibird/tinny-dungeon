@@ -1,5 +1,5 @@
+import { Entity } from '../entity';
 import { Vector2 } from '../geometry';
-import Entity from '../object/entity';
 
 export const initialize2DArray = (
   w: number,
