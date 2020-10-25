@@ -1,5 +1,4 @@
 import { SoundEffect } from '../sound';
-import { updateEntitiesLightings } from '../utils';
 import Character, { PLAYER_TYPES } from './character';
 
 export default class Player extends Character {
@@ -7,10 +6,6 @@ export default class Player extends Character {
     super(type);
 
     this.registSounds();
-  }
-
-  protected updateLighting() {
-    updateEntitiesLightings(this.geometryPosition);
   }
 
   private registSounds() {

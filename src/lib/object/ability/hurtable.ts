@@ -1,3 +1,4 @@
+import StaticSystem from '../../core/static';
 import { Vector2 } from '../../geometry';
 import Ability, { ABILITY_NAMES, ABILITY_STATUS } from './ability';
 
@@ -15,9 +16,12 @@ export default class Hurtable extends Ability {
     this._status = initStatus;
   }
 
-  public exert(sourceDirection: Vector2) {
+  public exert(originDirection: Vector2) {
     if (this._status === ABILITY_STATUS.CANHURT) {
-      //
+      const { x, y } = this._geometryPosition;
+      const character = StaticSystem.characterGroup.getCharacter(x, y);
+
+      character.hurt();
     }
   }
 

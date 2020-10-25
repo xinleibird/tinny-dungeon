@@ -28,6 +28,11 @@ export class Vector2 {
     return Vector2.center;
   }
 
+  public static swap(vector: Vector2) {
+    const { x, y } = vector;
+    return new Vector2(y, x);
+  }
+
   public static merge(v1: Vector2, v2: Vector2) {
     return new Vector2(v1.x + v2.x, v1.y + v2.y);
   }
@@ -53,6 +58,9 @@ export class Vector2 {
   }
 
   public static equals(v1: Vector2, v2: Vector2) {
+    if (!v1 || !v2) {
+      return false;
+    }
     return v1.x === v2.x && v1.y === v2.y;
   }
   public static manhattan(v1: Vector2, v2: Vector2) {
@@ -66,11 +74,6 @@ export class Vector2 {
   private _y = 0;
 
   public constructor(x = 0, y = 0) {
-    this._x = x;
-    this._y = y;
-  }
-
-  public set(x: number, y: number) {
     this._x = x;
     this._y = y;
   }
@@ -91,6 +94,9 @@ export class Vector2 {
   }
 
   public equals(another: Vector2) {
+    if (!this || !another) {
+      return false;
+    }
     return this._x === another.x && this._y === another.y;
   }
 

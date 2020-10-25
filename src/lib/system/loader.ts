@@ -49,6 +49,8 @@ export default class Loader {
 
     loader.add('player_step', 'assets/sounds/effects/sfx_movement_footsteps1a.wav');
     loader.add('player_attack', 'assets/sounds/effects/sfx_wpn_sword1.wav');
+    loader.add('nonplayer_step', 'assets/sounds/effects/sfx_movement_footstepsloop3_fast.wav');
+    loader.add('nonplayer_attack', 'assets/sounds/effects/sfx_wpn_dagger.wav');
     loader.add('door_open', 'assets/sounds/effects/sfx_movement_dooropen2.wav');
     loader.add('cave_airflow', 'assets/sounds/effects/cave_airflow.wav');
 
@@ -78,7 +80,7 @@ export default class Loader {
         const texture = PIXI.Texture.from(`stairs_${i}`);
         this.textures.STAIRS.push(texture);
       }
-      for (let i = 0; i <= 20; i++) {
+      for (let i = 0; i <= 26; i++) {
         const texture = PIXI.Texture.from(`floor_decorators_${i}`);
         this.textures.FLOOR_DECORATORS.push(texture);
       }
@@ -127,6 +129,10 @@ export default class Loader {
       this.sounds.musics['main'] = sound.Sound.from(this.resources.main);
       this.sounds.effects['player_step'] = sound.Sound.from(this.resources.player_step);
       this.sounds.effects['player_attack'] = sound.Sound.from(this.resources.player_attack);
+      this.sounds.effects['nonplayer_step'] = sound.Sound.from(this.resources.nonplayer_step);
+      this.sounds.effects['nonplayer_attack'] = sound.Sound.from(
+        this.resources.nonplayer_attack
+      );
       this.sounds.effects['door_open'] = sound.Sound.from(this.resources.door_open);
       this.sounds.effects['cave_airflow'] = sound.Sound.from(this.resources.cave_airflow);
 

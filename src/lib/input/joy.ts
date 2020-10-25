@@ -1,4 +1,11 @@
-import { event, JOY_EVENTS, JOY_NAMES } from './event';
+import { emitter, JOY_EVENTS } from '../system';
+
+export enum JOY_NAMES {
+  up = 'up',
+  down = 'down',
+  left = 'left',
+  right = 'right',
+}
 
 export interface IJoyEventType {
   timeStamp: number;
@@ -11,9 +18,9 @@ export default class Joy {
   private _isUp = true;
   private _lastDown = 0;
   private _lastUp = 0;
-  private _delay = 150;
-  private onDown = event;
-  private onUp = event;
+  private _delay = 50;
+  private onDown = emitter;
+  private onUp = emitter;
 
   public constructor(name: JOY_NAMES) {
     this._name = name;

@@ -99,6 +99,7 @@ export const generateDungeonMapToAutoTile = (dungeonW: number, dungeonH: number)
   const tilesH = ~~(dungeonH / 2) + 1;
 
   const tilesMap = initialize2DArray(tilesW, tilesH, TILE_TYPES.EMPTY);
+
   const floorsMap = initialize2DArray(dungeonW, dungeonH, ENTITY_TYPES.EMPTY);
   const decoratorsMap = initialize2DArray(dungeonW, dungeonH, 0);
 

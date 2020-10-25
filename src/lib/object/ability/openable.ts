@@ -1,6 +1,8 @@
+import { DropShadowFilter } from '@pixi/filter-drop-shadow';
 import * as PIXI from 'pixi.js';
 import StaticSystem from '../../core/static';
 import { Vector2 } from '../../geometry';
+import { SoundEffect } from '../../sound';
 import { Loader } from '../../system';
 import Ability, { ABILITY_NAMES, ABILITY_STATUS } from './ability';
 
@@ -19,6 +21,16 @@ export default class Openable extends Ability {
     this._status = initStatus;
 
     this.initialize(geometryPosition, initStatus, direction);
+  }
+
+  private registShadowFilter() {
+    this._rendering.filters = [
+      new DropShadowFilter({
+        blur: 0,
+        distance: 2,
+        rotation: -90,
+      }),
+    ];
   }
 
   private initialize(
@@ -51,6 +63,8 @@ export default class Openable extends Ability {
     this.geometryPosition = geometryPosition;
 
     StaticSystem.renderer.add(this);
+
+    this.registShadowFilter();
   }
 
   public get status() {
@@ -61,6 +75,7 @@ export default class Openable extends Ability {
     if (status === ABILITY_STATUS.CLOSE) {
       this._rendering.gotoAndStop(0);
     } else {
+      SoundEffect.play('door_open');
       this._rendering.gotoAndStop(1);
     }
     this._status = status;

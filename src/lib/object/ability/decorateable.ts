@@ -5,7 +5,7 @@ import { Loader } from '../../system';
 import { Ability, ABILITY_NAMES } from './';
 
 export const DecoratorTypesWeight = {
-  '0': 100,
+  '0': 150,
   '1': 2,
   '2': 2,
   '3': 2,
@@ -24,8 +24,14 @@ export const DecoratorTypesWeight = {
   '16': 2,
   '17': 2,
   '18': 2,
-  '19': 1,
-  '20': 1,
+  '19': 2,
+  '20': 2,
+  '21': 2,
+  '22': 2,
+  '23': 2,
+  '24': 2,
+  '25': 1,
+  '26': 1,
 };
 
 export default class Decorateable extends Ability {

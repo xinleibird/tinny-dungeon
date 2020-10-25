@@ -1,15 +1,20 @@
-import * as PIXI from 'pixi.js';
 import { NonPlayer, Player } from '../character';
-import { JOYSTICK_CONTROLLED_JOYS, KEYBOARD_CONTROLLED_KEYS } from '../config';
-import { Vector2 } from '../geometry';
 import {
   CONTROL_ACTIONS,
-  event,
-  JOY_EVENTS,
-  JOY_NAMES,
-  KEY_EVENTS,
-  KEY_NAMES,
-} from '../input';
+  JOYSTICK_CONTROLLED_JOYS,
+  KEYBOARD_CONTROLLED_KEYS,
+} from '../config';
+import StaticSystem from '../core/static';
+import { Vector2 } from '../geometry';
+import { JOY_NAMES, KEY_NAMES } from '../input';
+import { emitter, JOY_EVENTS, KEY_EVENTS } from '../system';
+import TurnBase from '../turn/base';
+import TurnEvent from '../turn/event';
+import {
+  findEntitiesPath,
+  updateEntitiesDislightings,
+  updateEntitiesLightings,
+} from '../utils';
 import Character from './character';
 
 enum TURN_PHASES {
@@ -18,12 +23,14 @@ enum TURN_PHASES {
   HOLD_TURN,
 }
 
-export default class TurnBase {
-  private static _instance: TurnBase;
+export default class Turn {
+  private static _instance: Turn;
+
+  private static _manager: TurnBase = TurnBase.getInstance();
 
   public static getInstance() {
     if (!this._instance) {
-      this._instance = new TurnBase();
+      this._instance = new Turn();
     }
     return this._instance;
   }
@@ -46,112 +53,46 @@ export default class TurnBase {
     return instance;
   }
 
-  private _someKeysDown = false;
-  private _lastUpTimeStamp = 0;
-  private _holdDelay = 150;
-
-  private _turnPhase: TURN_PHASES;
+  private _lastDownTimeStamp = 0;
+  private _delay = 150;
 
   private _playerLeader: Player;
   private _characters: Character[] = [];
   private _players: Player[] = [];
   private _nonPlayers: NonPlayer[] = [];
 
-  private _playerTurnStack: any[] = [];
-  private _nonPlayerTurnStack: any[] = [];
+  private _lock = false;
 
   private constructor() {
-    this._turnPhase = TURN_PHASES.HOLD_TURN;
-
     this.handleKeyDown();
-    this.handleKeyUp();
 
     this.handleJoyDown();
-    this.handleJoyUp();
-
-    this.registerTurnLoop();
   }
 
   private handleKeyDown() {
-    event.on(KEY_EVENTS.KEY_DOWN, (key: KEY_NAMES, timeStamp: number) => {
+    emitter.on(KEY_EVENTS.KEY_DOWN, (key: KEY_NAMES, timeStamp: number) => {
       switch (KEY_NAMES[key]) {
         case KEYBOARD_CONTROLLED_KEYS[CONTROL_ACTIONS.WALK_LEFT]: {
-          this._turnPhase = TURN_PHASES.PLAYER_TURN;
-
-          this._playerLeader.direction = Vector2.left;
-
-          this._playerLeader.rollBehaviors(Vector2.left);
-          this._someKeysDown = true;
+          this.doit(Vector2.left);
 
           break;
         }
 
         case KEYBOARD_CONTROLLED_KEYS[CONTROL_ACTIONS.WALK_RIGHT]: {
-          this._turnPhase = TURN_PHASES.PLAYER_TURN;
-          this._playerLeader.direction = Vector2.right;
+          this.doit(Vector2.right);
 
-          this._playerLeader.rollBehaviors(Vector2.right);
-
-          this._someKeysDown = true;
           break;
         }
 
         case KEYBOARD_CONTROLLED_KEYS[CONTROL_ACTIONS.WALK_UP]: {
-          this._turnPhase = TURN_PHASES.PLAYER_TURN;
-          this._playerLeader.direction = Vector2.up;
+          this.doit(Vector2.up);
 
-          this._playerLeader.rollBehaviors(Vector2.up);
-
-          this._someKeysDown = true;
           break;
         }
 
         case KEYBOARD_CONTROLLED_KEYS[CONTROL_ACTIONS.WALK_DOWN]: {
-          this._turnPhase = TURN_PHASES.PLAYER_TURN;
-          this._playerLeader.direction = Vector2.down;
+          this.doit(Vector2.down);
 
-          this._playerLeader.rollBehaviors(Vector2.down);
-
-          this._someKeysDown = true;
-          break;
-        }
-
-        default:
-          break;
-      }
-    });
-  }
-
-  private handleKeyUp() {
-    event.on(KEY_EVENTS.KEY_UP, (key: KEY_NAMES, timeStamp: number) => {
-      switch (KEY_NAMES[key]) {
-        case KEYBOARD_CONTROLLED_KEYS[CONTROL_ACTIONS.WALK_LEFT]: {
-          this._someKeysDown = false;
-          this._lastUpTimeStamp = timeStamp;
-          break;
-        }
-
-        case KEYBOARD_CONTROLLED_KEYS[CONTROL_ACTIONS.WALK_RIGHT]: {
-          this._someKeysDown = false;
-          this._lastUpTimeStamp = timeStamp;
-          break;
-        }
-
-        case KEYBOARD_CONTROLLED_KEYS[CONTROL_ACTIONS.WALK_UP]: {
-          this._someKeysDown = false;
-          this._lastUpTimeStamp = timeStamp;
-          break;
-        }
-
-        case KEYBOARD_CONTROLLED_KEYS[CONTROL_ACTIONS.WALK_DOWN]: {
-          this._someKeysDown = false;
-          this._lastUpTimeStamp = timeStamp;
-          break;
-        }
-
-        case KEYBOARD_CONTROLLED_KEYS[CONTROL_ACTIONS.SHOW_EXTERNAL]: {
-          this._someKeysDown = false;
-          this._lastUpTimeStamp = timeStamp;
           break;
         }
 
@@ -162,45 +103,29 @@ export default class TurnBase {
   }
 
   private handleJoyDown() {
-    event.on(JOY_EVENTS.JOY_DOWN, (joy: JOY_NAMES) => {
+    emitter.on(JOY_EVENTS.JOY_DOWN, async (joy: JOY_NAMES) => {
       switch (JOY_NAMES[joy]) {
         case JOYSTICK_CONTROLLED_JOYS[CONTROL_ACTIONS.WALK_LEFT]: {
-          this._turnPhase = TURN_PHASES.PLAYER_TURN;
-          this._playerLeader.direction = Vector2.left;
+          await this.doit(Vector2.left);
 
-          this._playerLeader.rollBehaviors(Vector2.left);
-
-          this._someKeysDown = true;
           break;
         }
 
         case JOYSTICK_CONTROLLED_JOYS[CONTROL_ACTIONS.WALK_RIGHT]: {
-          this._turnPhase = TURN_PHASES.PLAYER_TURN;
-          this._playerLeader.direction = Vector2.right;
+          await this.doit(Vector2.right);
 
-          this._playerLeader.rollBehaviors(Vector2.right);
-
-          this._someKeysDown = true;
           break;
         }
 
         case JOYSTICK_CONTROLLED_JOYS[CONTROL_ACTIONS.WALK_UP]: {
-          this._turnPhase = TURN_PHASES.PLAYER_TURN;
-          this._playerLeader.direction = Vector2.up;
+          await this.doit(Vector2.up);
 
-          this._playerLeader.rollBehaviors(Vector2.up);
-
-          this._someKeysDown = true;
           break;
         }
 
         case JOYSTICK_CONTROLLED_JOYS[CONTROL_ACTIONS.WALK_DOWN]: {
-          this._turnPhase = TURN_PHASES.PLAYER_TURN;
-          this._playerLeader.direction = Vector2.down;
+          await this.doit(Vector2.down);
 
-          this._playerLeader.rollBehaviors(Vector2.down);
-
-          this._someKeysDown = true;
           break;
         }
 
@@ -210,54 +135,33 @@ export default class TurnBase {
     });
   }
 
-  private handleJoyUp() {
-    event.on(JOY_EVENTS.JOY_UP, (joy: JOY_NAMES) => {
-      switch (JOY_NAMES[joy]) {
-        case JOYSTICK_CONTROLLED_JOYS[CONTROL_ACTIONS.WALK_LEFT]: {
-          this._someKeysDown = false;
-          this._lastUpTimeStamp = Date.now();
-          break;
-        }
+  private async doit(direction: Vector2) {
+    if (Date.now() > this._lastDownTimeStamp + this._delay && !this._lock) {
+      this._lock = true;
+      Turn._manager.add(new TurnEvent(this._playerLeader, direction));
+      console.log(this._playerLeader.isStay);
 
-        case JOYSTICK_CONTROLLED_JOYS[CONTROL_ACTIONS.WALK_RIGHT]: {
-          this._someKeysDown = false;
-          this._lastUpTimeStamp = Date.now();
-          break;
-        }
+      this._nonPlayers.forEach((char) => {
+        const dir = findEntitiesPath(
+          char.geometryPosition,
+          this._playerLeader.geometryPosition,
+          this._playerLeader.isStay
+        );
 
-        case JOYSTICK_CONTROLLED_JOYS[CONTROL_ACTIONS.WALK_UP]: {
-          this._someKeysDown = false;
-          this._lastUpTimeStamp = Date.now();
-          break;
-        }
+        Turn._manager.add(new TurnEvent(char, dir));
+      });
 
-        case JOYSTICK_CONTROLLED_JOYS[CONTROL_ACTIONS.WALK_DOWN]: {
-          this._someKeysDown = false;
-          this._lastUpTimeStamp = Date.now();
-          break;
-        }
+      await Turn._manager.next();
+      await Turn._manager.next();
+      await Turn._manager.next();
+      await Turn._manager.next();
+      Turn._manager.clear();
 
-        default:
-          break;
-      }
-    });
-  }
-
-  private registerTurnLoop() {
-    PIXI.Ticker.shared.add(() => {
-      if (!this._someKeysDown && Date.now() > this._lastUpTimeStamp + this._holdDelay) {
-        this._turnPhase = TURN_PHASES.NONPLAYER_TURN;
-      }
-
-      if (this._turnPhase === TURN_PHASES.NONPLAYER_TURN) {
-        this._turnPhase = TURN_PHASES.HOLD_TURN;
-      }
-
-      if (this._turnPhase === TURN_PHASES.HOLD_TURN) {
-        this._characters.forEach((character) => {
-          character.hold();
-        });
-      }
-    });
+      this._lastDownTimeStamp = Date.now();
+      this._lock = false;
+      StaticSystem.renderer.characterLayer.sortChildren();
+      updateEntitiesDislightings(this._playerLeader.geometryPosition);
+      updateEntitiesLightings(this._playerLeader.geometryPosition);
+    }
   }
 }

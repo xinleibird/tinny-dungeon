@@ -2,15 +2,6 @@ import { JOYSTICK_CONTROLLED_JOYS, KEYBOARD_CONTROLLED_KEYS } from '../config';
 import Joystick from './joystick';
 import Keyboard from './keyboard';
 
-export enum CONTROL_ACTIONS {
-  WALK_LEFT = 'walkLeft',
-  WALK_RIGHT = 'walkRight',
-  WALK_UP = 'walkUp',
-  WALK_DOWN = 'walkDown',
-  SHOW_EXTERNAL = 'showExternal',
-  ATTACK = 'attack',
-}
-
 export default class Controller {
   private _keyboard: Keyboard;
   private _joystick: Joystick;

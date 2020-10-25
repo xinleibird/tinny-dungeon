@@ -1,11 +1,10 @@
 import { gsap } from 'gsap';
 import { PixiPlugin } from 'gsap/PixiPlugin';
 import * as PIXI from 'pixi.js';
-import { Character } from '../../character';
+import { Character, NonPlayer } from '../../character';
 import { SPRITE_OPTIONS } from '../../config';
 import StaticSystem from '../../core/static';
 import { Vector2 } from '../../geometry';
-import { updateEntitiesDislightings, updateEntitiesLightings } from '../../utils';
 import { ABILITY_NAMES, ABILITY_STATUS } from '../ability';
 import Behavior, { BEHAVIOR_NAMES } from './behavior';
 
@@ -21,43 +20,65 @@ export default class Attacking extends Behavior {
   }
 
   public do(direction: Vector2) {
-    this._character.attackSound.play();
+    return new Promise((resolve, reject) => {
+      this._character.attackSound.play();
 
-    const geometryPosition = this._character.geometryPosition;
-    const { x, y } = geometryPosition;
-    const { x: dx, y: dy } = direction;
+      const geometryPosition = this._character.geometryPosition;
+      const { x, y } = geometryPosition;
 
-    updateEntitiesDislightings(geometryPosition);
+      this._character.lastGeometryPosition = new Vector2(x, y);
 
-    gsap.to(this._character, {
-      duration: 0.075,
-      pixi: {
-        x: x * 16 + SPRITE_OFFSET_X + dx * 16,
-        y: y * 16 + SPRITE_OFFSET_Y + dy * 16,
-      },
+      const { x: dx, y: dy } = direction;
+
+      gsap.to(this._character.rendering, {
+        duration: 0.15,
+        pixi: {
+          x: x * 16 + SPRITE_OFFSET_X + dx * 8,
+          y: y * 16 + SPRITE_OFFSET_Y + dy * 8,
+        },
+        onComplete: () => {
+          gsap.to(this._character.rendering, {
+            duration: 0.05,
+            pixi: { x: x * 16 + SPRITE_OFFSET_X, y: y * 16 + SPRITE_OFFSET_Y },
+            onComplete: () => {
+              this._character.hold();
+              resolve(true);
+            },
+          });
+        },
+      });
+
+      this.exertAbility(direction);
+
+      this._character.direction = direction;
+      this._character.attack(direction);
     });
-
-    gsap.to(this._character, {
-      duration: 0.075,
-      pixi: { x: x * 16 + SPRITE_OFFSET_X, y: y * 16 + SPRITE_OFFSET_Y },
-    });
-
-    this._character.attack(direction);
-
-    this.triggerAbility(direction);
-
-    updateEntitiesLightings(geometryPosition);
   }
 
   public canDo(direction: Vector2) {
+    if (!direction || direction.equals(Vector2.center)) {
+      return false;
+    }
+
     const tarPosition = Vector2.merge(this._character.geometryPosition, direction);
     const { x, y } = tarPosition;
 
     const tarEntity = StaticSystem.entityGroup.getEntity(x, y);
+    const tarCharacter = StaticSystem.characterGroup.getCharacter(x, y);
 
-    if (tarEntity.hasAbility(ABILITY_NAMES.HURTABLE)) {
-      const passable = tarEntity.getAbility(ABILITY_NAMES.HURTABLE);
-      if (passable.status === ABILITY_STATUS.CANHURT) {
+    if (tarCharacter?.hasAbility(ABILITY_NAMES.HURTABLE)) {
+      const hurtable = tarCharacter?.getAbility(ABILITY_NAMES.HURTABLE);
+      if (hurtable?.status === ABILITY_STATUS.CANHURT) {
+        if (this._character instanceof NonPlayer && tarCharacter instanceof NonPlayer) {
+          return false;
+        }
+        return true;
+      }
+    }
+
+    if (tarEntity?.hasAbility(ABILITY_NAMES.HURTABLE)) {
+      const hurtable = tarEntity?.getAbility(ABILITY_NAMES.HURTABLE);
+      if (hurtable?.status === ABILITY_STATUS.CANHURT) {
         return true;
       }
     }
@@ -65,16 +86,22 @@ export default class Attacking extends Behavior {
     return false;
   }
 
-  private triggerAbility(direction: Vector2) {
+  private exertAbility(direction: Vector2) {
     const tarPosition = Vector2.merge(this._character.geometryPosition, direction);
     const { x, y } = tarPosition;
 
     const tarEntity = StaticSystem.entityGroup.getEntity(x, y);
+    const tarCharacter = StaticSystem.characterGroup.getCharacter(x, y);
 
-    if (tarEntity.hasAbility(ABILITY_NAMES.HURTABLE)) {
-      const hurtable = tarEntity.getAbility(ABILITY_NAMES.HURTABLE);
-      if (hurtable.status === ABILITY_STATUS.CANHURT) {
-        hurtable.exert(direction);
+    if (tarCharacter?.hasAbility(ABILITY_NAMES.HURTABLE)) {
+      const hurtable = tarCharacter?.getAbility(ABILITY_NAMES.HURTABLE);
+      if (hurtable?.status === ABILITY_STATUS.CANHURT) {
+        hurtable?.exert(direction);
+      }
+    } else if (tarEntity?.hasAbility(ABILITY_NAMES.HURTABLE)) {
+      const hurtable = tarEntity?.getAbility(ABILITY_NAMES.HURTABLE);
+      if (hurtable?.status === ABILITY_STATUS.CANHURT) {
+        hurtable?.exert(direction);
       }
     }
   }

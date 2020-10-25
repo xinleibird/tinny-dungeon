@@ -1,5 +1,4 @@
-import { KEY_NAMES } from './event';
-import Key from './key';
+import Key, { KEY_NAMES } from './key';
 
 type HandleKeysType = {
   [key in KEY_NAMES]?: Key;

@@ -4,14 +4,14 @@ import { Renderable } from '../abstraction';
 import { SPRITE_OPTIONS } from '../config';
 import StaticSystem from '../core/static';
 import { Vector2 } from '../geometry';
-import { Ability, ABILITY_STATUS, Hurtable, Passable } from '../object/ability';
+import { Ability, ABILITY_NAMES, ABILITY_STATUS, Hurtable, Passable } from '../object/ability';
 import { Behavior, Movement, Opening } from '../object/behavior';
 import Attacking from '../object/behavior/attacking';
 import { DirectionIndicator, External } from '../object/external';
 import { Loader } from '../system';
 import TurnBase from './turnbase';
 
-const { SPRITE_OFFSET_X, SPRITE_OFFSET_Y } = SPRITE_OPTIONS;
+const { SPRITE_OFFSET_X, SPRITE_OFFSET_Y, SPRITE_SIZE } = SPRITE_OPTIONS;
 
 export enum PLAYER_TYPES {
   KNIGHT_M = 'knight_m',
@@ -38,6 +38,7 @@ export default abstract class Character extends Renderable {
   protected _direction: Vector2 = Vector2.down;
   protected _rendering: PIXI.Container;
   protected _geometryPosition: Vector2;
+  protected _lastGeometryPosition: Vector2;
 
   protected _stepSound: PIXI.sound.Sound;
   protected _attackSound: PIXI.sound.Sound;
@@ -45,10 +46,11 @@ export default abstract class Character extends Renderable {
   protected _externals: External[] = [];
   protected _internals: External[] = [];
 
-  private _behaviors: Behavior[] = [];
-  private _abilities: Ability[] = [];
+  protected _behaviors: Behavior[] = [];
+  protected _abilities: Ability[] = [];
 
   private _turnBase: TurnBase;
+  private _inTick = false;
 
   protected constructor(type: PLAYER_TYPES | NONPLAYER_TYPES) {
     super();
@@ -56,6 +58,7 @@ export default abstract class Character extends Renderable {
     this._rendering = new PIXI.Container();
 
     this._geometryPosition = new Vector2();
+    this._lastGeometryPosition = null;
     this._turnBase = TurnBase.regist(this);
 
     this.initialize(type);
@@ -64,6 +67,12 @@ export default abstract class Character extends Renderable {
     this.registShadowFilter();
 
     StaticSystem.renderer.add(this);
+    StaticSystem.characterGroup.setCharacter(0, 0, this);
+
+    // zIndex for characters view depth
+    PIXI.Ticker.shared.add(() => {
+      this._rendering.zIndex = this.geometryPosition.y;
+    });
   }
 
   public get rendering() {
@@ -84,6 +93,32 @@ export default abstract class Character extends Renderable {
 
   public get abilities() {
     return this._abilities;
+  }
+
+  public hasAbility(name: ABILITY_NAMES) {
+    for (const ability of this._abilities) {
+      if (ability.name === name) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public getAbility(name: ABILITY_NAMES) {
+    for (const ability of this._abilities) {
+      if (ability.name === name) {
+        return ability;
+      }
+    }
+    return undefined;
+  }
+
+  public addAbility(...ability: Ability[]) {
+    for (const abi of ability) {
+      if (!this.hasAbility(abi.name)) {
+        this._abilities.push(...ability);
+      }
+    }
   }
 
   public addExternal(external: External) {
@@ -136,12 +171,44 @@ export default abstract class Character extends Renderable {
     });
   }
 
-  public set geometryPosition(position: Vector2) {
-    this._geometryPosition = position;
-    const { x, y } = position;
-    this._rendering.position.set(x * 16 + SPRITE_OFFSET_X, y * 16 + SPRITE_OFFSET_Y);
+  public get inTick() {
+    return this._inTick;
+  }
 
-    this.updateLighting();
+  public set inTick(contorl: boolean) {
+    this._inTick = contorl;
+  }
+
+  public get isStay() {
+    return this._geometryPosition.equals(this._lastGeometryPosition);
+  }
+
+  public get lastGeometryPosition() {
+    return this._lastGeometryPosition;
+  }
+
+  public set lastGeometryPosition(getmetryPosition: Vector2) {
+    this._lastGeometryPosition = getmetryPosition;
+  }
+
+  public set geometryPosition(geometryPosition: Vector2) {
+    // this._lastGeometryPosition = this._geometryPosition;
+
+    const { x, y } = this._geometryPosition;
+    this._geometryPosition = geometryPosition;
+    const { x: tarX, y: tarY } = geometryPosition;
+    this._rendering.position.set(
+      tarX * SPRITE_SIZE + SPRITE_OFFSET_X,
+      tarY * SPRITE_SIZE + SPRITE_OFFSET_Y
+    );
+
+    const characterGroup = StaticSystem.characterGroup;
+    characterGroup.setCharacter(tarX, tarY, this);
+    characterGroup.setCharacter(x, y, null);
+
+    this.abilities.forEach((abi) => {
+      abi.geometryPosition = this._geometryPosition;
+    });
   }
 
   public get geometryPosition() {
@@ -167,7 +234,10 @@ export default abstract class Character extends Renderable {
     attack.visible = false;
     hurt.visible = false;
 
-    walk.play();
+    walk.gotoAndPlay(0);
+    walk.onComplete = () => {
+      this.hold();
+    };
   }
 
   public attack(direction: Vector2) {
@@ -188,9 +258,21 @@ export default abstract class Character extends Renderable {
     hurt.visible = true;
 
     hurt.play();
+    hurt.onComplete = () => {
+      this.hold();
+    };
   }
 
-  public changeSpriteDirection(direction: Vector2) {
+  public async rollBehaviors(direction: Vector2) {
+    for (const behavior of this._behaviors) {
+      if (behavior.canDo(direction)) {
+        await behavior.do(direction);
+        break;
+      }
+    }
+  }
+
+  protected changeSpriteDirection(direction: Vector2) {
     if (direction.equals(Vector2.left)) {
       this._rendering.scale.x = -1;
       const [hold, walk, attack, hurt] = this._rendering.children as PIXI.AnimatedSprite[];
@@ -212,22 +294,9 @@ export default abstract class Character extends Renderable {
     }
   }
 
-  public rollBehaviors(direction: Vector2) {
-    for (const behavior of this._behaviors) {
-      if (behavior.canDo(direction)) {
-        behavior.do(direction);
-        break;
-      }
-    }
-  }
+  protected hide() {}
 
-  protected hide() {
-    this._rendering.visible = false;
-  }
-
-  protected show() {
-    this._rendering.visible = true;
-  }
+  protected show() {}
 
   private initialize(type: PLAYER_TYPES | NONPLAYER_TYPES) {
     const character = type.toString().toUpperCase();
@@ -247,16 +316,16 @@ export default abstract class Character extends Renderable {
     attack.visible = false;
     hurt.visible = false;
 
+    walk.loop = false;
     attack.loop = false;
     hurt.loop = false;
 
-    const duringSecond = 0.5;
-    const speed = 1 / (duringSecond / (4 / 60));
+    hold.animationSpeed = 0.133;
+    walk.animationSpeed = 0.188;
+    attack.animationSpeed = 0.3;
+    hurt.animationSpeed = 0.3;
 
-    hold.animationSpeed = speed;
-    walk.animationSpeed = speed * 1.45;
-    attack.animationSpeed = speed;
-    hurt.animationSpeed = speed;
+    hurt.tint = 0xda4e38;
 
     hold.anchor.set(0.5, 0.5);
     walk.anchor.set(0.5, 0.5);
@@ -283,7 +352,7 @@ export default abstract class Character extends Renderable {
       new DropShadowFilter({
         blur: 0,
         distance: 5,
-        alpha: 0.6,
+        alpha: 0.4,
         rotation: -90,
       }),
     ];
@@ -293,7 +362,7 @@ export default abstract class Character extends Renderable {
     const movement = new Movement(this);
     const opening = new Opening(this);
     const attacting = new Attacking(this);
-    this._behaviors.push(attacting, opening, movement);
+    this._behaviors.push(opening, attacting, movement);
   }
 
   private registAbilities() {
@@ -301,6 +370,4 @@ export default abstract class Character extends Renderable {
     const hurtable = new Hurtable(this.geometryPosition);
     this._abilities.push(passable, hurtable);
   }
-
-  protected abstract updateLighting(): void;
 }

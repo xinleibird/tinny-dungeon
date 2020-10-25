@@ -1,8 +1,9 @@
 import { PixiStatsPlugin } from '@armathai/pixi-stats';
 import { OldFilmFilter } from '@pixi/filter-old-film';
 import * as PIXI from 'pixi.js';
-import { Player, PLAYER_TYPES } from '../character';
+import { NonPlayer, NONPLAYER_TYPES, Player, PLAYER_TYPES } from '../character';
 import { GAME_OPTIONS } from '../config';
+import { Vector2 } from '../geometry';
 import Controller from '../input/controller';
 import { Scene } from '../scene';
 import Dungeon from '../scene/dungeon';
@@ -32,7 +33,8 @@ export interface PIXIAppOption {
 
 PIXI.Application.registerPlugin(PixiStatsPlugin);
 
-const MAX_DUNGEON_SIZE = 75;
+const DUNGEON_SIZE_WIDTH = 60;
+const DUNGEON_SIZE_HEITHT = 40;
 
 const { DEBUG, PIXEL_SCALE } = GAME_OPTIONS;
 
@@ -125,8 +127,8 @@ export default class Game extends PIXI.Application {
     background.drawRect(
       0,
       0,
-      MAX_DUNGEON_SIZE * 16 + window.innerWidth * 2,
-      MAX_DUNGEON_SIZE * 16 + window.innerHeight * 2
+      DUNGEON_SIZE_WIDTH * 16 + window.innerWidth * 2,
+      DUNGEON_SIZE_HEITHT * 16 + window.innerHeight * 2
     );
     background.endFill();
 
@@ -182,14 +184,19 @@ export default class Game extends PIXI.Application {
     Music.play('main');
     SoundEffect.play('cave_airflow', 0.02, true);
 
-    this._scene = new Dungeon(MAX_DUNGEON_SIZE, MAX_DUNGEON_SIZE);
+    this._scene = new Dungeon(DUNGEON_SIZE_WIDTH, DUNGEON_SIZE_HEITHT);
     this._player = new Player(PLAYER_TYPES.KNIGHT_M);
     this._camera.follow(this._player.rendering);
 
     this._player.geometryPosition = this._scene.playerRespawnPosition;
 
-    // const skeleton = new NonPlayer(NONPLAYER_TYPES.SKELETON, dungeon);
-    // const { x, y } = dungeon.respawnPosition;
-    // skeleton.geometryPosition = new Vector2(x + 1, y);
+    const { x, y } = this._scene.playerRespawnPosition;
+
+    const skeleton1 = new NonPlayer(NONPLAYER_TYPES.SKELETON);
+    const skeleton2 = new NonPlayer(NONPLAYER_TYPES.SKELETON);
+    const skeleton3 = new NonPlayer(NONPLAYER_TYPES.SKELETON);
+    skeleton1.geometryPosition = new Vector2(x + 1, y);
+    skeleton2.geometryPosition = new Vector2(x + 2, y);
+    skeleton3.geometryPosition = new Vector2(x + 3, y);
   }
 }

@@ -4,6 +4,7 @@ import {
   ABILITY_NAMES,
   ABILITY_STATUS,
   Clearable,
+  Hurtable,
   Openable,
   Passable,
   Respawnable,
@@ -93,8 +94,9 @@ export default class Entity {
         this._direction
       );
       const passable = new Passable(this.geometryPosition, ABILITY_STATUS.STOP);
+      const hurtable = new Hurtable(this.geometryPosition, ABILITY_STATUS.CANHURT);
 
-      this.addAbility(openable, passable);
+      this.addAbility(openable, passable, hurtable);
     }
 
     if (entityType === ENTITY_TYPES.UPSTAIR) {

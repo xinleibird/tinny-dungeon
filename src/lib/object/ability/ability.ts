@@ -47,7 +47,12 @@ export default abstract class Ability extends Renderable {
 
   public set geometryPosition(geometryPosition: Vector2) {
     const { x, y } = geometryPosition;
-    this._rendering.position.set(x * TILE_SIZE + TILE_OFFSET_X, y * TILE_SIZE + TILE_OFFSET_Y);
+    this._rendering?.position?.set(
+      x * TILE_SIZE + TILE_OFFSET_X,
+      y * TILE_SIZE + TILE_OFFSET_Y
+    );
+
+    this._geometryPosition = geometryPosition;
   }
 
   public exert(direction: Vector2) {}

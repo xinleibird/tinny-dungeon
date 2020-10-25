@@ -5,7 +5,6 @@ import { Character, Player } from '../../character';
 import { SPRITE_OPTIONS } from '../../config';
 import StaticSystem from '../../core/static';
 import { Vector2 } from '../../geometry';
-import { updateEntitiesDislightings, updateEntitiesLightings } from '../../utils';
 import { ABILITY_NAMES, ABILITY_STATUS } from '../ability';
 import Behavior, { BEHAVIOR_NAMES } from './behavior';
 
@@ -20,50 +19,60 @@ export default class Movement extends Behavior {
     this._name = BEHAVIOR_NAMES.MOVEMENT;
   }
 
-  public do(direction: Vector2) {
+  public async do(direction: Vector2) {
     this._character.stepSound.play();
 
-    const geometryPosition = this._character.geometryPosition;
-    updateEntitiesDislightings(geometryPosition);
+    this._character.direction = direction;
 
+    const geometryPosition = this._character.geometryPosition;
     const { x, y } = geometryPosition;
+    this._character.lastGeometryPosition = new Vector2(x, y);
 
     geometryPosition.combine(direction);
 
     const { x: tarX, y: tarY } = geometryPosition;
 
     const characterGroup = StaticSystem.characterGroup;
-
     characterGroup.setCharacter(tarX, tarY, this._character);
     characterGroup.setCharacter(x, y, null);
 
     gsap.to(this._character.rendering, {
-      duration: 0.15,
+      duration: 0.2,
       pixi: { x: tarX * 16 + SPRITE_OFFSET_X, y: tarY * 16 + SPRITE_OFFSET_Y },
     });
-
-    this._character.walk(direction);
 
     if (this._character instanceof Player) {
       this._character.showExternal();
     }
 
-    updateEntitiesLightings(geometryPosition);
+    this._character.walk(direction);
   }
 
   public canDo(direction: Vector2) {
+    if (!direction || direction.equals(Vector2.center)) {
+      return false;
+    }
+
     const tarPosition = Vector2.merge(this._character.geometryPosition, direction);
     const { x, y } = tarPosition;
 
+    const tarCharacter = StaticSystem.characterGroup.getCharacter(x, y);
     const tarEntity = StaticSystem.entityGroup.getEntity(x, y);
 
-    if (tarEntity.hasAbility(ABILITY_NAMES.PASSABLE)) {
-      const passable = tarEntity.getAbility(ABILITY_NAMES.PASSABLE);
-      if (passable.status === ABILITY_STATUS.PASS) {
-        return true;
+    if (tarCharacter?.hasAbility(ABILITY_NAMES.PASSABLE)) {
+      const passable = tarCharacter?.getAbility(ABILITY_NAMES.PASSABLE);
+      if (passable?.status === ABILITY_STATUS.STOP) {
+        return false;
       }
     }
 
-    return false;
+    if (tarEntity.hasAbility(ABILITY_NAMES.PASSABLE)) {
+      const passable = tarEntity.getAbility(ABILITY_NAMES.PASSABLE);
+      if (passable.status === ABILITY_STATUS.STOP) {
+        return false;
+      }
+    }
+
+    return true;
   }
 }

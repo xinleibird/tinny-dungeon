@@ -1,4 +1,13 @@
-import { CONTROL_ACTIONS, JOY_NAMES, KEY_NAMES } from '../input';
+import { JOY_NAMES, KEY_NAMES } from '../input';
+
+export enum CONTROL_ACTIONS {
+  WALK_LEFT = 'walkLeft',
+  WALK_RIGHT = 'walkRight',
+  WALK_UP = 'walkUp',
+  WALK_DOWN = 'walkDown',
+  SHOW_EXTERNAL = 'showExternal',
+  ATTACK = 'attack',
+}
 
 export const KEYBOARD_CONTROLLED_KEYS = {
   [CONTROL_ACTIONS.WALK_LEFT]: KEY_NAMES.a,

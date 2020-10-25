@@ -1,4 +1,3 @@
-import CharacterGroup from '../character/group';
 import StaticSystem from '../core/static';
 import { Vector2 } from '../geometry';
 import { ABILITY_NAMES, ABILITY_STATUS, Decorateable, Lightable } from '../object/ability';
@@ -16,7 +15,7 @@ export default class Dungeon extends Scene {
   private _decoratorsMap: number[][] = [];
 
   public constructor(tilesX = 0, tilesY = 0) {
-    super();
+    super(tilesX, tilesY);
     this.initialize(tilesX, tilesY);
   }
 
@@ -47,7 +46,6 @@ export default class Dungeon extends Scene {
     this._tilesMap = tilesMap;
     this._floorsMap = floorsMap;
     this._decoratorsMap = decoratorsMap;
-    this._characterGroup = new CharacterGroup(tx, ty);
 
     this.fillTileLayer();
     this.fillEntityLayer();
@@ -91,7 +89,7 @@ export default class Dungeon extends Scene {
       if (this._floorsMap?.[y - 1]?.[x] && this._floorsMap?.[y + 1]?.[x]) {
         direction = Vector2.up;
 
-        if (this._floorsMap?.[y]?.[x - 1] && this._floorsMap?.[y]?.[x + 1]) {
+        if (this._floorsMap?.[y]?.[x - 1] || this._floorsMap?.[y]?.[x + 1]) {
           direction = Vector2.center;
         }
       }

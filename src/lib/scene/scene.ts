@@ -9,7 +9,8 @@ export default class Scene {
   protected _playerRespawnPosition: Vector2;
   protected _sceneClearPosition: Vector2;
 
-  protected constructor() {
+  protected constructor(tx: number, ty: number) {
+    this._characterGroup = new CharacterGroup(tx, ty);
     StaticSystem.registScene(this);
   }
 

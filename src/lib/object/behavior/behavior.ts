@@ -21,6 +21,6 @@ export default abstract class Behavior {
     return this._name;
   }
 
-  public abstract do(direction: Vector2): void;
+  public abstract do(direction: Vector2): Promise<unknown>;
   public abstract canDo(vector: Vector2): boolean;
 }

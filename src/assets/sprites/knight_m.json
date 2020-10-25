@@ -121,7 +121,7 @@
       "duration": 100
     },
     "knight_m_15": {
-      "frame": { "x": 0, "y": 96, "w": 16, "h": 32 },
+      "frame": { "x": 32, "y": 96, "w": 16, "h": 32 },
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 32 },

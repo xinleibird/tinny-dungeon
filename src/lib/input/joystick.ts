@@ -1,6 +1,5 @@
 import nipple, { JoystickManager } from 'nipplejs';
-import { JOY_NAMES } from './event';
-import Joy, { IJoyEventType } from './joy';
+import Joy, { IJoyEventType, JOY_NAMES } from './joy';
 
 type HandleJoysType = {
   [key in JOY_NAMES]?: Joy;

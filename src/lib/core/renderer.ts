@@ -11,7 +11,7 @@ export default class Renderer {
 
   private _tileLayer: PIXI.DisplayObject[] = [];
   private _floorLayer: PIXI.DisplayObject[] = [];
-  private _characterLayer: PIXI.DisplayObject[] = [];
+  private _characterLayer: PIXI.Container = new PIXI.Container();
   private _lightingLayer: PIXI.DisplayObject[] = [];
 
   public constructor() {
@@ -22,8 +22,17 @@ export default class Renderer {
   public render() {
     this._tileLayer.length > 0 && this._camera.addChild(...this._tileLayer);
     this._floorLayer.length > 0 && this._camera.viewport.addChild(...this._floorLayer);
-    this._characterLayer.length > 0 && this._camera.viewport.addChild(...this._characterLayer);
+    this._characterLayer.children.length > 0 &&
+      this._camera.viewport.addChild(this._characterLayer);
     this._lightingLayer.length > 0 && this._camera.viewport.addChild(...this._lightingLayer);
+  }
+
+  public get characterLayer() {
+    return this._characterLayer;
+  }
+
+  public setCharIndex(obj: PIXI.DisplayObject, index: number) {
+    this._characterLayer.setChildIndex(obj, index);
   }
 
   public add(obj: Renderable) {
@@ -40,7 +49,7 @@ export default class Renderer {
     }
 
     if (obj instanceof Character) {
-      this._characterLayer.push(obj.rendering);
+      this._characterLayer.addChild(obj.rendering);
     }
   }
 }
