@@ -54,7 +54,7 @@ const config: Configuration = {
     new CopyWebpackPlugin({
       patterns: [
         { from: 'src/assets/', to: 'assets/' },
-        { from: 'public', to: '' },
+        // { from: 'public', to: '' },
       ],
     }),
     new CleanWebpackPlugin(),

@@ -74,10 +74,6 @@ export default class StaticSystem {
     return instance._renderer;
   }
 
-  public get renderer() {
-    return this._renderer;
-  }
-
   private _entityGroup: EntityGroup;
   private _characterGroup: CharacterGroup;
   private _camera: Camera;

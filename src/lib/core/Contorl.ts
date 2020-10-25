@@ -1,4 +1,4 @@
-import { NonPlayer, Player } from '.';
+import { Character, NonPlayer, Player } from '../character';
 import {
   CONTROL_ACTIONS,
   JOYSTICK_CONTROLLED_JOYS,
@@ -14,22 +14,14 @@ import {
   updateEntitiesDislightings,
   updateEntitiesLightings,
 } from '../utils';
-import Character from './Character';
 
-enum TURN_PHASES {
-  PLAYER_TURN,
-  NONPLAYER_TURN,
-  HOLD_TURN,
-}
-
-export default class Turn {
-  private static _instance: Turn;
-
-  private static _manager: TurnBase = TurnBase.getInstance();
+export default class Control {
+  private static _instance: Control;
+  private static _turnBase: TurnBase = TurnBase.getInstance();
 
   public static getInstance() {
     if (!this._instance) {
-      this._instance = new Turn();
+      this._instance = new Control();
     }
     return this._instance;
   }
@@ -40,9 +32,8 @@ export default class Turn {
 
     if (character instanceof Player) {
       const player = character as Player;
-      instance._players.push(player);
 
-      instance._playerLeader = instance._players[0];
+      instance._player = player;
     }
 
     if (character instanceof NonPlayer) {
@@ -55,9 +46,9 @@ export default class Turn {
   private _lastDownTimeStamp = 0;
   private _delay = 150;
 
-  private _playerLeader: Player;
   private _characters: Character[] = [];
-  private _players: Player[] = [];
+
+  private _player: Player;
   private _nonPlayers: NonPlayer[] = [];
 
   private _lock = false;
@@ -137,32 +128,33 @@ export default class Turn {
   private async doit(direction: Vector2) {
     if (Date.now() > this._lastDownTimeStamp + this._delay && !this._lock) {
       this._lock = true;
-      Turn._manager.add(new TurnEvent(this._playerLeader, direction));
+      Control._turnBase.add(new TurnEvent(this._player, direction));
 
       this._nonPlayers.forEach((char) => {
         const dir = findEntitiesPath(
           char.geometryPosition,
-          this._playerLeader.geometryPosition,
-          this._playerLeader.isStay
+          this._player.geometryPosition,
+          this._player.isStay
         );
 
-        Turn._manager.add(new TurnEvent(char, dir));
+        Control._turnBase.add(new TurnEvent(char, dir));
       });
 
-      await Turn._manager.next();
-      await Turn._manager.next();
-      await Turn._manager.next();
-      await Turn._manager.next();
-      await Turn._manager.next();
-      await Turn._manager.next();
-      // await Turn._manager.tickAll();
-      Turn._manager.clear();
+      await Control._turnBase.next();
+      await Control._turnBase.next();
+      await Control._turnBase.next();
+      await Control._turnBase.next();
+      await Control._turnBase.next();
+      await Control._turnBase.next();
+
+      Control._turnBase.clear();
 
       this._lastDownTimeStamp = Date.now();
       this._lock = false;
+
       StaticSystem.renderer.characterLayer.sortChildren();
-      updateEntitiesDislightings(this._playerLeader.geometryPosition);
-      updateEntitiesLightings(this._playerLeader.geometryPosition);
+      updateEntitiesDislightings(this._player.geometryPosition);
+      updateEntitiesLightings(this._player.geometryPosition);
     }
   }
 }

@@ -1,16 +1,15 @@
 import { PixiStatsPlugin } from '@armathai/pixi-stats';
 import { OldFilmFilter } from '@pixi/filter-old-film';
 import * as PIXI from 'pixi.js';
-import { NonPlayer, NONPLAYER_TYPES, Player, PLAYER_TYPES } from '../character';
-import { GAME_OPTIONS } from '../config';
-import { Vector2 } from '../geometry';
-import Controller from '../input/Controller';
-import { Scene } from '../scene';
-import Dungeon from '../scene/Dungeon';
-import { GameMusic, GameSound } from '../sound';
-import { Emitter, Loader, RESOURCE_EVENTS } from '../system';
-import Camera from './Camera';
-import Renderer from './Renderer';
+import { NonPlayer, NONPLAYER_TYPES, Player, PLAYER_TYPES } from './character';
+import { GAME_OPTIONS } from './config';
+import { Camera, Renderer } from './core';
+import { Vector2 } from './geometry';
+import Controller from './input/Controller';
+import { Scene } from './scene';
+import Dungeon from './scene/Dungeon';
+import { GameMusic, GameSound } from './sound';
+import { Emitter, Loader, RESOURCE_EVENTS } from './system';
 
 export interface GameOptions {
   autoStart?: boolean;

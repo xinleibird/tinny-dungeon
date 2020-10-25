@@ -2,13 +2,12 @@ import { DropShadowFilter } from '@pixi/filter-drop-shadow';
 import * as PIXI from 'pixi.js';
 import { Renderable } from '../abstraction';
 import { SPRITE_OPTIONS } from '../config';
-import { StaticSystem } from '../core';
+import { Control, StaticSystem } from '../core';
 import { Vector2 } from '../geometry';
 import { Ability, ABILITY_NAMES, ABILITY_STATUS, Hurtable, Passable } from '../object/ability';
 import { Attacking, Behavior, Movement, Opening } from '../object/behavior';
 import { DirectionIndicator, External } from '../object/external';
 import { Loader } from '../system';
-import TurnBase from './Turn';
 
 const { SPRITE_OFFSET_X, SPRITE_OFFSET_Y, SPRITE_SIZE } = SPRITE_OPTIONS;
 
@@ -48,7 +47,6 @@ export default abstract class Character extends Renderable {
   protected _behaviors: Behavior[] = [];
   protected _abilities: Ability[] = [];
 
-  private _turnBase: TurnBase;
   private _inTick = false;
 
   protected constructor(type: PLAYER_TYPES | NONPLAYER_TYPES) {
@@ -58,13 +56,13 @@ export default abstract class Character extends Renderable {
 
     this._geometryPosition = new Vector2();
     this._lastGeometryPosition = null;
-    this._turnBase = TurnBase.regist(this);
 
     this.initialize(type);
     this.registBehaviors();
     this.registAbilities();
     this.registShadowFilter();
 
+    Control.regist(this);
     StaticSystem.renderer.add(this);
     StaticSystem.characterGroup.setCharacter(0, 0, this);
 

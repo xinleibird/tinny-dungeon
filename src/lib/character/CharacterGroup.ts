@@ -13,18 +13,6 @@ export default class CharacterGroup extends Groupable {
     StaticSystem.registCharacterGroup(this);
   }
 
-  public get characters() {
-    const chars = [];
-    for (const row of this._characters) {
-      for (const char of row) {
-        if (char instanceof Character) {
-          chars.push(char);
-        }
-      }
-    }
-    return chars;
-  }
-
   public setCharacter(x: number, y: number, character: Character) {
     this._characters[y][x] = character;
   }
