@@ -78,37 +78,33 @@ export default class Entity {
 
   private initialize(entityType: ENTITY_TYPES) {
     if (entityType === ENTITY_TYPES.EMPTY) {
-      const passable = new Passable(this.geometryPosition, ABILITY_STATUS.STOP);
+      const passable = new Passable(this, ABILITY_STATUS.STOP);
       this.addAbility(passable);
     }
 
     if (entityType === ENTITY_TYPES.FLOOR || entityType === ENTITY_TYPES.CORRIDOR) {
-      const passable = new Passable(this.geometryPosition, ABILITY_STATUS.PASS);
+      const passable = new Passable(this, ABILITY_STATUS.PASS);
       this.addAbility(passable);
     }
 
     if (entityType === ENTITY_TYPES.DOOR) {
-      const openable = new Openable(
-        this.geometryPosition,
-        ABILITY_STATUS.CLOSE,
-        this._direction
-      );
-      const passable = new Passable(this.geometryPosition, ABILITY_STATUS.STOP);
-      const hurtable = new Hurtable(this.geometryPosition, ABILITY_STATUS.CANHURT);
+      const openable = new Openable(this, ABILITY_STATUS.CLOSE, this._direction);
+      const passable = new Passable(this, ABILITY_STATUS.STOP);
+      const hurtable = new Hurtable(this, ABILITY_STATUS.CANHURT);
 
       this.addAbility(openable, passable, hurtable);
     }
 
     if (entityType === ENTITY_TYPES.UPSTAIR) {
-      const respawnable = new Respawnable(this.geometryPosition);
-      const passable = new Passable(this.geometryPosition, ABILITY_STATUS.PASS);
+      const respawnable = new Respawnable(this);
+      const passable = new Passable(this, ABILITY_STATUS.PASS);
 
       this.addAbility(respawnable, passable);
     }
 
     if (entityType === ENTITY_TYPES.DOWNSTAIR) {
-      const clearable = new Clearable(this.geometryPosition);
-      const passable = new Passable(this.geometryPosition, ABILITY_STATUS.PASS);
+      const clearable = new Clearable(this);
+      const passable = new Passable(this, ABILITY_STATUS.PASS);
 
       this.addAbility(clearable, passable);
     }

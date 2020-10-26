@@ -10,6 +10,7 @@ import { Scene } from './scene';
 import Dungeon from './scene/Dungeon';
 import { GameMusic, GameSound } from './sound';
 import { Emitter, Loader, RESOURCE_EVENTS } from './system';
+import { updateEntitiesLightings } from './utils';
 
 export interface GameOptions {
   autoStart?: boolean;
@@ -30,8 +31,8 @@ export interface GameOptions {
   resizeTo?: Window | HTMLElement;
 }
 
-const DUNGEON_SIZE_WIDTH = 50;
-const DUNGEON_SIZE_HEITHT = 50;
+const DUNGEON_SIZE_WIDTH = 71;
+const DUNGEON_SIZE_HEITHT = 71;
 
 const { DEBUG, PIXEL_SCALE } = GAME_OPTIONS;
 
@@ -190,6 +191,7 @@ export default class Game extends PIXI.Application {
     this._camera.follow(this._player.rendering);
 
     this._player.geometryPosition = this._scene.playerRespawnPosition;
+    updateEntitiesLightings(this._player.geometryPosition);
 
     const { x, y } = this._scene.playerRespawnPosition;
 

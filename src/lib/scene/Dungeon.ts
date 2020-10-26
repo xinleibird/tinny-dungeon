@@ -97,7 +97,7 @@ export default class Dungeon extends Scene {
 
       const decoratorIndex = this._decoratorsMap[y][x];
       if (decoratorIndex !== 0) {
-        const decoratorable = new Decorateable(new Vector2(x, y), decoratorIndex);
+        const decoratorable = new Decorateable(entity, decoratorIndex);
         entity.addAbility(decoratorable);
       }
 
@@ -110,7 +110,7 @@ export default class Dungeon extends Scene {
     entityGroup.forLoop((x: number, y: number) => {
       const entity = entityGroup.getEntity(x, y);
       if (entity.getAbility(ABILITY_NAMES.PASSABLE)) {
-        const lightable = new Lightable(new Vector2(x, y), ABILITY_STATUS.UNVISIT);
+        const lightable = new Lightable(entity, ABILITY_STATUS.UNVISIT);
         entity.addAbility(lightable);
         entityGroup.setEntity(x, y, entity);
       }

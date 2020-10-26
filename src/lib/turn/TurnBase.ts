@@ -56,6 +56,14 @@ export default class TurnBase {
     });
     this._current = 0;
     this._time += 1;
-    // this._time = 0;
+  }
+
+  public hasNext() {
+    for (let i = this._current; i < this._queue.length; i++) {
+      if (this._queue?.[i].time === this._time) {
+        return true;
+      }
+    }
+    return false;
   }
 }

@@ -1,7 +1,8 @@
 import * as PIXI from 'pixi.js';
 import { Ability, ABILITY_NAMES } from '.';
+import { Character } from '../../character';
 import { StaticSystem } from '../../core';
-import { Vector2 } from '../../geometry';
+import { Entity } from '../../entity';
 import { Loader } from '../../system';
 
 export const DecoratorTypesWeight = {
@@ -35,27 +36,22 @@ export const DecoratorTypesWeight = {
 };
 
 export default class Decorateable extends Ability {
-  public constructor(geometryPosition: Vector2, decoratorIndex: number) {
-    super(geometryPosition);
+  public constructor(owner: Character | Entity, decoratorIndex: number) {
+    super(owner);
 
     this._name = ABILITY_NAMES.DECORATEABLE;
-    this.initialize(geometryPosition, decoratorIndex);
+
+    this.initialize(decoratorIndex);
   }
 
-  private initialize(geometryPosition: Vector2, decoratorIndex: number) {
+  private initialize(decoratorIndex: number) {
     const length = Object.keys(DecoratorTypesWeight).length;
     if (decoratorIndex !== 0 && decoratorIndex < length) {
       const sprite = new PIXI.Sprite(Loader.textures.FLOOR_DECORATORS[decoratorIndex]);
       sprite.blendMode = PIXI.BLEND_MODES.MULTIPLY;
-
-      this._rendering = sprite;
-      this.geometryPosition = geometryPosition;
+      this.rendering = sprite;
 
       StaticSystem.renderer.add(this);
     }
-  }
-
-  public get rendering() {
-    return this._rendering;
   }
 }

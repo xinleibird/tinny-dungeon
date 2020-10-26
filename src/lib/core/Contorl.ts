@@ -55,7 +55,6 @@ export default class Control {
 
   private constructor() {
     this.handleKeyDown();
-
     this.handleJoyDown();
   }
 
@@ -63,25 +62,25 @@ export default class Control {
     Emitter.on(KEY_EVENTS.KEY_DOWN, (key: KEY_NAMES, timeStamp: number) => {
       switch (KEY_NAMES[key]) {
         case KEYBOARD_CONTROLLED_KEYS[CONTROL_ACTIONS.WALK_LEFT]: {
-          this.doit(Vector2.left);
+          this.nextTurn(Vector2.left);
 
           break;
         }
 
         case KEYBOARD_CONTROLLED_KEYS[CONTROL_ACTIONS.WALK_RIGHT]: {
-          this.doit(Vector2.right);
+          this.nextTurn(Vector2.right);
 
           break;
         }
 
         case KEYBOARD_CONTROLLED_KEYS[CONTROL_ACTIONS.WALK_UP]: {
-          this.doit(Vector2.up);
+          this.nextTurn(Vector2.up);
 
           break;
         }
 
         case KEYBOARD_CONTROLLED_KEYS[CONTROL_ACTIONS.WALK_DOWN]: {
-          this.doit(Vector2.down);
+          this.nextTurn(Vector2.down);
 
           break;
         }
@@ -96,25 +95,25 @@ export default class Control {
     Emitter.on(JOY_EVENTS.JOY_DOWN, async (joy: JOY_NAMES) => {
       switch (JOY_NAMES[joy]) {
         case JOYSTICK_CONTROLLED_JOYS[CONTROL_ACTIONS.WALK_LEFT]: {
-          await this.doit(Vector2.left);
+          await this.nextTurn(Vector2.left);
 
           break;
         }
 
         case JOYSTICK_CONTROLLED_JOYS[CONTROL_ACTIONS.WALK_RIGHT]: {
-          await this.doit(Vector2.right);
+          await this.nextTurn(Vector2.right);
 
           break;
         }
 
         case JOYSTICK_CONTROLLED_JOYS[CONTROL_ACTIONS.WALK_UP]: {
-          await this.doit(Vector2.up);
+          await this.nextTurn(Vector2.up);
 
           break;
         }
 
         case JOYSTICK_CONTROLLED_JOYS[CONTROL_ACTIONS.WALK_DOWN]: {
-          await this.doit(Vector2.down);
+          await this.nextTurn(Vector2.down);
 
           break;
         }
@@ -125,7 +124,7 @@ export default class Control {
     });
   }
 
-  private async doit(direction: Vector2) {
+  private async nextTurn(direction: Vector2) {
     if (Date.now() > this._lastDownTimeStamp + this._delay && !this._lock) {
       this._lock = true;
       Control._turnBase.add(new TurnEvent(this._player, direction));
@@ -140,12 +139,9 @@ export default class Control {
         Control._turnBase.add(new TurnEvent(char, dir));
       });
 
-      await Control._turnBase.next();
-      await Control._turnBase.next();
-      await Control._turnBase.next();
-      await Control._turnBase.next();
-      await Control._turnBase.next();
-      await Control._turnBase.next();
+      while (Control._turnBase.hasNext()) {
+        await Control._turnBase.next();
+      }
 
       Control._turnBase.clear();
 
@@ -153,6 +149,7 @@ export default class Control {
       this._lock = false;
 
       StaticSystem.renderer.characterLayer.sortChildren();
+
       updateEntitiesDislightings(this._player.geometryPosition);
       updateEntitiesLightings(this._player.geometryPosition);
     }

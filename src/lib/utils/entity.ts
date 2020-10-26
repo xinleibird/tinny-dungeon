@@ -77,7 +77,7 @@ export const findEntitiesPath = (
     (x, y) => {
       const entity = entityGroup.getEntity(x, y);
 
-      if (threshold > 200) {
+      if (threshold > 300) {
         return false;
       }
 

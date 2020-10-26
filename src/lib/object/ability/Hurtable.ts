@@ -1,4 +1,6 @@
+import { Character } from '../../character';
 import { StaticSystem } from '../../core';
+import { Entity } from '../../entity';
 import { Vector2 } from '../../geometry';
 import Ability, { ABILITY_NAMES, ABILITY_STATUS } from './Ability';
 
@@ -8,10 +10,10 @@ export default class Hurtable extends Ability {
   protected _status: HurtableStatus;
 
   public constructor(
-    geometryPosition: Vector2,
+    owner: Character | Entity,
     initStatus: HurtableStatus = ABILITY_STATUS.CANHURT
   ) {
-    super(geometryPosition);
+    super(owner);
     this._name = ABILITY_NAMES.HURTABLE;
     this._status = initStatus;
   }
@@ -23,10 +25,6 @@ export default class Hurtable extends Ability {
 
       character.hurt();
     }
-  }
-
-  public get rendering() {
-    return null;
   }
 
   public get status() {

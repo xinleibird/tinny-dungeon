@@ -1,4 +1,3 @@
-import { DropShadowFilter } from '@pixi/filter-drop-shadow';
 import * as PIXI from 'pixi.js';
 import { Renderable } from '../abstraction';
 import { SPRITE_OPTIONS } from '../config';
@@ -60,7 +59,6 @@ export default abstract class Character extends Renderable {
     this.initialize(type);
     this.registBehaviors();
     this.registAbilities();
-    this.registShadowFilter();
 
     Control.regist(this);
     StaticSystem.renderer.add(this);
@@ -202,7 +200,7 @@ export default abstract class Character extends Renderable {
     characterGroup.setCharacter(x, y, null);
 
     this.abilities.forEach((abi) => {
-      abi.geometryPosition = this._geometryPosition;
+      abi.geometryPosition = geometryPosition;
     });
   }
 
@@ -211,49 +209,78 @@ export default abstract class Character extends Renderable {
   }
 
   public hold() {
-    const [hold, walk, attack, hurt] = this._rendering.children as PIXI.AnimatedSprite[];
+    const [holdShadow, hold, walkShadow, walk, attackShadow, attack, hurtShadow, hurt] = this
+      ._rendering.children as PIXI.AnimatedSprite[];
+
+    holdShadow.visible = true;
     hold.visible = true;
+    walkShadow.visible = false;
     walk.visible = false;
+    attackShadow.visible = false;
     attack.visible = false;
+    hurtShadow.visible = false;
     hurt.visible = false;
 
+    holdShadow.play();
     hold.play();
 
     this.hideExternal();
   }
 
   public walk(direction: Vector2) {
-    const [hold, walk, attack, hurt] = this._rendering.children as PIXI.AnimatedSprite[];
+    const [holdShadow, hold, walkShadow, walk, attackShadow, attack, hurtShadow, hurt] = this
+      ._rendering.children as PIXI.AnimatedSprite[];
+
+    holdShadow.visible = false;
     hold.visible = false;
+    walkShadow.visible = true;
     walk.visible = true;
+    attackShadow.visible = false;
     attack.visible = false;
+    hurtShadow.visible = false;
     hurt.visible = false;
 
+    walkShadow.gotoAndPlay(0);
     walk.gotoAndPlay(0);
+
     walk.onComplete = () => {
       this.hold();
     };
-    // this.stepSound.play();
   }
 
   public attack(direction: Vector2) {
-    const [hold, walk, attack, hurt] = this._rendering.children as PIXI.AnimatedSprite[];
+    const [holdShadow, hold, walkShadow, walk, attackShadow, attack, hurtShadow, hurt] = this
+      ._rendering.children as PIXI.AnimatedSprite[];
+
+    holdShadow.visible = false;
     hold.visible = false;
+    walkShadow.visible = false;
     walk.visible = false;
+    attackShadow.visible = true;
     attack.visible = true;
+    hurtShadow.visible = false;
     hurt.visible = false;
 
+    attackShadow.gotoAndPlay(0);
     attack.gotoAndPlay(0);
   }
 
   public hurt() {
-    const [hold, walk, attack, hurt] = this._rendering.children as PIXI.AnimatedSprite[];
+    const [holdShadow, hold, walkShadow, walk, attackShadow, attack, hurtShadow, hurt] = this
+      ._rendering.children as PIXI.AnimatedSprite[];
+
+    holdShadow.visible = false;
     hold.visible = false;
+    walkShadow.visible = false;
     walk.visible = false;
+    attackShadow.visible = false;
     attack.visible = false;
+    hurtShadow.visible = true;
     hurt.visible = true;
 
+    hurtShadow.play();
     hurt.play();
+
     hurt.onComplete = () => {
       this.hold();
     };
@@ -307,6 +334,31 @@ export default abstract class Character extends Renderable {
     const attack = new PIXI.AnimatedSprite(attackBatch);
     const hurt = new PIXI.AnimatedSprite(hurtBatch);
 
+    const holdShadow = new PIXI.AnimatedSprite(holdBatch);
+    const walkShadow = new PIXI.AnimatedSprite(walkBatch);
+    const attackShadow = new PIXI.AnimatedSprite(attackBatch);
+    const hurtShadow = new PIXI.AnimatedSprite(hurtBatch);
+
+    holdShadow.visible = true;
+    walkShadow.visible = false;
+    attackShadow.visible = false;
+    hurtShadow.visible = false;
+
+    holdShadow.tint = 0x000000;
+    walkShadow.tint = 0x000000;
+    attackShadow.tint = 0x000000;
+    hurtShadow.tint = 0x000000;
+
+    holdShadow.position.y = -5;
+    walkShadow.position.y = -5;
+    attackShadow.position.y = -5;
+    hurtShadow.position.y = -5;
+
+    holdShadow.alpha = 0.5;
+    walkShadow.alpha = 0.5;
+    attackShadow.alpha = 0.5;
+    hurtShadow.alpha = 0.5;
+
     hold.visible = true;
     walk.visible = false;
     attack.visible = false;
@@ -316,10 +368,19 @@ export default abstract class Character extends Renderable {
     attack.loop = false;
     hurt.loop = false;
 
+    walkShadow.loop = false;
+    attackShadow.loop = false;
+    hurtShadow.loop = false;
+
     hold.animationSpeed = 0.133;
     walk.animationSpeed = 0.188;
     attack.animationSpeed = 0.3;
     hurt.animationSpeed = 0.3;
+
+    holdShadow.animationSpeed = 0.133;
+    walkShadow.animationSpeed = 0.188;
+    attackShadow.animationSpeed = 0.3;
+    hurtShadow.animationSpeed = 0.3;
 
     hurt.tint = 0xda4e38;
 
@@ -328,30 +389,34 @@ export default abstract class Character extends Renderable {
     attack.anchor.set(0.5, 0.5);
     hurt.anchor.set(0.5, 0.5);
 
+    holdShadow.anchor.set(0.5, 0.5);
+    walkShadow.anchor.set(0.5, 0.5);
+    attackShadow.anchor.set(0.5, 0.5);
+    hurtShadow.anchor.set(0.5, 0.5);
+
     // default play HOLD animation
     hold.play();
+    holdShadow.play();
 
     // prepare character's animations
-    this._rendering.addChild(hold, walk, attack, hurt);
-    const { x, y } = this._geometryPosition;
-    this._rendering.position.set(x * 16 + SPRITE_OFFSET_X, y * 16 + SPRITE_OFFSET_Y);
+    this._rendering.addChild(
+      holdShadow,
+      hold,
+      walkShadow,
+      walk,
+      attackShadow,
+      attack,
+      hurtShadow,
+      hurt
+    );
+
+    this.geometryPosition = this._geometryPosition;
 
     // external composition
     const directionIndicator = new DirectionIndicator();
     directionIndicator.direction = this.direction;
     this._externals.push(directionIndicator);
     this._rendering.addChild(directionIndicator.sprite);
-  }
-
-  private registShadowFilter() {
-    this._rendering.filters = [
-      new DropShadowFilter({
-        blur: 0,
-        distance: 5,
-        alpha: 0.4,
-        rotation: -90,
-      }),
-    ];
   }
 
   private registBehaviors() {
@@ -362,8 +427,8 @@ export default abstract class Character extends Renderable {
   }
 
   private registAbilities() {
-    const passable = new Passable(this.geometryPosition, ABILITY_STATUS.STOP);
-    const hurtable = new Hurtable(this.geometryPosition);
+    const passable = new Passable(this, ABILITY_STATUS.STOP);
+    const hurtable = new Hurtable(this);
     this._abilities.push(passable, hurtable);
   }
 }

@@ -1,6 +1,7 @@
-import { DropShadowFilter } from '@pixi/filter-drop-shadow';
 import * as PIXI from 'pixi.js';
+import { Character } from '../../character';
 import { StaticSystem } from '../../core';
+import { Entity } from '../../entity';
 import { Vector2 } from '../../geometry';
 import { GameSound } from '../../sound';
 import { Loader } from '../../system';
@@ -12,32 +13,18 @@ export default class Openable extends Ability {
   protected _status: ABILITY_STATUS.CLOSE | ABILITY_STATUS.OPEN;
   protected _rendering: PIXI.AnimatedSprite;
   public constructor(
-    geometryPosition: Vector2,
+    owner: Character | Entity,
     initStatus: OpenableStatus = ABILITY_STATUS.CLOSE,
     direction: Vector2
   ) {
-    super(geometryPosition);
+    super(owner);
     this._name = ABILITY_NAMES.OPENABLE;
     this._status = initStatus;
 
-    this.initialize(geometryPosition, initStatus, direction);
+    this.initialize(initStatus, direction);
   }
 
-  private registShadowFilter() {
-    this._rendering.filters = [
-      new DropShadowFilter({
-        blur: 0,
-        distance: 2,
-        rotation: -90,
-      }),
-    ];
-  }
-
-  private initialize(
-    geometryPosition: Vector2,
-    initStatus: OpenableStatus,
-    direction: Vector2
-  ) {
+  private initialize(initStatus: OpenableStatus, direction: Vector2) {
     let sprite: PIXI.AnimatedSprite = null;
 
     if (direction.equals(Vector2.center)) {
@@ -59,12 +46,9 @@ export default class Openable extends Ability {
       sprite.gotoAndStop(1);
     }
 
-    this._rendering = sprite;
-    this.geometryPosition = geometryPosition;
+    this.rendering = sprite;
 
     StaticSystem.renderer.add(this);
-
-    this.registShadowFilter();
   }
 
   public get status() {
@@ -82,10 +66,6 @@ export default class Openable extends Ability {
   }
 
   public get sprite(): PIXI.AnimatedSprite {
-    return this._rendering;
-  }
-
-  public get rendering() {
     return this._rendering;
   }
 }

@@ -1,6 +1,7 @@
 import * as PIXI from 'pixi.js';
+import { Character } from '../../character';
 import { StaticSystem } from '../../core';
-import { Vector2 } from '../../geometry';
+import { Entity } from '../../entity';
 import { Loader } from '../../system';
 import Ability, { ABILITY_NAMES, ABILITY_STATUS } from './Ability';
 
@@ -15,25 +16,20 @@ export default class Lightable extends Ability {
   private _lightingLevel: number;
 
   public constructor(
-    geometryPosition: Vector2,
+    owner: Character | Entity,
     initStatus: LightableStatus = ABILITY_STATUS.UNVISIT
   ) {
-    super(geometryPosition);
+    super(owner);
     this._name = ABILITY_NAMES.LIGHTABLE;
 
     const texture = Loader.textures.LIGHTING_MASK[0];
     const sprite = new PIXI.Sprite(texture);
-    this._rendering = sprite;
-    this.geometryPosition = geometryPosition;
+    this.rendering = sprite;
 
     this._status = initStatus;
     this.initialize(initStatus);
 
     StaticSystem.renderer.add(this);
-  }
-
-  public get rendering() {
-    return this._rendering;
   }
 
   public get lightingLevel() {
