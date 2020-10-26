@@ -52,64 +52,11 @@ export const updateEntitiesDislightings = (geometryPosition: Vector2) => {
         const character = characterGroup.getCharacter(x, y) as NonPlayer;
         character?.hide();
       }
+
+      if (lightable.status === ABILITY_STATUS.DISLIGHTING) {
+        const character = characterGroup.getCharacter(x, y) as NonPlayer;
+        character?.hide();
+      }
     }
   });
-};
-
-export const findEntitiesPath = (
-  sourcePosition: Vector2,
-  targetPosition: Vector2,
-  isStay = false
-) => {
-  const { x: sx, y: sy } = sourcePosition;
-  const { x: tx, y: ty } = targetPosition;
-  const entityGroup = StaticSystem.entityGroup;
-  const characterGroup = StaticSystem.characterGroup;
-
-  const currentCharacter = characterGroup.getCharacter(sx, sy);
-  currentCharacter.inTick = true;
-
-  let threshold = 0;
-
-  const dijkstra = new ROT.Path.Dijkstra(
-    sx,
-    sy,
-    (x, y) => {
-      const entity = entityGroup.getEntity(x, y);
-
-      if (threshold > 300) {
-        return false;
-      }
-
-      if (entity?.hasAbility(ABILITY_NAMES.PASSABLE)) {
-        const passable = entity.getAbility(ABILITY_NAMES.PASSABLE);
-        const char = characterGroup.getCharacter(x, y);
-        const inTick = char?.inTick;
-
-        threshold += 1;
-        if (isStay) {
-          if (passable.status === ABILITY_STATUS.PASS && !inTick) {
-            return true;
-          }
-        } else {
-          if (passable.status === ABILITY_STATUS.PASS) {
-            return true;
-          }
-        }
-      }
-
-      return false;
-    },
-    { topology: 4 }
-  );
-
-  const pathStack = [];
-  dijkstra.compute(tx, ty, (x, y) => {
-    const dir = Vector2.minus(new Vector2(x, y), sourcePosition);
-    if (!Vector2.equals(Vector2.center, dir)) {
-      pathStack.push(dir);
-    }
-  });
-
-  return pathStack[0];
 };

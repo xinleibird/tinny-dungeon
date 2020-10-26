@@ -179,7 +179,7 @@ export const generateDungeonMapToAutoTile = (dungeonW: number, dungeonH: number)
       const finalDistance = Vector2.manhattan(new Vector2(rx, ry), new Vector2(x, y));
       if (
         floorsMap[y][x] === ENTITY_TYPES.FLOOR &&
-        finalDistance > (dungeonW + dungeonH) * 0.2 &&
+        // finalDistance > (dungeonW + dungeonH) * 0.2 &&
         floorsMap[y + 1][x] !== ENTITY_TYPES.EMPTY &&
         floorsMap[y + 1][x] !== ENTITY_TYPES.CORRIDOR &&
         floorsMap[y - 1][x] !== ENTITY_TYPES.CORRIDOR &&

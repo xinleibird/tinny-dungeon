@@ -6,7 +6,10 @@ import { Vector2 } from '../geometry';
 import { Ability, ABILITY_NAMES, ABILITY_STATUS, Hurtable, Passable } from '../object/ability';
 import { Attacking, Behavior, Movement, Opening } from '../object/behavior';
 import { DirectionIndicator, External } from '../object/external';
+import { Strategy } from '../object/strategy';
 import { Loader } from '../system';
+import { TurnBase } from '../turn';
+import Intelligence from './Intelligence';
 
 const { SPRITE_OFFSET_X, SPRITE_OFFSET_Y, SPRITE_SIZE } = SPRITE_OPTIONS;
 
@@ -46,7 +49,10 @@ export default abstract class Character extends Renderable {
   protected _behaviors: Behavior[] = [];
   protected _abilities: Ability[] = [];
 
+  protected _intelligence: Intelligence;
+
   private _inTick = false;
+  private _turnBase: TurnBase;
 
   protected constructor(type: PLAYER_TYPES | NONPLAYER_TYPES) {
     super();
@@ -56,11 +62,14 @@ export default abstract class Character extends Renderable {
     this._geometryPosition = new Vector2();
     this._lastGeometryPosition = null;
 
+    this._intelligence = new Intelligence(this);
+
     this.initialize(type);
     this.registBehaviors();
     this.registAbilities();
 
     Control.regist(this);
+    this._turnBase = Control.getInstance().turnBase;
     StaticSystem.renderer.add(this);
     StaticSystem.characterGroup.setCharacter(0, 0, this);
 
@@ -68,6 +77,26 @@ export default abstract class Character extends Renderable {
     PIXI.Ticker.shared.add(() => {
       this._rendering.zIndex = this.geometryPosition.y;
     });
+  }
+
+  public decide() {
+    this._intelligence.decide();
+  }
+
+  public setStrategy(strategy: Strategy) {
+    this._intelligence.strategy = strategy;
+  }
+
+  public set strategy(strategy: Strategy) {
+    this._intelligence.strategy = strategy;
+  }
+
+  public get strategy() {
+    return this._intelligence.strategy;
+  }
+
+  public get turnBase() {
+    return this._turnBase;
   }
 
   public get rendering() {
@@ -286,6 +315,18 @@ export default abstract class Character extends Renderable {
     };
   }
 
+  public canBehave(direction: Vector2) {
+    this.direction = direction;
+
+    for (const behavior of this._behaviors) {
+      if (behavior.canDo(direction)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   public async rollBehaviors(direction: Vector2) {
     for (const behavior of this._behaviors) {
       if (behavior.canDo(direction)) {
@@ -410,7 +451,7 @@ export default abstract class Character extends Renderable {
       hurt
     );
 
-    this.geometryPosition = this._geometryPosition;
+    this.setRenderingGeometryPosition(this._geometryPosition);
 
     // external composition
     const directionIndicator = new DirectionIndicator();

@@ -14,7 +14,6 @@ export default class TurnBase {
   private _queue: TurnEvent[] = [];
   private _current = 0;
   private _time = 0;
-  private _length = 0;
 
   private constructor() {}
 
@@ -27,7 +26,7 @@ export default class TurnBase {
     this._current += 1;
   }
 
-  public async tickAll() {
+  public async tickPromiseAll() {
     const tmp = [];
     this._queue.forEach((e) => {
       const cur = this._queue?.[this._current];
@@ -40,10 +39,24 @@ export default class TurnBase {
     await Promise.all(tmp);
   }
 
-  public add(event: TurnEvent, time = event.time) {
-    event.time = this._time + time;
-    this._queue.push(event);
-    this._length += 1;
+  public async tickTurnAll() {
+    while (this.hasNext()) {
+      await this.next();
+    }
+  }
+
+  public add(event: TurnEvent | TurnEvent[]) {
+    if (event instanceof TurnEvent) {
+      event.time += this._time;
+      this._queue.push(event);
+    }
+
+    if (Array.isArray(event)) {
+      for (const evt of event) {
+        evt.time += this._time;
+        this._queue.push(evt);
+      }
+    }
   }
 
   public get time() {

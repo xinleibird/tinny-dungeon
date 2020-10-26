@@ -7,13 +7,10 @@ import {
 import { StaticSystem } from '../core';
 import { Vector2 } from '../geometry';
 import { JOY_NAMES, KEY_NAMES } from '../input';
+import { Trace } from '../object/strategy';
 import { Emitter, JOY_EVENTS, KEY_EVENTS } from '../system';
 import { TurnBase, TurnEvent } from '../turn/';
-import {
-  findEntitiesPath,
-  updateEntitiesDislightings,
-  updateEntitiesLightings,
-} from '../utils';
+import { updateEntitiesDislightings, updateEntitiesLightings } from '../utils';
 
 export default class Control {
   private static _instance: Control;
@@ -43,6 +40,10 @@ export default class Control {
     return instance;
   }
 
+  public get turnBase() {
+    return Control._turnBase;
+  }
+
   private _lastDownTimeStamp = 0;
   private _delay = 150;
 
@@ -59,28 +60,28 @@ export default class Control {
   }
 
   private handleKeyDown() {
-    Emitter.on(KEY_EVENTS.KEY_DOWN, (key: KEY_NAMES, timeStamp: number) => {
+    Emitter.on(KEY_EVENTS.KEY_DOWN, (key: KEY_NAMES) => {
       switch (KEY_NAMES[key]) {
         case KEYBOARD_CONTROLLED_KEYS[CONTROL_ACTIONS.WALK_LEFT]: {
-          this.nextTurn(Vector2.left);
+          this.processTurn(Vector2.left);
 
           break;
         }
 
         case KEYBOARD_CONTROLLED_KEYS[CONTROL_ACTIONS.WALK_RIGHT]: {
-          this.nextTurn(Vector2.right);
+          this.processTurn(Vector2.right);
 
           break;
         }
 
         case KEYBOARD_CONTROLLED_KEYS[CONTROL_ACTIONS.WALK_UP]: {
-          this.nextTurn(Vector2.up);
+          this.processTurn(Vector2.up);
 
           break;
         }
 
         case KEYBOARD_CONTROLLED_KEYS[CONTROL_ACTIONS.WALK_DOWN]: {
-          this.nextTurn(Vector2.down);
+          this.processTurn(Vector2.down);
 
           break;
         }
@@ -95,25 +96,25 @@ export default class Control {
     Emitter.on(JOY_EVENTS.JOY_DOWN, async (joy: JOY_NAMES) => {
       switch (JOY_NAMES[joy]) {
         case JOYSTICK_CONTROLLED_JOYS[CONTROL_ACTIONS.WALK_LEFT]: {
-          await this.nextTurn(Vector2.left);
+          await this.processTurn(Vector2.left);
 
           break;
         }
 
         case JOYSTICK_CONTROLLED_JOYS[CONTROL_ACTIONS.WALK_RIGHT]: {
-          await this.nextTurn(Vector2.right);
+          await this.processTurn(Vector2.right);
 
           break;
         }
 
         case JOYSTICK_CONTROLLED_JOYS[CONTROL_ACTIONS.WALK_UP]: {
-          await this.nextTurn(Vector2.up);
+          await this.processTurn(Vector2.up);
 
           break;
         }
 
         case JOYSTICK_CONTROLLED_JOYS[CONTROL_ACTIONS.WALK_DOWN]: {
-          await this.nextTurn(Vector2.down);
+          await this.processTurn(Vector2.down);
 
           break;
         }
@@ -124,24 +125,22 @@ export default class Control {
     });
   }
 
-  private async nextTurn(direction: Vector2) {
+  private async processTurn(direction: Vector2) {
     if (Date.now() > this._lastDownTimeStamp + this._delay && !this._lock) {
+      if (!this._player.canBehave(direction)) {
+        return;
+      }
+
       this._lock = true;
+
       Control._turnBase.add(new TurnEvent(this._player, direction));
 
       this._nonPlayers.forEach((char) => {
-        const dir = findEntitiesPath(
-          char.geometryPosition,
-          this._player.geometryPosition,
-          this._player.isStay
-        );
-
-        Control._turnBase.add(new TurnEvent(char, dir));
+        char.strategy = new Trace(char, this._player);
+        char.decide();
       });
 
-      while (Control._turnBase.hasNext()) {
-        await Control._turnBase.next();
-      }
+      await Control._turnBase.tickTurnAll();
 
       Control._turnBase.clear();
 

@@ -34,6 +34,7 @@ export default class Attacking extends Behavior {
           x: x * 16 + SPRITE_OFFSET_X + dx * 8,
           y: y * 16 + SPRITE_OFFSET_Y + dy * 8,
         },
+
         onComplete: () => {
           gsap.to(this._character.rendering, {
             duration: 0.05,
@@ -45,13 +46,13 @@ export default class Attacking extends Behavior {
           });
         },
         onStart: () => {
+          this._character.direction = direction;
           this._character.attackSound.play();
         },
       });
 
       this.exertAbility(direction);
 
-      this._character.direction = direction;
       this._character.attack(direction);
     });
   }

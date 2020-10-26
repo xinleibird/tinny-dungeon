@@ -5,6 +5,7 @@ import Character, { NONPLAYER_TYPES } from './Character';
 export default class NonPlayer extends Character {
   public constructor(type: NONPLAYER_TYPES, scene?: Scene) {
     super(type);
+
     this.registSounds();
   }
 
