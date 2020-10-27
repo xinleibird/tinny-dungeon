@@ -59,6 +59,10 @@ export default class TurnBase {
     }
   }
 
+  public get queue() {
+    return this._queue;
+  }
+
   public get time() {
     return this._time;
   }

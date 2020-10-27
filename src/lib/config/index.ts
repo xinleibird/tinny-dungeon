@@ -7,6 +7,7 @@ export enum CONTROL_ACTIONS {
   WALK_DOWN = 'walkDown',
   SHOW_EXTERNAL = 'showExternal',
   ATTACK = 'attack',
+  GO_TO_LEFT = 'GoToLeft',
 }
 
 export const KEYBOARD_CONTROLLED_KEYS = {
@@ -16,6 +17,7 @@ export const KEYBOARD_CONTROLLED_KEYS = {
   [CONTROL_ACTIONS.WALK_DOWN]: KEY_NAMES.s,
   [CONTROL_ACTIONS.SHOW_EXTERNAL]: KEY_NAMES.f,
   [CONTROL_ACTIONS.ATTACK]: KEY_NAMES.Space,
+  [CONTROL_ACTIONS.GO_TO_LEFT]: KEY_NAMES.ArrowLeft,
 };
 
 export const JOYSTICK_CONTROLLED_JOYS = {

@@ -25,10 +25,6 @@ export default class Trace extends Strategy {
     const { x: sx, y: sy } = this._self.geometryPosition;
     const { x: tx, y: ty } = this._target.geometryPosition;
     const entityGroup = StaticSystem.entityGroup;
-    const characterGroup = StaticSystem.characterGroup;
-
-    const currentCharacter = characterGroup.getCharacter(sx, sy);
-    currentCharacter.inTick = true;
 
     const dijkstra = new ROT.Path.Dijkstra(
       sx,
@@ -51,6 +47,7 @@ export default class Trace extends Strategy {
     const pathStack = [];
     dijkstra.compute(tx, ty, (x, y) => {
       const dir = Vector2.minus(new Vector2(x, y), this._self.geometryPosition);
+
       if (!Vector2.equals(Vector2.center, dir)) {
         pathStack.push(dir);
       }
@@ -65,8 +62,7 @@ export default class Trace extends Strategy {
     const entityGroup = StaticSystem.entityGroup;
     const characterGroup = StaticSystem.characterGroup;
 
-    const currentCharacter = characterGroup.getCharacter(sx, sy);
-    currentCharacter.inTick = true;
+    this._self.inTick = true;
 
     let count = 0;
 

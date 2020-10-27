@@ -7,7 +7,7 @@ import {
 import { StaticSystem } from '../core';
 import { Vector2 } from '../geometry';
 import { JOY_NAMES, KEY_NAMES } from '../input';
-import { Trace } from '../object/strategy';
+import { GoTo } from '../object/strategy';
 import { Emitter, JOY_EVENTS, KEY_EVENTS } from '../system';
 import { TurnBase, TurnEvent } from '../turn/';
 import { updateEntitiesDislightings, updateEntitiesLightings } from '../utils';
@@ -86,6 +86,12 @@ export default class Control {
           break;
         }
 
+        case KEYBOARD_CONTROLLED_KEYS[CONTROL_ACTIONS.GO_TO_LEFT]: {
+          this.setNon();
+
+          break;
+        }
+
         default:
           break;
       }
@@ -125,7 +131,17 @@ export default class Control {
     });
   }
 
-  private async processTurn(direction: Vector2) {
+  private setNon() {
+    this._nonPlayers.forEach((char) => {
+      char.strategy = new GoTo(
+        char,
+        Vector2.merge(this._player.geometryPosition, Vector2.left)
+      );
+      char.decide();
+    });
+  }
+
+  private async processTurn(direction: Vector2, count?: number) {
     if (Date.now() > this._lastDownTimeStamp + this._delay && !this._lock) {
       if (!this._player.canBehave(direction)) {
         return;
@@ -134,11 +150,6 @@ export default class Control {
       this._lock = true;
 
       Control._turnBase.add(new TurnEvent(this._player, direction));
-
-      this._nonPlayers.forEach((char) => {
-        char.strategy = new Trace(char, this._player);
-        char.decide();
-      });
 
       await Control._turnBase.tickTurnAll();
 

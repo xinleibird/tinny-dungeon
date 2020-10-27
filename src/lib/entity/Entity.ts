@@ -53,7 +53,7 @@ export default class Entity {
   public addAbility(...ability: Ability[]) {
     for (const abi of ability) {
       if (!this.hasAbility(abi.name)) {
-        this._abilities.push(...ability);
+        this._abilities.push(abi);
       }
     }
   }
