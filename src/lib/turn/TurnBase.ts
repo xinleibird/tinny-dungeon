@@ -1,3 +1,4 @@
+import { Character } from '../character';
 import TurnEvent from './TurnEvent';
 
 export default class TurnBase {
@@ -57,6 +58,15 @@ export default class TurnBase {
         this._queue.push(evt);
       }
     }
+  }
+
+  public remove(occurd: Character) {
+    this.queue.forEach((evt) => {
+      if (evt.occurd === occurd) {
+        evt.time = -1;
+        evt.life = 0;
+      }
+    });
   }
 
   public get queue() {

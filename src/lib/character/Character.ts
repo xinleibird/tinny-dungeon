@@ -54,6 +54,8 @@ export default abstract class Character extends Renderable {
   private _inTick = false;
   private _turnBase: TurnBase;
 
+  private _holdTimeout: any;
+
   protected constructor(type: PLAYER_TYPES | NONPLAYER_TYPES) {
     super();
     this._type = type;
@@ -70,6 +72,7 @@ export default abstract class Character extends Renderable {
 
     Control.regist(this);
     this._turnBase = Control.getInstance().turnBase;
+
     StaticSystem.renderer.add(this);
     StaticSystem.characterGroup.setCharacter(0, 0, this);
 
@@ -272,8 +275,11 @@ export default abstract class Character extends Renderable {
     walkShadow.gotoAndPlay(0);
     walk.gotoAndPlay(0);
 
+    clearTimeout(this._holdTimeout);
     walk.onComplete = () => {
-      this.hold();
+      this._holdTimeout = setTimeout(() => {
+        this.hold();
+      }, 50);
     };
   }
 
@@ -292,6 +298,10 @@ export default abstract class Character extends Renderable {
 
     attackShadow.gotoAndPlay(0);
     attack.gotoAndPlay(0);
+
+    attack.onComplete = () => {
+      this.hold();
+    };
   }
 
   public hurt() {
@@ -451,7 +461,7 @@ export default abstract class Character extends Renderable {
       hurt
     );
 
-    this.setRenderingGeometryPosition(this._geometryPosition);
+    this.geometryPosition = this._geometryPosition;
 
     // external composition
     const directionIndicator = new DirectionIndicator();

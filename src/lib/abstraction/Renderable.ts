@@ -24,8 +24,4 @@ export default abstract class Renderable {
 
     this._geometryPosition = geometryPosition;
   }
-
-  public setRenderingGeometryPosition(geometryPosition: Vector2) {
-    this.geometryPosition = geometryPosition;
-  }
 }

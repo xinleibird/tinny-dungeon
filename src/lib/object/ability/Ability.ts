@@ -45,7 +45,7 @@ export default class Ability extends Renderable {
 
   public set rendering(rendering: PIXI.DisplayObject | null) {
     this._rendering = rendering;
-    this.setRenderingGeometryPosition(this._geometryPosition);
+    this.geometryPosition = this._geometryPosition;
   }
 
   public exert(direction: Vector2) {}

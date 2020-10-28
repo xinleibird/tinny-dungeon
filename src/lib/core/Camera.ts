@@ -35,6 +35,10 @@ export default class Camera {
     this._viewport.removeChild(obj);
   }
 
+  public removeChildren() {
+    this._viewport.removeChildren();
+  }
+
   public follow(obj: PIXI.DisplayObject) {
     this._viewport.follow(obj);
   }

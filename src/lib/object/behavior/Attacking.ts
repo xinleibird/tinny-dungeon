@@ -25,6 +25,7 @@ export default class Attacking extends Behavior {
       const { x, y } = geometryPosition;
 
       this._character.lastGeometryPosition = new Vector2(x, y);
+      this._character.direction = direction;
 
       const { x: dx, y: dy } = direction;
 
@@ -34,26 +35,22 @@ export default class Attacking extends Behavior {
           x: x * 16 + SPRITE_OFFSET_X + dx * 8,
           y: y * 16 + SPRITE_OFFSET_Y + dy * 8,
         },
-
+        onStart: () => {
+          this._character.attackSound.play();
+          this._character.attack(direction);
+        },
         onComplete: () => {
           gsap.to(this._character.rendering, {
             duration: 0.05,
             pixi: { x: x * 16 + SPRITE_OFFSET_X, y: y * 16 + SPRITE_OFFSET_Y },
             onComplete: () => {
-              this._character.hold();
               resolve(true);
             },
           });
         },
-        onStart: () => {
-          this._character.direction = direction;
-          this._character.attackSound.play();
-        },
       });
 
       this.exertAbility(direction);
-
-      this._character.attack(direction);
     });
   }
 

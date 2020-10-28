@@ -56,6 +56,7 @@ export default class Game extends PIXI.Application {
   private _camera: Camera;
   private _renderer: Renderer;
   private _scene: Scene;
+
   private _player: Player;
 
   // for stats.js
@@ -72,7 +73,6 @@ export default class Game extends PIXI.Application {
   public play() {
     Emitter.on(RESOURCE_EVENTS.RESOURCES_LOADED, () => {
       this.gameLoop();
-      this._renderer.render();
     });
   }
 
@@ -205,5 +205,15 @@ export default class Game extends PIXI.Application {
     // skeleton3.geometryPosition = new Vector2(x + 3, y);
     // skeleton4.geometryPosition = new Vector2(x + 1, y + 1);
     // skeleton5.geometryPosition = new Vector2(x, y + 1);
+    this._renderer.render();
+
+    // this._scene.destroy();
+
+    // this._scene = new Dungeon(DUNGEON_SIZE_WIDTH, DUNGEON_SIZE_HEITHT);
+    // const { x: sx, y: sy } = this._scene.playerRespawnPosition;
+
+    // this._player.geometryPosition = this._scene.playerRespawnPosition;
+    // updateEntitiesLightings(this._player.geometryPosition);
+    // this._renderer.render();
   }
 }

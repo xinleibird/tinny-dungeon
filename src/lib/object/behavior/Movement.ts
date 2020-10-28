@@ -37,18 +37,17 @@ export default class Movement extends Behavior {
     gsap.to(this._character.rendering, {
       duration: 0.2,
       pixi: { x: tarX * 16 + SPRITE_OFFSET_X, y: tarY * 16 + SPRITE_OFFSET_Y },
-      onStart: () => {
+      onStart: async () => {
         if (this._character instanceof Player) {
           this._character.stepSound.play();
         }
+        this._character.walk(direction);
       },
     });
 
     if (this._character instanceof Player) {
       this._character.showExternal();
     }
-
-    this._character.walk(direction);
   }
 
   public canDo(direction: Vector2) {

@@ -7,7 +7,7 @@ import {
 import { StaticSystem } from '../core';
 import { Vector2 } from '../geometry';
 import { JOY_NAMES, KEY_NAMES } from '../input';
-import { GoTo } from '../object/strategy';
+import { Goto } from '../object/strategy';
 import { Emitter, JOY_EVENTS, KEY_EVENTS } from '../system';
 import { TurnBase, TurnEvent } from '../turn/';
 import { updateEntitiesDislightings, updateEntitiesLightings } from '../utils';
@@ -133,10 +133,11 @@ export default class Control {
 
   private setNon() {
     this._nonPlayers.forEach((char) => {
-      char.strategy = new GoTo(
+      char.strategy = new Goto(
         char,
         Vector2.merge(this._player.geometryPosition, Vector2.left)
       );
+      this.turnBase.remove(char);
       char.decide();
     });
   }
@@ -149,11 +150,11 @@ export default class Control {
 
       this._lock = true;
 
-      Control._turnBase.add(new TurnEvent(this._player, direction));
+      this.turnBase.add(new TurnEvent(this._player, direction));
 
-      await Control._turnBase.tickTurnAll();
+      await this.turnBase.tickTurnAll();
 
-      Control._turnBase.clear();
+      this.turnBase.clear();
 
       this._lastDownTimeStamp = Date.now();
       this._lock = false;

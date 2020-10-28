@@ -21,4 +21,8 @@ export default class Scene {
   public get sceneClearPosition() {
     return this._sceneClearPosition;
   }
+
+  public destroy() {
+    StaticSystem.renderer.trash();
+  }
 }

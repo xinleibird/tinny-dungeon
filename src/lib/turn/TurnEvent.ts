@@ -18,6 +18,10 @@ export default class TurnEvent {
     await this._occured.rollBehaviors(this._direction);
   }
 
+  public get occurd() {
+    return this._occured;
+  }
+
   public get life() {
     return this._life;
   }

@@ -1,6 +1,7 @@
 import * as PIXI from 'pixi.js';
 import { Renderable } from '../abstraction';
-import { Character } from '../character';
+import { Character, Player } from '../character';
+import { Vector2 } from '../geometry';
 import { Ability, Lightable } from '../object/ability';
 import { Tile } from '../tilemap';
 import Camera from './Camera';
@@ -14,6 +15,8 @@ export default class Renderer {
   private _characterLayer: PIXI.Container = new PIXI.Container();
   private _lightingLayer: PIXI.DisplayObject[] = [];
 
+  private _player: Player;
+
   public constructor() {
     this._camera = StaticSystem.camera;
     StaticSystem.registRenderer(this);
@@ -25,6 +28,18 @@ export default class Renderer {
     this._characterLayer.children.length > 0 &&
       this._camera.viewport.addChild(this._characterLayer);
     this._lightingLayer.length > 0 && this._camera.viewport.addChild(...this._lightingLayer);
+  }
+
+  public trash() {
+    this._tileLayer = [];
+    this._floorLayer = [];
+    this._lightingLayer = [];
+
+    this._characterLayer.removeChildren();
+    StaticSystem.camera.removeChildren();
+
+    this._player.geometryPosition = new Vector2(0, 0);
+    this.add(this._player);
   }
 
   public get characterLayer() {
@@ -50,6 +65,10 @@ export default class Renderer {
 
     if (obj instanceof Character) {
       this._characterLayer.addChild(obj.rendering);
+
+      if (obj instanceof Player) {
+        this._player = obj;
+      }
     }
   }
 }
