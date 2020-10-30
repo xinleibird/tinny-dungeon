@@ -4,17 +4,13 @@ import { Loader } from '../../system';
 import External, { EXTERNAL_NAMES } from './External';
 
 export default class DirectionIndicator extends External {
-  protected _sprite: PIXI.AnimatedSprite;
   protected _direction: Vector2;
+  protected _rendering: PIXI.AnimatedSprite;
 
   public constructor(direction: Vector2 = Vector2.down) {
     super();
     this._name = EXTERNAL_NAMES.DIRECTION_INDICATOR;
     this.initialize(direction);
-  }
-
-  public get sprite() {
-    return this._sprite;
   }
 
   public get direction() {
@@ -26,25 +22,33 @@ export default class DirectionIndicator extends External {
     this.handleDirection(direction);
   }
 
+  public get visiable() {
+    return this._rendering.visible;
+  }
+
+  public set visiable(visiable: boolean) {
+    this._rendering.visible = visiable;
+  }
+
   private handleDirection(direction: Vector2) {
     if (direction.equals(Vector2.down)) {
-      this._sprite.gotoAndStop(0);
-      this._sprite.position.set(0, 18);
+      this._rendering.gotoAndStop(0);
+      this._rendering.position.set(0, 18);
     }
 
     if (direction.equals(Vector2.up)) {
-      this._sprite.gotoAndStop(1);
-      this._sprite.position.set(0, 0);
+      this._rendering.gotoAndStop(1);
+      this._rendering.position.set(0, 0);
     }
 
     if (direction.equals(Vector2.left)) {
-      this._sprite.gotoAndStop(3);
-      this._sprite.position.set(8, 10);
+      this._rendering.gotoAndStop(3);
+      this._rendering.position.set(8, 10);
     }
 
     if (direction.equals(Vector2.right)) {
-      this._sprite.gotoAndStop(3);
-      this._sprite.position.set(8, 10);
+      this._rendering.gotoAndStop(3);
+      this._rendering.position.set(8, 10);
     }
   }
 
@@ -57,11 +61,11 @@ export default class DirectionIndicator extends External {
 
     const sprite = new PIXI.AnimatedSprite(batch);
     sprite.visible = false;
-    this._sprite = sprite;
+    this._rendering = sprite;
 
-    this._sprite.anchor.set(0.5, 0.5);
-    this._sprite.alpha = 0.75;
-    this._sprite.loop = false;
+    this._rendering.anchor.set(0.5, 0.5);
+    this._rendering.alpha = 0.75;
+    this._rendering.loop = false;
 
     this.handleDirection(direction);
   }

@@ -16,12 +16,12 @@ export default class Trace extends Strategy {
       const dir = this.siege();
       return [new TurnEvent(this._self, dir)];
     } else {
-      const dir = this.fellow();
+      const dir = this.follow();
       return [new TurnEvent(this._self, dir)];
     }
   }
 
-  private fellow() {
+  private follow() {
     const { x: sx, y: sy } = this._self.geometryPosition;
     const { x: tx, y: ty } = this._target.geometryPosition;
     const entityGroup = StaticSystem.entityGroup;

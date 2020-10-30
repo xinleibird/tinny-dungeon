@@ -12,6 +12,8 @@ export default class Passable extends Ability {
     this._name = ABILITY_NAMES.PASSABLE;
   }
 
+  public exert() {}
+
   public set status(status: PassableStatus) {
     this._status = status;
   }

@@ -1,2 +1,2 @@
-export { default as DirectionIndicator } from './Direction';
+export { default as DirectionIndicator } from './DirectionIndicator';
 export { default as External } from './External';

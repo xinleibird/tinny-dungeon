@@ -15,6 +15,8 @@ export default class Clearable extends Ability {
     this.initialize();
   }
 
+  public exert() {}
+
   private initialize() {
     const sprite = new PIXI.Sprite(Loader.textures.STAIRS[1]);
     sprite.anchor.y = 0.5;

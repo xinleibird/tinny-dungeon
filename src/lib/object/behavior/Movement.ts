@@ -6,6 +6,7 @@ import { SPRITE_OPTIONS } from '../../config';
 import { StaticSystem } from '../../core';
 import { Vector2 } from '../../geometry';
 import { ABILITY_NAMES, ABILITY_STATUS } from '../ability';
+import { EXTERNAL_NAMES } from '../external/External';
 import Behavior, { BEHAVIOR_NAMES } from './Behavior';
 
 gsap.registerPlugin(PixiPlugin);
@@ -46,7 +47,7 @@ export default class Movement extends Behavior {
     });
 
     if (this._character instanceof Player) {
-      this._character.showExternal();
+      this._character.showExternal(EXTERNAL_NAMES.DIRECTION_INDICATOR);
     }
   }
 

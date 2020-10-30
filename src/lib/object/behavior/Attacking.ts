@@ -29,26 +29,28 @@ export default class Attacking extends Behavior {
 
       const { x: dx, y: dy } = direction;
 
-      gsap.to(this._character.rendering, {
-        duration: 0.15,
-        pixi: {
-          x: x * 16 + SPRITE_OFFSET_X + dx * 8,
-          y: y * 16 + SPRITE_OFFSET_Y + dy * 8,
-        },
-        onStart: () => {
-          this._character.attackSound.play();
-          this._character.attack(direction);
-        },
-        onComplete: () => {
-          gsap.to(this._character.rendering, {
-            duration: 0.05,
-            pixi: { x: x * 16 + SPRITE_OFFSET_X, y: y * 16 + SPRITE_OFFSET_Y },
-            onComplete: () => {
-              resolve(true);
-            },
-          });
-        },
-      });
+      setTimeout(() => {
+        gsap.to(this._character.rendering, {
+          duration: 0.15,
+          pixi: {
+            x: x * 16 + SPRITE_OFFSET_X + dx * 8,
+            y: y * 16 + SPRITE_OFFSET_Y + dy * 8,
+          },
+          onStart: () => {
+            this._character.attackSound.play();
+            this._character.attack(direction);
+          },
+          onComplete: () => {
+            gsap.to(this._character.rendering, {
+              duration: 0.05,
+              pixi: { x: x * 16 + SPRITE_OFFSET_X, y: y * 16 + SPRITE_OFFSET_Y },
+              onComplete: () => {
+                resolve(true);
+              },
+            });
+          },
+        });
+      }, 50);
 
       this.exertAbility(direction);
     });
@@ -92,15 +94,28 @@ export default class Attacking extends Behavior {
     const tarEntity = StaticSystem.entityGroup.getEntity(x, y);
     const tarCharacter = StaticSystem.characterGroup.getCharacter(x, y);
 
-    if (tarCharacter?.hasAbility(ABILITY_NAMES.HURTABLE)) {
-      const hurtable = tarCharacter?.getAbility(ABILITY_NAMES.HURTABLE);
-      if (hurtable?.status === ABILITY_STATUS.CANHURT) {
-        hurtable?.exert(direction);
+    const attackRoll = this._character.class.attackRoll();
+    let damage = 0;
+
+    if (attackRoll !== -1) {
+      const defenceRoll = tarCharacter.class.defenceRoll();
+
+      if (!defenceRoll) {
+        damage = this._character.class.damageRoll();
       }
-    } else if (tarEntity?.hasAbility(ABILITY_NAMES.HURTABLE)) {
+    } else {
+      damage = this._character.class.damageRoll();
+    }
+
+    if (tarEntity?.hasAbility(ABILITY_NAMES.HURTABLE)) {
       const hurtable = tarEntity?.getAbility(ABILITY_NAMES.HURTABLE);
       if (hurtable?.status === ABILITY_STATUS.CANHURT) {
         hurtable?.exert(direction);
+      }
+    } else if (tarCharacter?.hasAbility(ABILITY_NAMES.HURTABLE)) {
+      const hurtable = tarCharacter?.getAbility(ABILITY_NAMES.HURTABLE);
+      if (hurtable?.status === ABILITY_STATUS.CANHURT) {
+        hurtable?.exert(direction, damage);
       }
     }
   }

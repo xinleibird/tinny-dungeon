@@ -44,6 +44,8 @@ export default class Decorateable extends Ability {
     this.initialize(decoratorIndex);
   }
 
+  public exert() {}
+
   private initialize(decoratorIndex: number) {
     const length = Object.keys(DecoratorTypesWeight).length;
     if (decoratorIndex !== 0 && decoratorIndex < length) {

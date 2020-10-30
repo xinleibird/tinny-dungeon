@@ -24,6 +24,8 @@ export default class Openable extends Ability {
     this.initialize(initStatus, direction);
   }
 
+  public exert() {}
+
   private initialize(initStatus: OpenableStatus, direction: Vector2) {
     let sprite: PIXI.AnimatedSprite = null;
 

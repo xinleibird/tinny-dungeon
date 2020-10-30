@@ -27,7 +27,7 @@ export enum ABILITY_STATUS {
   NOHURT = 'nohurt',
 }
 
-export default class Ability extends Renderable {
+export default abstract class Ability extends Renderable {
   protected _name: ABILITY_NAMES;
   protected _status: ABILITY_STATUS;
   protected _owner: Character | Entity;
@@ -48,7 +48,7 @@ export default class Ability extends Renderable {
     this.geometryPosition = this._geometryPosition;
   }
 
-  public exert(direction: Vector2) {}
+  public abstract exert(direction: Vector2, value?: any): void;
 
   public get name() {
     return this._name;

@@ -7,7 +7,7 @@ import {
 import { StaticSystem } from '../core';
 import { Vector2 } from '../geometry';
 import { JOY_NAMES, KEY_NAMES } from '../input';
-import { Goto } from '../object/strategy';
+import { Goto, Trace } from '../object/strategy';
 import { Emitter, JOY_EVENTS, KEY_EVENTS } from '../system';
 import { TurnBase, TurnEvent } from '../turn/';
 import { updateEntitiesDislightings, updateEntitiesLightings } from '../utils';
@@ -151,6 +151,11 @@ export default class Control {
       this._lock = true;
 
       this.turnBase.add(new TurnEvent(this._player, direction));
+
+      this._nonPlayers.forEach((non) => {
+        non.strategy = new Trace(non, this._player);
+        non.decide();
+      });
 
       await this.turnBase.tickTurnAll();
 

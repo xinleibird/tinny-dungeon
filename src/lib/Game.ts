@@ -196,15 +196,15 @@ export default class Game extends PIXI.Application {
     const { x, y } = this._scene.playerRespawnPosition;
 
     const skeleton1 = new NonPlayer(NONPLAYER_TYPES.SKELETON);
-    // const skeleton2 = new NonPlayer(NONPLAYER_TYPES.SKELETON);
-    // const skeleton3 = new NonPlayer(NONPLAYER_TYPES.SKELETON);
-    // const skeleton4 = new NonPlayer(NONPLAYER_TYPES.SKELETON);
-    // const skeleton5 = new NonPlayer(NONPLAYER_TYPES.SKELETON);
+    const skeleton2 = new NonPlayer(NONPLAYER_TYPES.SKELETON);
+    const skeleton3 = new NonPlayer(NONPLAYER_TYPES.SKELETON);
+    const skeleton4 = new NonPlayer(NONPLAYER_TYPES.SKELETON);
+    const skeleton5 = new NonPlayer(NONPLAYER_TYPES.SKELETON);
     skeleton1.geometryPosition = new Vector2(x + 1, y);
-    // skeleton2.geometryPosition = new Vector2(x + 2, y);
-    // skeleton3.geometryPosition = new Vector2(x + 3, y);
-    // skeleton4.geometryPosition = new Vector2(x + 1, y + 1);
-    // skeleton5.geometryPosition = new Vector2(x, y + 1);
+    skeleton2.geometryPosition = new Vector2(x + 2, y);
+    skeleton3.geometryPosition = new Vector2(x + 3, y);
+    skeleton4.geometryPosition = new Vector2(x + 1, y + 1);
+    skeleton5.geometryPosition = new Vector2(x, y + 1);
     this._renderer.render();
 
     // this._scene.destroy();

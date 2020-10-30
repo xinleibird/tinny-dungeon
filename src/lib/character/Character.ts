@@ -6,9 +6,13 @@ import { Vector2 } from '../geometry';
 import { Ability, ABILITY_NAMES, ABILITY_STATUS, Hurtable, Passable } from '../object/ability';
 import { Attacking, Behavior, Movement, Opening } from '../object/behavior';
 import { DirectionIndicator, External } from '../object/external';
+import DamageIndicator from '../object/external/DamageIndicator';
+import { EXTERNAL_NAMES } from '../object/external/External';
 import { Strategy } from '../object/strategy';
+import { GameSound } from '../sound';
 import { Loader } from '../system';
 import { TurnBase } from '../turn';
+import CharacterClass from './CharacterClass';
 import Intelligence from './Intelligence';
 
 const { SPRITE_OFFSET_X, SPRITE_OFFSET_Y, SPRITE_SIZE } = SPRITE_OPTIONS;
@@ -26,11 +30,17 @@ export const CHARACTER_CATEGORIES = {
   ...NONPLAYER_TYPES,
 };
 
+export enum CHARACTER_TYPES {
+  PLAYER = 'player',
+  NON_PLAYER = 'nonPlayer',
+}
+
 export enum CHARACTER_ANIMATIONS {
   HOLD = 'hold',
   WALK = 'walk',
   ATTACK = 'attack',
   HURT = 'hurt',
+  DODGE = 'dodge',
 }
 
 export default abstract class Character extends Renderable {
@@ -42,9 +52,11 @@ export default abstract class Character extends Renderable {
 
   protected _stepSound: PIXI.sound.Sound;
   protected _attackSound: PIXI.sound.Sound;
+  protected _damageSound: PIXI.sound.Sound;
+  protected _dodgeSound: PIXI.sound.Sound;
 
   protected _externals: External[] = [];
-  protected _internals: External[] = [];
+  protected _class: CharacterClass;
 
   protected _behaviors: Behavior[] = [];
   protected _abilities: Ability[] = [];
@@ -53,8 +65,6 @@ export default abstract class Character extends Renderable {
 
   private _inTick = false;
   private _turnBase: TurnBase;
-
-  private _holdTimeout: any;
 
   protected constructor(type: PLAYER_TYPES | NONPLAYER_TYPES) {
     super();
@@ -69,6 +79,8 @@ export default abstract class Character extends Renderable {
     this.initialize(type);
     this.registBehaviors();
     this.registAbilities();
+    this.registSound();
+    this.registExternals();
 
     Control.regist(this);
     this._turnBase = Control.getInstance().turnBase;
@@ -88,6 +100,10 @@ export default abstract class Character extends Renderable {
 
   public setStrategy(strategy: Strategy) {
     this._intelligence.strategy = strategy;
+  }
+
+  public get class() {
+    return this._class;
   }
 
   public set strategy(strategy: Strategy) {
@@ -116,6 +132,14 @@ export default abstract class Character extends Renderable {
 
   public get attackSound() {
     return this._attackSound;
+  }
+
+  public get damageSound() {
+    return this._damageSound;
+  }
+
+  public get dodgeSound() {
+    return this._dodgeSound;
   }
 
   public get abilities() {
@@ -150,10 +174,10 @@ export default abstract class Character extends Renderable {
 
   public addExternal(external: External) {
     this._externals.push(external);
-    this._rendering.addChild(external.sprite);
+    this._rendering.addChild(external.rendering);
   }
 
-  public showExternal(externalName?: string) {
+  public showExternal(externalName?: EXTERNAL_NAMES) {
     if (!externalName) {
       this._externals.forEach((external) => {
         external.visiable = true;
@@ -168,7 +192,16 @@ export default abstract class Character extends Renderable {
     }
   }
 
-  public hideExternal(externalName?: string) {
+  public getExternal(externalName: EXTERNAL_NAMES) {
+    for (const ex of this._externals) {
+      if (ex.name === externalName) {
+        return ex;
+      }
+    }
+    return undefined;
+  }
+
+  public hideExternal(externalName?: EXTERNAL_NAMES) {
     if (!externalName) {
       this._externals.forEach((external) => {
         external.visiable = false;
@@ -241,8 +274,18 @@ export default abstract class Character extends Renderable {
   }
 
   public hold() {
-    const [holdShadow, hold, walkShadow, walk, attackShadow, attack, hurtShadow, hurt] = this
-      ._rendering.children as PIXI.AnimatedSprite[];
+    const [
+      holdShadow,
+      hold,
+      walkShadow,
+      walk,
+      attackShadow,
+      attack,
+      hurtShadow,
+      hurt,
+      dodgeShadow,
+      dodge,
+    ] = this._rendering.children as PIXI.AnimatedSprite[];
 
     holdShadow.visible = true;
     hold.visible = true;
@@ -252,16 +295,28 @@ export default abstract class Character extends Renderable {
     attack.visible = false;
     hurtShadow.visible = false;
     hurt.visible = false;
+    dodgeShadow.visible = false;
+    dodge.visible = false;
 
     holdShadow.play();
     hold.play();
 
-    this.hideExternal();
+    this.hideExternal(EXTERNAL_NAMES.DIRECTION_INDICATOR);
   }
 
   public walk(direction: Vector2) {
-    const [holdShadow, hold, walkShadow, walk, attackShadow, attack, hurtShadow, hurt] = this
-      ._rendering.children as PIXI.AnimatedSprite[];
+    const [
+      holdShadow,
+      hold,
+      walkShadow,
+      walk,
+      attackShadow,
+      attack,
+      hurtShadow,
+      hurt,
+      dodgeShadow,
+      dodge,
+    ] = this._rendering.children as PIXI.AnimatedSprite[];
 
     holdShadow.visible = false;
     hold.visible = false;
@@ -271,21 +326,32 @@ export default abstract class Character extends Renderable {
     attack.visible = false;
     hurtShadow.visible = false;
     hurt.visible = false;
+    dodgeShadow.visible = false;
+    dodge.visible = false;
 
-    walkShadow.gotoAndPlay(0);
-    walk.gotoAndPlay(0);
+    walkShadow.play();
+    walk.play();
 
-    clearTimeout(this._holdTimeout);
-    walk.onComplete = () => {
-      this._holdTimeout = setTimeout(() => {
-        this.hold();
-      }, 50);
+    hurt.gotoAndPlay(0);
+
+    hurt.onComplete = () => {
+      this.hold();
     };
   }
 
   public attack(direction: Vector2) {
-    const [holdShadow, hold, walkShadow, walk, attackShadow, attack, hurtShadow, hurt] = this
-      ._rendering.children as PIXI.AnimatedSprite[];
+    const [
+      holdShadow,
+      hold,
+      walkShadow,
+      walk,
+      attackShadow,
+      attack,
+      hurtShadow,
+      hurt,
+      dodgeShadow,
+      dodge,
+    ] = this._rendering.children as PIXI.AnimatedSprite[];
 
     holdShadow.visible = false;
     hold.visible = false;
@@ -295,6 +361,8 @@ export default abstract class Character extends Renderable {
     attack.visible = true;
     hurtShadow.visible = false;
     hurt.visible = false;
+    dodgeShadow.visible = false;
+    dodge.visible = false;
 
     attackShadow.gotoAndPlay(0);
     attack.gotoAndPlay(0);
@@ -305,8 +373,18 @@ export default abstract class Character extends Renderable {
   }
 
   public hurt() {
-    const [holdShadow, hold, walkShadow, walk, attackShadow, attack, hurtShadow, hurt] = this
-      ._rendering.children as PIXI.AnimatedSprite[];
+    const [
+      holdShadow,
+      hold,
+      walkShadow,
+      walk,
+      attackShadow,
+      attack,
+      hurtShadow,
+      hurt,
+      dodgeShadow,
+      dodge,
+    ] = this._rendering.children as PIXI.AnimatedSprite[];
 
     holdShadow.visible = false;
     hold.visible = false;
@@ -316,11 +394,46 @@ export default abstract class Character extends Renderable {
     attack.visible = false;
     hurtShadow.visible = true;
     hurt.visible = true;
+    dodgeShadow.visible = false;
+    dodge.visible = false;
 
-    hurtShadow.play();
-    hurt.play();
+    hurtShadow.gotoAndPlay(0);
+    hurt.gotoAndPlay(0);
 
     hurt.onComplete = () => {
+      this.hold();
+    };
+  }
+
+  public dodge() {
+    const [
+      holdShadow,
+      hold,
+      walkShadow,
+      walk,
+      attackShadow,
+      attack,
+      hurtShadow,
+      hurt,
+      dodgeShadow,
+      dodge,
+    ] = this._rendering.children as PIXI.AnimatedSprite[];
+
+    holdShadow.visible = false;
+    hold.visible = false;
+    walkShadow.visible = false;
+    walk.visible = false;
+    attackShadow.visible = false;
+    attack.visible = false;
+    hurtShadow.visible = false;
+    hurt.visible = false;
+    dodgeShadow.visible = true;
+    dodge.visible = true;
+
+    dodgeShadow.gotoAndPlay(0);
+    dodge.gotoAndPlay(0);
+
+    dodge.onComplete = () => {
       this.hold();
     };
   }
@@ -379,59 +492,71 @@ export default abstract class Character extends Renderable {
     const walkBatch = Loader.textures[character][CHARACTER_ANIMATIONS.WALK];
     const attackBatch = Loader.textures[character][CHARACTER_ANIMATIONS.ATTACK];
     const hurtBatch = Loader.textures[character][CHARACTER_ANIMATIONS.HURT];
+    const dodgeBatch = Loader.textures[character][CHARACTER_ANIMATIONS.DODGE];
 
     const hold = new PIXI.AnimatedSprite(holdBatch);
     const walk = new PIXI.AnimatedSprite(walkBatch);
     const attack = new PIXI.AnimatedSprite(attackBatch);
     const hurt = new PIXI.AnimatedSprite(hurtBatch);
+    const dodge = new PIXI.AnimatedSprite(dodgeBatch);
 
     const holdShadow = new PIXI.AnimatedSprite(holdBatch);
     const walkShadow = new PIXI.AnimatedSprite(walkBatch);
     const attackShadow = new PIXI.AnimatedSprite(attackBatch);
     const hurtShadow = new PIXI.AnimatedSprite(hurtBatch);
+    const dodgeShadow = new PIXI.AnimatedSprite(dodgeBatch);
 
     holdShadow.visible = true;
     walkShadow.visible = false;
     attackShadow.visible = false;
     hurtShadow.visible = false;
-
-    holdShadow.tint = 0x000000;
-    walkShadow.tint = 0x000000;
-    attackShadow.tint = 0x000000;
-    hurtShadow.tint = 0x000000;
-
-    holdShadow.position.y = -5;
-    walkShadow.position.y = -5;
-    attackShadow.position.y = -5;
-    hurtShadow.position.y = -5;
-
-    holdShadow.alpha = 0.5;
-    walkShadow.alpha = 0.5;
-    attackShadow.alpha = 0.5;
-    hurtShadow.alpha = 0.5;
+    dodgeShadow.visible = false;
 
     hold.visible = true;
     walk.visible = false;
     attack.visible = false;
     hurt.visible = false;
+    dodge.visible = false;
 
-    walk.loop = false;
+    holdShadow.tint = 0x000000;
+    walkShadow.tint = 0x000000;
+    attackShadow.tint = 0x000000;
+    hurtShadow.tint = 0x000000;
+    dodgeShadow.tint = 0x000000;
+
+    holdShadow.position.y = -5;
+    walkShadow.position.y = -5;
+    attackShadow.position.y = -5;
+    hurtShadow.position.y = -5;
+    dodgeShadow.position.y = -5;
+
+    holdShadow.alpha = 0.5;
+    walkShadow.alpha = 0.5;
+    attackShadow.alpha = 0.5;
+    hurtShadow.alpha = 0.5;
+    dodgeShadow.alpha = 0.5;
+
     attack.loop = false;
     hurt.loop = false;
+    dodge.loop = false;
 
-    walkShadow.loop = false;
+    dodge.alpha = 0.75;
+
     attackShadow.loop = false;
     hurtShadow.loop = false;
+    // dodgeShadow.loop = false;
 
     hold.animationSpeed = 0.133;
     walk.animationSpeed = 0.188;
     attack.animationSpeed = 0.3;
     hurt.animationSpeed = 0.3;
+    dodge.animationSpeed = 0.3;
 
     holdShadow.animationSpeed = 0.133;
     walkShadow.animationSpeed = 0.188;
     attackShadow.animationSpeed = 0.3;
     hurtShadow.animationSpeed = 0.3;
+    dodgeShadow.animationSpeed = 0.3;
 
     hurt.tint = 0xda4e38;
 
@@ -439,11 +564,13 @@ export default abstract class Character extends Renderable {
     walk.anchor.set(0.5, 0.5);
     attack.anchor.set(0.5, 0.5);
     hurt.anchor.set(0.5, 0.5);
+    dodge.anchor.set(0.5, 0.5);
 
     holdShadow.anchor.set(0.5, 0.5);
     walkShadow.anchor.set(0.5, 0.5);
     attackShadow.anchor.set(0.5, 0.5);
     hurtShadow.anchor.set(0.5, 0.5);
+    dodgeShadow.anchor.set(0.5, 0.5);
 
     // default play HOLD animation
     hold.play();
@@ -458,16 +585,21 @@ export default abstract class Character extends Renderable {
       attackShadow,
       attack,
       hurtShadow,
-      hurt
+      hurt,
+      dodgeShadow,
+      dodge
     );
 
     this.geometryPosition = this._geometryPosition;
+  }
 
-    // external composition
+  private registExternals() {
     const directionIndicator = new DirectionIndicator();
     directionIndicator.direction = this.direction;
-    this._externals.push(directionIndicator);
-    this._rendering.addChild(directionIndicator.sprite);
+    this.addExternal(directionIndicator);
+
+    const damageIndicator = new DamageIndicator();
+    this.addExternal(damageIndicator);
   }
 
   private registBehaviors() {
@@ -481,5 +613,10 @@ export default abstract class Character extends Renderable {
     const passable = new Passable(this, ABILITY_STATUS.STOP);
     const hurtable = new Hurtable(this);
     this._abilities.push(passable, hurtable);
+  }
+
+  private registSound() {
+    this._damageSound = GameSound.get('damage');
+    this._dodgeSound = GameSound.get('dodge');
   }
 }

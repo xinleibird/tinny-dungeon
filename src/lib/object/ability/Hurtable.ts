@@ -1,7 +1,9 @@
-import { Character } from '../../character';
+import { Character, CHARACTER_TYPES, Player } from '../../character';
 import { StaticSystem } from '../../core';
 import { Entity } from '../../entity';
 import { Vector2 } from '../../geometry';
+import DamageIndicator from '../external/DamageIndicator';
+import { EXTERNAL_NAMES } from '../external/External';
 import Ability, { ABILITY_NAMES, ABILITY_STATUS } from './Ability';
 
 type HurtableStatus = ABILITY_STATUS.CANHURT | ABILITY_STATUS.NOHURT;
@@ -18,12 +20,30 @@ export default class Hurtable extends Ability {
     this._status = initStatus;
   }
 
-  public exert(originDirection: Vector2) {
+  public exert(originDirection: Vector2, damage: number) {
     if (this._status === ABILITY_STATUS.CANHURT) {
       const { x, y } = this._geometryPosition;
       const character = StaticSystem.characterGroup.getCharacter(x, y);
 
-      character.hurt();
+      const dir = Vector2.flip(originDirection);
+
+      character.direction = dir;
+      setTimeout(() => {
+        if (damage) {
+          character.damageSound.play();
+          character.hurt();
+        } else {
+          character.dodgeSound.play();
+          character.dodge();
+        }
+        const di = character.getExternal(EXTERNAL_NAMES.DAMAGE_INDICATOR) as DamageIndicator;
+        if (this._owner instanceof Player) {
+          di.addDamageText(damage, CHARACTER_TYPES.PLAYER);
+        } else {
+          di.addDamageText(damage, CHARACTER_TYPES.NON_PLAYER);
+        }
+        character.showExternal(EXTERNAL_NAMES.DAMAGE_INDICATOR);
+      }, 50);
     }
   }
 

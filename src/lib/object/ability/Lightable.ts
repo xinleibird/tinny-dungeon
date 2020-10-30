@@ -32,6 +32,8 @@ export default class Lightable extends Ability {
     StaticSystem.renderer.add(this);
   }
 
+  public exert() {}
+
   public get lightingLevel() {
     return this._lightingLevel;
   }

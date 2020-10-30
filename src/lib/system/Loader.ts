@@ -53,6 +53,10 @@ export default class Loader {
     loader.add('nonplayer_attack', 'assets/sounds/effects/sfx_wpn_dagger.wav');
     loader.add('door_open', 'assets/sounds/effects/sfx_movement_dooropen2.wav');
     loader.add('cave_airflow', 'assets/sounds/effects/cave_airflow.wav');
+    loader.add('damage', 'assets/sounds/effects/sfx_damage_hit9.wav');
+    loader.add('dodge', 'assets/sounds/effects/sfx_damage_hit1.wav');
+
+    loader.add('Click', 'assets/fonts/click.fnt');
 
     loader.load((loader, resources) => {
       this.resources = resources;
@@ -101,6 +105,7 @@ export default class Loader {
           [CHARACTER_ANIMATIONS.WALK]: [],
           [CHARACTER_ANIMATIONS.ATTACK]: [],
           [CHARACTER_ANIMATIONS.HURT]: [],
+          [CHARACTER_ANIMATIONS.DODGE]: [],
         };
 
         const frameName = character.toString().toLowerCase();
@@ -123,6 +128,11 @@ export default class Loader {
           const texture = PIXI.Texture.from(`${frameName}_${i}`);
           this.textures[character][CHARACTER_ANIMATIONS.HURT].push(texture);
         }
+
+        for (let i = 16; i < 20; i++) {
+          const texture = PIXI.Texture.from(`${frameName}_${i}`);
+          this.textures[character][CHARACTER_ANIMATIONS.DODGE].push(texture);
+        }
       });
 
       this.sounds = { musics: {}, effects: {} };
@@ -135,6 +145,8 @@ export default class Loader {
       );
       this.sounds.effects['door_open'] = sound.Sound.from(this.resources.door_open);
       this.sounds.effects['cave_airflow'] = sound.Sound.from(this.resources.cave_airflow);
+      this.sounds.effects['damage'] = sound.Sound.from(this.resources.damage);
+      this.sounds.effects['dodge'] = sound.Sound.from(this.resources.dodge);
 
       Emitter.emit(RESOURCE_EVENTS.RESOURCES_LOADED);
     });
