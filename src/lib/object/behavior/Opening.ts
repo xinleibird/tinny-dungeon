@@ -12,9 +12,8 @@ export default class Opening extends Behavior {
 
   public async do(direction: Vector2) {
     const tarPosition = Vector2.merge(this._character.geometryPosition, direction);
-    const { x, y } = tarPosition;
 
-    const tarEntity = StaticSystem.entityGroup.getEntity(x, y);
+    const tarEntity = StaticSystem.entityGroup.getEntity(tarPosition);
 
     const openable = tarEntity?.getAbility(ABILITY_NAMES.OPENABLE);
     openable.status = ABILITY_STATUS.OPEN;
@@ -32,8 +31,7 @@ export default class Opening extends Behavior {
     }
 
     const tarPosition = Vector2.merge(this._character.geometryPosition, direction);
-    const { x, y } = tarPosition;
-    const tarEntity = StaticSystem.entityGroup.getEntity(x, y);
+    const tarEntity = StaticSystem.entityGroup.getEntity(tarPosition);
 
     if (tarEntity?.hasAbility(ABILITY_NAMES.OPENABLE)) {
       const openable = tarEntity?.getAbility(ABILITY_NAMES.OPENABLE);

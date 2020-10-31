@@ -63,10 +63,9 @@ export default class Attacking extends Behavior {
     }
 
     const tarPosition = Vector2.merge(this._character.geometryPosition, direction);
-    const { x, y } = tarPosition;
 
-    const tarEntity = StaticSystem.entityGroup.getEntity(x, y);
-    const tarCharacter = StaticSystem.entityGroup.getCharacter(x, y);
+    const tarEntity = StaticSystem.entityGroup.getEntity(tarPosition);
+    const tarCharacter = StaticSystem.entityGroup.getCharacter(tarPosition);
 
     if (tarCharacter?.hasAbility(ABILITY_NAMES.HURTABLE)) {
       const hurtable = tarCharacter?.getAbility(ABILITY_NAMES.HURTABLE);
@@ -90,10 +89,9 @@ export default class Attacking extends Behavior {
 
   private exertAbility(direction: Vector2) {
     const tarPosition = Vector2.merge(this._character.geometryPosition, direction);
-    const { x, y } = tarPosition;
 
-    const tarEntity = StaticSystem.entityGroup.getEntity(x, y);
-    const tarCharacter = StaticSystem.entityGroup.getCharacter(x, y);
+    const tarEntity = StaticSystem.entityGroup.getEntity(tarPosition);
+    const tarCharacter = StaticSystem.entityGroup.getCharacter(tarPosition);
 
     const attackRoll = this._character.class.attackRoll();
     let damage = 0;

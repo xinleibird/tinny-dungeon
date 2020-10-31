@@ -19,25 +19,27 @@ export default class Dungeon extends Scene {
   }
 
   private getRespawnPosition() {
+    let pos = Vector2.center;
     const entityGroup = StaticSystem.entityGroup;
-    for (let y = 0; y < entityGroup.height; y++) {
-      for (let x = 0; x < entityGroup.width; x++) {
-        if (entityGroup.getEntity(x, y).hasAbility(ABILITY_NAMES.RESPAWNABLE)) {
-          return new Vector2(x, y);
-        }
+    entityGroup.forLoop((x, y) => {
+      if (entityGroup.getEntity(x, y).hasAbility(ABILITY_NAMES.RESPAWNABLE)) {
+        pos = new Vector2(x, y);
       }
-    }
+    });
+
+    return pos;
   }
 
   private getClearPosition() {
+    let pos = Vector2.center;
     const entityGroup = StaticSystem.entityGroup;
-    for (let y = 0; y < entityGroup.height; y++) {
-      for (let x = 0; x < entityGroup.width; x++) {
-        if (entityGroup.getEntity(x, y).hasAbility(ABILITY_NAMES.CLEARABLE)) {
-          return new Vector2(x, y);
-        }
+    entityGroup.forLoop((x, y) => {
+      if (entityGroup.getEntity(x, y).hasAbility(ABILITY_NAMES.CLEARABLE)) {
+        pos = new Vector2(x, y);
       }
-    }
+    });
+
+    return pos;
   }
 
   private initialize(tx: number, ty: number) {
@@ -50,8 +52,8 @@ export default class Dungeon extends Scene {
     this.fillEntityLayer();
     this.fillLightingLayer();
 
-    this._playerRespawnPosition = this.getRespawnPosition();
-    this._sceneClearPosition = this.getClearPosition();
+    this._respawnPosition = this.getRespawnPosition();
+    this._clearPosition = this.getClearPosition();
   }
 
   private fillTileLayer() {

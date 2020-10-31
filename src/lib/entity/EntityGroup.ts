@@ -19,19 +19,59 @@ export default class EntityGroup extends Groupable {
     StaticSystem.registEntityGroup(this);
   }
 
-  public setEntity(x: number, y: number, entity: Entity) {
-    this._entities[y][x] = entity;
+  public setEntity(
+    ...args:
+      | [x: number, y: number, entity: Entity]
+      | [geometryPosition: Vector2, entity: Entity]
+  ) {
+    if (args.length === 3) {
+      const [x, y, entity] = args;
+      this._entities[y][x] = entity;
+    }
+    if (args.length === 2) {
+      const [geometryPosition, entity] = args;
+      const { x, y } = geometryPosition;
+      this._entities[y][x] = entity;
+    }
   }
 
-  public getEntity(x: number, y: number) {
-    return this._entities[y][x];
+  public getEntity(...args: [x: number, y: number] | [geometryPosition: Vector2]) {
+    if (args.length === 2) {
+      const [x, y] = args;
+      return this._entities[y][x];
+    }
+    if (args.length === 1) {
+      const [geometryPosition] = args;
+      const { x, y } = geometryPosition;
+      return this._entities[y][x];
+    }
   }
 
-  public setCharacter(x: number, y: number, character: Character) {
-    this._entities[y][x].character = character;
+  public setCharacter(
+    ...args:
+      | [x: number, y: number, character: Character]
+      | [geometryPosition: Vector2, character: Character]
+  ) {
+    if (args.length === 3) {
+      const [x, y, character] = args;
+      this._entities[y][x].character = character;
+    }
+    if (args.length === 2) {
+      const [geometryPosition, character] = args;
+      const { x, y } = geometryPosition;
+      this._entities[y][x].character = character;
+    }
   }
 
-  public getCharacter(x: number, y: number) {
-    return this._entities[y][x].character;
+  public getCharacter(...args: [x: number, y: number] | [geometryPosition: Vector2]) {
+    if (args.length === 2) {
+      const [x, y] = args;
+      return this._entities[y][x].character;
+    }
+    if (args.length === 1) {
+      const [geometryPosition] = args;
+      const { x, y } = geometryPosition;
+      return this._entities[y][x].character;
+    }
   }
 }

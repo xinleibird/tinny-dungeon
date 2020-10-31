@@ -90,7 +90,7 @@ export default abstract class Character extends Renderable {
     this._turnBase = Control.getInstance().turnBase;
 
     StaticSystem.renderer.add(this);
-    StaticSystem.entityGroup.setCharacter(0, 0, this);
+    StaticSystem.entityGroup.setCharacter(Vector2.center, this);
 
     // zIndex for characters view depth
     PIXI.Ticker.shared.add(() => {
@@ -262,17 +262,17 @@ export default abstract class Character extends Renderable {
   }
 
   public set geometryPosition(geometryPosition: Vector2) {
-    const { x, y } = this._geometryPosition;
-    this._geometryPosition = geometryPosition;
-    const { x: tarX, y: tarY } = geometryPosition;
+    const entityGroup = StaticSystem.entityGroup;
+    entityGroup.setCharacter(geometryPosition, this);
+    entityGroup.setCharacter(this._geometryPosition, null);
+
+    const { x, y } = geometryPosition;
     this._rendering.position.set(
-      tarX * SPRITE_SIZE + SPRITE_OFFSET_X,
-      tarY * SPRITE_SIZE + SPRITE_OFFSET_Y
+      x * SPRITE_SIZE + SPRITE_OFFSET_X,
+      y * SPRITE_SIZE + SPRITE_OFFSET_Y
     );
 
-    const entityGroup = StaticSystem.entityGroup;
-    entityGroup.setCharacter(tarX, tarY, this);
-    entityGroup.setCharacter(x, y, null);
+    this._geometryPosition = geometryPosition;
 
     this.abilities.forEach((abi) => {
       abi.geometryPosition = geometryPosition;
