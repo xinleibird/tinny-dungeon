@@ -36,6 +36,8 @@ export default class DamageIndicator extends External {
       });
     }
 
+    const dir = this._direction.equals(Vector2.left) ? 1 : -1;
+
     bitmapText.anchor = 0.5;
     bitmapText.scale = 0.8;
     this._rendering.addChild(bitmapText);
@@ -43,7 +45,7 @@ export default class DamageIndicator extends External {
     gsap.to(bitmapText, {
       duration: 0.2,
       pixi: {
-        x: 0,
+        x: 12 * dir,
         y: -2,
         scale: 1,
       },
@@ -52,7 +54,7 @@ export default class DamageIndicator extends External {
         gsap.to(bitmapText, {
           duration: 0.15,
           pixi: {
-            x: 0,
+            x: 12 * dir,
             y: 4,
             scale: 0.5,
           },
@@ -61,7 +63,7 @@ export default class DamageIndicator extends External {
             gsap.to(bitmapText, {
               duration: 0.2,
               pixi: {
-                x: 0,
+                x: 8 * dir,
                 y: 4,
                 alpha: 0,
               },

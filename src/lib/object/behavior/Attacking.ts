@@ -21,11 +21,12 @@ export default class Attacking extends Behavior {
 
   public do(direction: Vector2) {
     return new Promise((resolve, reject) => {
+      this._character.direction = direction;
+
       const geometryPosition = this._character.geometryPosition;
       const { x, y } = geometryPosition;
 
       this._character.lastGeometryPosition = new Vector2(x, y);
-      this._character.direction = direction;
 
       const { x: dx, y: dy } = direction;
 
@@ -65,7 +66,7 @@ export default class Attacking extends Behavior {
     const { x, y } = tarPosition;
 
     const tarEntity = StaticSystem.entityGroup.getEntity(x, y);
-    const tarCharacter = StaticSystem.characterGroup.getCharacter(x, y);
+    const tarCharacter = StaticSystem.entityGroup.getCharacter(x, y);
 
     if (tarCharacter?.hasAbility(ABILITY_NAMES.HURTABLE)) {
       const hurtable = tarCharacter?.getAbility(ABILITY_NAMES.HURTABLE);
@@ -92,7 +93,7 @@ export default class Attacking extends Behavior {
     const { x, y } = tarPosition;
 
     const tarEntity = StaticSystem.entityGroup.getEntity(x, y);
-    const tarCharacter = StaticSystem.characterGroup.getCharacter(x, y);
+    const tarCharacter = StaticSystem.entityGroup.getCharacter(x, y);
 
     const attackRoll = this._character.class.attackRoll();
     let damage = 0;

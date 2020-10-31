@@ -60,7 +60,6 @@ export default class Trace extends Strategy {
     const { x: sx, y: sy } = this._self.geometryPosition;
     const { x: tx, y: ty } = this._target.geometryPosition;
     const entityGroup = StaticSystem.entityGroup;
-    const characterGroup = StaticSystem.characterGroup;
 
     this._self.inTick = true;
 
@@ -77,7 +76,7 @@ export default class Trace extends Strategy {
         const entity = entityGroup.getEntity(x, y);
         if (entity?.hasAbility(ABILITY_NAMES.PASSABLE)) {
           const passable = entity.getAbility(ABILITY_NAMES.PASSABLE);
-          const char = characterGroup.getCharacter(x, y);
+          const char = entityGroup.getCharacter(x, y);
           const inTick = char?.inTick;
 
           if (passable.status === ABILITY_STATUS.PASS && !inTick) {

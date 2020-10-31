@@ -68,7 +68,7 @@ export default abstract class Character extends Renderable {
   private _inTick = false;
   private _turnBase: TurnBase;
 
-  private _isAlive = true;
+  private _alive = true;
 
   protected constructor(type: PLAYER_TYPES | NONPLAYER_TYPES) {
     super();
@@ -90,14 +90,18 @@ export default abstract class Character extends Renderable {
     this._turnBase = Control.getInstance().turnBase;
 
     StaticSystem.renderer.add(this);
-    StaticSystem.characterGroup.setCharacter(0, 0, this);
+    StaticSystem.entityGroup.setCharacter(0, 0, this);
 
     // zIndex for characters view depth
     PIXI.Ticker.shared.add(() => {
-      if (this._isAlive) {
+      if (this._alive) {
         this._rendering.zIndex = this.geometryPosition.y;
       }
     });
+  }
+
+  public get alive() {
+    return this._alive;
   }
 
   public decide() {
@@ -266,9 +270,9 @@ export default abstract class Character extends Renderable {
       tarY * SPRITE_SIZE + SPRITE_OFFSET_Y
     );
 
-    const characterGroup = StaticSystem.characterGroup;
-    characterGroup.setCharacter(tarX, tarY, this);
-    characterGroup.setCharacter(x, y, null);
+    const entityGroup = StaticSystem.entityGroup;
+    entityGroup.setCharacter(tarX, tarY, this);
+    entityGroup.setCharacter(x, y, null);
 
     this.abilities.forEach((abi) => {
       abi.geometryPosition = geometryPosition;
@@ -349,7 +353,7 @@ export default abstract class Character extends Renderable {
     hurt.gotoAndPlay(0);
 
     hurt.onComplete = () => {
-      if (this._isAlive) {
+      if (this._alive) {
         this.hold();
       }
     };
@@ -388,7 +392,7 @@ export default abstract class Character extends Renderable {
     attack.gotoAndPlay(0);
 
     attack.onComplete = () => {
-      if (this._isAlive) {
+      if (this._alive) {
         this.hold();
       }
     };
@@ -427,7 +431,7 @@ export default abstract class Character extends Renderable {
     hurt.gotoAndPlay(0);
 
     hurt.onComplete = () => {
-      if (this._isAlive) {
+      if (this._alive) {
         this.hold();
       }
     };
@@ -466,7 +470,7 @@ export default abstract class Character extends Renderable {
     dodge.gotoAndPlay(0);
 
     dodge.onComplete = () => {
-      if (this._isAlive) {
+      if (this._alive) {
         this.hold();
       }
     };
@@ -514,14 +518,16 @@ export default abstract class Character extends Renderable {
 
     if (currentHP <= 0) {
       this.die();
-      this.setdie();
-      this._isAlive = false;
+      this.setDie();
+      this._alive = false;
       this._rendering.zIndex = -1;
     }
   }
 
   public canBehave(direction: Vector2) {
-    this.direction = direction;
+    if (this._alive) {
+      this.direction = direction;
+    }
 
     for (const behavior of this._behaviors) {
       if (behavior.canDo(direction)) {
@@ -563,30 +569,32 @@ export default abstract class Character extends Renderable {
     }
   }
 
-  protected hide() {}
+  protected hide() {
+    this._rendering.visible = false;
+  }
 
-  protected show() {}
+  protected show() {
+    this._rendering.visible = true;
+  }
 
-  private setdie() {
-    if (this instanceof Character) {
-      this._behaviors = this._behaviors.filter((behavior) => {
-        return (
-          behavior.name !== BEHAVIOR_NAMES.ATTACKING &&
-          behavior.name !== BEHAVIOR_NAMES.MOVEMENT &&
-          behavior.name !== BEHAVIOR_NAMES.OPENING
-        );
-      });
+  private setDie() {
+    this._behaviors = this._behaviors.filter((behavior) => {
+      return (
+        behavior.name !== BEHAVIOR_NAMES.ATTACKING &&
+        behavior.name !== BEHAVIOR_NAMES.MOVEMENT &&
+        behavior.name !== BEHAVIOR_NAMES.OPENING
+      );
+    });
 
-      this._abilities.forEach((abi) => {
-        if (abi.name === ABILITY_NAMES.HURTABLE) {
-          abi.status = ABILITY_STATUS.NOHURT;
-        }
+    this._abilities.forEach((abi) => {
+      if (abi.name === ABILITY_NAMES.HURTABLE) {
+        abi.status = ABILITY_STATUS.NOHURT;
+      }
 
-        if (abi.name === ABILITY_NAMES.PASSABLE) {
-          abi.status = ABILITY_STATUS.PASS;
-        }
-      });
-    }
+      if (abi.name === ABILITY_NAMES.PASSABLE) {
+        abi.status = ABILITY_STATUS.PASS;
+      }
+    });
   }
 
   private initialize(type: PLAYER_TYPES | NONPLAYER_TYPES) {

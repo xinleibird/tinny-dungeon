@@ -1,4 +1,3 @@
-import { CharacterGroup } from '../character';
 import { EntityGroup } from '../entity';
 import { Scene } from '../scene';
 import Camera from './Camera';
@@ -19,13 +18,6 @@ export default class StaticSystem {
     instance._entityGroup = entityGroup;
 
     return instance._entityGroup;
-  }
-
-  public static registCharacterGroup(characterGroup: CharacterGroup) {
-    const instance = StaticSystem.getInstance();
-    instance._characterGroup = characterGroup;
-
-    return instance._characterGroup;
   }
 
   public static registCamera(camera: Camera) {
@@ -54,11 +46,6 @@ export default class StaticSystem {
     return instance._entityGroup;
   }
 
-  public static get characterGroup() {
-    const instance = StaticSystem.getInstance();
-    return instance._characterGroup;
-  }
-
   public static get camera() {
     const instance = StaticSystem.getInstance();
     return instance._camera;
@@ -75,7 +62,6 @@ export default class StaticSystem {
   }
 
   private _entityGroup: EntityGroup;
-  private _characterGroup: CharacterGroup;
   private _camera: Camera;
   private _scene: Scene;
   private _renderer: Renderer;

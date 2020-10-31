@@ -23,11 +23,11 @@ export default class Hurtable extends Ability {
   public exert(originDirection: Vector2, damage: number) {
     if (this._status === ABILITY_STATUS.CANHURT) {
       const { x, y } = this._geometryPosition;
-      const character = StaticSystem.characterGroup.getCharacter(x, y);
+      const character = StaticSystem.entityGroup.getCharacter(x, y);
 
       const dir = Vector2.flip(originDirection);
-
       character.direction = dir;
+
       setTimeout(() => {
         if (damage) {
           character.damageSound.play();

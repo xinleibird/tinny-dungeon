@@ -7,8 +7,9 @@ import {
 import { StaticSystem } from '../core';
 import { Vector2 } from '../geometry';
 import { JOY_NAMES, KEY_NAMES } from '../input';
-import { Goto, Trace } from '../object/strategy';
+import { Disable, Goto, Trace } from '../object/strategy';
 import { Emitter, JOY_EVENTS, KEY_EVENTS } from '../system';
+import { GAME_EVENTS } from '../system/Emitter';
 import { TurnBase, TurnEvent } from '../turn/';
 import { updateEntitiesDislightings, updateEntitiesLightings } from '../utils';
 
@@ -148,26 +149,37 @@ export default class Control {
         return;
       }
 
-      this._lock = true;
+      if (this._player.alive) {
+        this._lock = true;
+        this.turnBase.add(new TurnEvent(this._player, direction));
 
-      this.turnBase.add(new TurnEvent(this._player, direction));
+        this._nonPlayers.forEach((non) => {
+          if (!non.alive) {
+            non.strategy = new Disable(non);
+          } else {
+            non.strategy = new Trace(non, this._player);
+          }
 
-      this._nonPlayers.forEach((non) => {
-        non.strategy = new Trace(non, this._player);
-        non.decide();
-      });
+          non.decide();
+        });
 
-      await this.turnBase.tickTurnAll();
+        await this.turnBase.tickTurnAll();
 
-      this.turnBase.clear();
+        this.turnBase.clear();
 
-      this._lastDownTimeStamp = Date.now();
-      this._lock = false;
+        this._lastDownTimeStamp = Date.now();
+        this._lock = false;
 
-      StaticSystem.renderer.characterLayer.sortChildren();
+        StaticSystem.renderer.characterLayer.sortChildren();
 
-      updateEntitiesDislightings(this._player.geometryPosition);
-      updateEntitiesLightings(this._player.geometryPosition);
+        updateEntitiesDislightings(this._player.geometryPosition);
+        updateEntitiesLightings(this._player.geometryPosition);
+      } else {
+        this.turnBase.clear();
+
+        console.log(2);
+        Emitter.emit(GAME_EVENTS.GAME_OVER);
+      }
     }
   }
 }

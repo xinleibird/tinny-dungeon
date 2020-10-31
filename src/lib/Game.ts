@@ -10,7 +10,7 @@ import { Scene } from './scene';
 import Dungeon from './scene/Dungeon';
 import { GameMusic, GameSound } from './sound';
 import { Emitter, Loader, RESOURCE_EVENTS } from './system';
-import { updateEntitiesLightings } from './utils';
+import { GAME_EVENTS } from './system/Emitter';
 
 export interface GameOptions {
   autoStart?: boolean;
@@ -74,6 +74,67 @@ export default class Game extends PIXI.Application {
     Emitter.on(RESOURCE_EVENTS.RESOURCES_LOADED, () => {
       this.gameLoop();
     });
+  }
+
+  private ScreenEffect(gameEvent: GAME_EVENTS) {
+    switch (gameEvent) {
+      case GAME_EVENTS.USER_DIE: {
+        const blackScreen = new PIXI.filters.ColorMatrixFilter();
+        blackScreen.desaturate();
+
+        PIXI.Ticker.shared.add(() => {
+          this.stage.filters = [
+            new OldFilmFilter(
+              {
+                sepia: 0,
+                noise: 0.0618,
+                noiseSize: 1,
+                scratch: -1,
+                scratchDensity: 0.0382,
+                scratchWidth: 1,
+                vignetting: 0.3,
+                vignettingAlpha: 0.618,
+                vignettingBlur: 0.3,
+              },
+              Math.random()
+            ),
+            blackScreen,
+          ];
+        });
+
+        break;
+      }
+
+      case GAME_EVENTS.SCENE_START: {
+        let count = 1;
+        PIXI.Ticker.shared.add(() => {
+          if (count > 0.3) {
+            count -= 0.005;
+          }
+
+          this.stage.filters = [
+            new OldFilmFilter(
+              {
+                sepia: 0,
+                noise: 0.0618,
+                noiseSize: 1,
+                scratch: -1,
+                scratchDensity: 0.0382,
+                scratchWidth: 1,
+                vignetting: count,
+                vignettingAlpha: 0.618,
+                vignettingBlur: 0.3,
+              },
+              Math.random()
+            ),
+          ];
+        });
+        break;
+      }
+
+      default:
+        break;
+    }
   }
 
   private initialize() {
@@ -172,8 +233,8 @@ export default class Game extends PIXI.Application {
             scratch: -1,
             scratchDensity: 0.0382,
             scratchWidth: 1,
-            vignetting: 0.3,
-            vignettingAlpha: 0.618,
+            vignetting: 1,
+            vignettingAlpha: 1,
             vignettingBlur: 0.3,
           },
           Math.random()
@@ -183,18 +244,23 @@ export default class Game extends PIXI.Application {
   }
 
   private gameLoop() {
+    Emitter.on(GAME_EVENTS.USER_DIE, () => {
+      this.ScreenEffect(GAME_EVENTS.USER_DIE);
+    });
+
+    Emitter.on(GAME_EVENTS.SCENE_START, () => {
+      this.ScreenEffect(GAME_EVENTS.SCENE_START);
+    });
+
     GameMusic.play('main');
     GameSound.play('cave_airflow', 0.02, true);
 
     this._scene = new Dungeon(DUNGEON_SIZE_WIDTH, DUNGEON_SIZE_HEITHT);
     this._player = new Player(PLAYER_TYPES.KNIGHT_M);
     this._camera.follow(this._player.rendering);
-
-    this._player.geometryPosition = this._scene.playerRespawnPosition;
-    updateEntitiesLightings(this._player.geometryPosition);
+    this._player.respawn(this._scene.playerRespawnPosition);
 
     const { x, y } = this._scene.playerRespawnPosition;
-
     const skeleton1 = new NonPlayer(NONPLAYER_TYPES.SKELETON);
     const skeleton2 = new NonPlayer(NONPLAYER_TYPES.SKELETON);
     const skeleton3 = new NonPlayer(NONPLAYER_TYPES.SKELETON);
@@ -206,14 +272,5 @@ export default class Game extends PIXI.Application {
     skeleton4.geometryPosition = new Vector2(x + 1, y + 1);
     skeleton5.geometryPosition = new Vector2(x, y + 1);
     this._renderer.render();
-
-    // this._scene.destroy();
-
-    // this._scene = new Dungeon(DUNGEON_SIZE_WIDTH, DUNGEON_SIZE_HEITHT);
-    // const { x: sx, y: sy } = this._scene.playerRespawnPosition;
-
-    // this._player.geometryPosition = this._scene.playerRespawnPosition;
-    // updateEntitiesLightings(this._player.geometryPosition);
-    // this._renderer.render();
   }
 }

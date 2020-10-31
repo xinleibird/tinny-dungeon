@@ -6,7 +6,6 @@ import { ABILITY_NAMES, ABILITY_STATUS, Lightable } from '../object/ability';
 
 export const updateEntitiesLightings = (geometryPosition: Vector2, radius = 6) => {
   const entityGroup = StaticSystem.entityGroup;
-  const characterGroup = StaticSystem.characterGroup;
 
   const fov = new ROT.FOV.RecursiveShadowcasting((x, y) => {
     const entity = entityGroup.getEntity(x, y);
@@ -33,7 +32,7 @@ export const updateEntitiesLightings = (geometryPosition: Vector2, radius = 6) =
 
       lightable.lightingLevel = r;
 
-      const character = characterGroup.getCharacter(x, y) as NonPlayer;
+      const character = entityGroup.getCharacter(x, y) as NonPlayer;
       character?.show();
     }
   });
@@ -41,7 +40,6 @@ export const updateEntitiesLightings = (geometryPosition: Vector2, radius = 6) =
 
 export const updateEntitiesDislightings = (geometryPosition: Vector2) => {
   const entityGroup = StaticSystem.entityGroup;
-  const characterGroup = StaticSystem.characterGroup;
   entityGroup.forLoop((x, y) => {
     const entity = entityGroup.getEntity(x, y);
     if (entity?.hasAbility(ABILITY_NAMES.LIGHTABLE)) {
@@ -49,13 +47,17 @@ export const updateEntitiesDislightings = (geometryPosition: Vector2) => {
       if (lightable.status === ABILITY_STATUS.LIGHTING) {
         lightable.status = ABILITY_STATUS.DISLIGHTING;
 
-        const character = characterGroup.getCharacter(x, y) as NonPlayer;
-        character?.hide();
+        const character = entityGroup.getCharacter(x, y);
+        if (character instanceof NonPlayer) {
+          character?.hide();
+        }
       }
 
       if (lightable.status === ABILITY_STATUS.DISLIGHTING) {
-        const character = characterGroup.getCharacter(x, y) as NonPlayer;
-        character?.hide();
+        const character = entityGroup.getCharacter(x, y);
+        if (character instanceof NonPlayer) {
+          character?.hide();
+        }
       }
     }
   });

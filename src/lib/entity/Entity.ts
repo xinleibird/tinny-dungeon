@@ -1,3 +1,4 @@
+import { Character } from '../character';
 import { Vector2 } from '../geometry';
 import {
   Ability,
@@ -25,6 +26,7 @@ export default class Entity {
   private _direction: Vector2;
   private _geometryPosition: Vector2;
   private _abilities: Ability[] = [];
+  private _character: Character;
 
   public constructor(
     geometryPosition: Vector2,
@@ -46,6 +48,14 @@ export default class Entity {
     return this._entityType;
   }
 
+  public get character() {
+    return this._character;
+  }
+
+  public set character(character: Character) {
+    this._character = character;
+  }
+
   public get abilities() {
     return this._abilities;
   }
@@ -59,6 +69,14 @@ export default class Entity {
   }
 
   public hasAbility(name: ABILITY_NAMES) {
+    if (this._character) {
+      for (const ability of this._character.abilities) {
+        if (ability.name === name) {
+          return true;
+        }
+      }
+    }
+
     for (const ability of this._abilities) {
       if (ability.name === name) {
         return true;

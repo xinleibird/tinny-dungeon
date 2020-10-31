@@ -31,9 +31,9 @@ export default class Movement extends Behavior {
 
     const { x: tarX, y: tarY } = geometryPosition;
 
-    const characterGroup = StaticSystem.characterGroup;
-    characterGroup.setCharacter(tarX, tarY, this._character);
-    characterGroup.setCharacter(x, y, null);
+    const entityGroup = StaticSystem.entityGroup;
+    entityGroup.setCharacter(tarX, tarY, this._character);
+    entityGroup.setCharacter(x, y, null);
 
     gsap.to(this._character.rendering, {
       duration: 0.2,
@@ -59,7 +59,7 @@ export default class Movement extends Behavior {
     const tarPosition = Vector2.merge(this._character.geometryPosition, direction);
     const { x, y } = tarPosition;
 
-    const tarCharacter = StaticSystem.characterGroup.getCharacter(x, y);
+    const tarCharacter = StaticSystem.entityGroup.getCharacter(x, y);
     const tarEntity = StaticSystem.entityGroup.getEntity(x, y);
 
     if (tarCharacter?.hasAbility(ABILITY_NAMES.PASSABLE)) {
