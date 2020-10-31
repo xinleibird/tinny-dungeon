@@ -225,6 +225,15 @@ export default class CharacterClass {
     return false;
   }
 
+  public damageHP(damage: number) {
+    this._minorAbility.HP -= damage;
+    if (this._minorAbility.HP < 0) {
+      this._minorAbility.HP = 0;
+    }
+
+    return this._minorAbility.HP;
+  }
+
   private d6(times = 1, bonus = 0) {
     let count = 0;
     for (let i = 0; i < times; i++) {

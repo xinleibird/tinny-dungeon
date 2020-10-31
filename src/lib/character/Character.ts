@@ -5,6 +5,7 @@ import { Control, StaticSystem } from '../core';
 import { Vector2 } from '../geometry';
 import { Ability, ABILITY_NAMES, ABILITY_STATUS, Hurtable, Passable } from '../object/ability';
 import { Attacking, Behavior, Movement, Opening } from '../object/behavior';
+import { BEHAVIOR_NAMES } from '../object/behavior/Behavior';
 import { DirectionIndicator, External } from '../object/external';
 import DamageIndicator from '../object/external/DamageIndicator';
 import { EXTERNAL_NAMES } from '../object/external/External';
@@ -41,6 +42,7 @@ export enum CHARACTER_ANIMATIONS {
   ATTACK = 'attack',
   HURT = 'hurt',
   DODGE = 'dodge',
+  DIE = 'die',
 }
 
 export default abstract class Character extends Renderable {
@@ -66,6 +68,8 @@ export default abstract class Character extends Renderable {
   private _inTick = false;
   private _turnBase: TurnBase;
 
+  private _isAlive = true;
+
   protected constructor(type: PLAYER_TYPES | NONPLAYER_TYPES) {
     super();
     this._type = type;
@@ -90,7 +94,9 @@ export default abstract class Character extends Renderable {
 
     // zIndex for characters view depth
     PIXI.Ticker.shared.add(() => {
-      this._rendering.zIndex = this.geometryPosition.y;
+      if (this._isAlive) {
+        this._rendering.zIndex = this.geometryPosition.y;
+      }
     });
   }
 
@@ -285,6 +291,8 @@ export default abstract class Character extends Renderable {
       hurt,
       dodgeShadow,
       dodge,
+      dieShadow,
+      die,
     ] = this._rendering.children as PIXI.AnimatedSprite[];
 
     holdShadow.visible = true;
@@ -297,6 +305,8 @@ export default abstract class Character extends Renderable {
     hurt.visible = false;
     dodgeShadow.visible = false;
     dodge.visible = false;
+    dieShadow.visible = false;
+    die.visible = false;
 
     holdShadow.play();
     hold.play();
@@ -316,6 +326,8 @@ export default abstract class Character extends Renderable {
       hurt,
       dodgeShadow,
       dodge,
+      dieShadow,
+      die,
     ] = this._rendering.children as PIXI.AnimatedSprite[];
 
     holdShadow.visible = false;
@@ -328,6 +340,8 @@ export default abstract class Character extends Renderable {
     hurt.visible = false;
     dodgeShadow.visible = false;
     dodge.visible = false;
+    dieShadow.visible = false;
+    die.visible = false;
 
     walkShadow.play();
     walk.play();
@@ -335,7 +349,9 @@ export default abstract class Character extends Renderable {
     hurt.gotoAndPlay(0);
 
     hurt.onComplete = () => {
-      this.hold();
+      if (this._isAlive) {
+        this.hold();
+      }
     };
   }
 
@@ -351,6 +367,8 @@ export default abstract class Character extends Renderable {
       hurt,
       dodgeShadow,
       dodge,
+      dieShadow,
+      die,
     ] = this._rendering.children as PIXI.AnimatedSprite[];
 
     holdShadow.visible = false;
@@ -363,12 +381,16 @@ export default abstract class Character extends Renderable {
     hurt.visible = false;
     dodgeShadow.visible = false;
     dodge.visible = false;
+    dieShadow.visible = false;
+    die.visible = false;
 
     attackShadow.gotoAndPlay(0);
     attack.gotoAndPlay(0);
 
     attack.onComplete = () => {
-      this.hold();
+      if (this._isAlive) {
+        this.hold();
+      }
     };
   }
 
@@ -384,6 +406,8 @@ export default abstract class Character extends Renderable {
       hurt,
       dodgeShadow,
       dodge,
+      dieShadow,
+      die,
     ] = this._rendering.children as PIXI.AnimatedSprite[];
 
     holdShadow.visible = false;
@@ -396,12 +420,16 @@ export default abstract class Character extends Renderable {
     hurt.visible = true;
     dodgeShadow.visible = false;
     dodge.visible = false;
+    dieShadow.visible = false;
+    die.visible = false;
 
     hurtShadow.gotoAndPlay(0);
     hurt.gotoAndPlay(0);
 
     hurt.onComplete = () => {
-      this.hold();
+      if (this._isAlive) {
+        this.hold();
+      }
     };
   }
 
@@ -417,6 +445,8 @@ export default abstract class Character extends Renderable {
       hurt,
       dodgeShadow,
       dodge,
+      dieShadow,
+      die,
     ] = this._rendering.children as PIXI.AnimatedSprite[];
 
     holdShadow.visible = false;
@@ -429,13 +459,65 @@ export default abstract class Character extends Renderable {
     hurt.visible = false;
     dodgeShadow.visible = true;
     dodge.visible = true;
+    dieShadow.visible = false;
+    die.visible = false;
 
     dodgeShadow.gotoAndPlay(0);
     dodge.gotoAndPlay(0);
 
     dodge.onComplete = () => {
-      this.hold();
+      if (this._isAlive) {
+        this.hold();
+      }
     };
+  }
+
+  public die() {
+    const [
+      holdShadow,
+      hold,
+      walkShadow,
+      walk,
+      attackShadow,
+      attack,
+      hurtShadow,
+      hurt,
+      dodgeShadow,
+      dodge,
+      dieShadow,
+      die,
+    ] = this._rendering.children as PIXI.AnimatedSprite[];
+
+    holdShadow.visible = false;
+    hold.visible = false;
+    walkShadow.visible = false;
+    walk.visible = false;
+    attackShadow.visible = false;
+    attack.visible = false;
+    hurtShadow.visible = false;
+    hurt.visible = false;
+    dodgeShadow.visible = false;
+    dodge.visible = false;
+    dieShadow.visible = true;
+    die.visible = true;
+
+    dieShadow.play();
+    die.play();
+
+    die.onComplete = () => {
+      dieShadow.alpha = 0;
+    };
+  }
+
+  public damageHP(damage: number) {
+    const currentHP = this._class.damageHP(damage);
+
+    if (currentHP <= 0) {
+      this.die();
+      this.setdie();
+      this._isAlive = false;
+      this._rendering.zIndex = -1;
+    }
   }
 
   public canBehave(direction: Vector2) {
@@ -485,6 +567,28 @@ export default abstract class Character extends Renderable {
 
   protected show() {}
 
+  private setdie() {
+    if (this instanceof Character) {
+      this._behaviors = this._behaviors.filter((behavior) => {
+        return (
+          behavior.name !== BEHAVIOR_NAMES.ATTACKING &&
+          behavior.name !== BEHAVIOR_NAMES.MOVEMENT &&
+          behavior.name !== BEHAVIOR_NAMES.OPENING
+        );
+      });
+
+      this._abilities.forEach((abi) => {
+        if (abi.name === ABILITY_NAMES.HURTABLE) {
+          abi.status = ABILITY_STATUS.NOHURT;
+        }
+
+        if (abi.name === ABILITY_NAMES.PASSABLE) {
+          abi.status = ABILITY_STATUS.PASS;
+        }
+      });
+    }
+  }
+
   private initialize(type: PLAYER_TYPES | NONPLAYER_TYPES) {
     const character = type.toString().toUpperCase();
 
@@ -493,84 +597,96 @@ export default abstract class Character extends Renderable {
     const attackBatch = Loader.textures[character][CHARACTER_ANIMATIONS.ATTACK];
     const hurtBatch = Loader.textures[character][CHARACTER_ANIMATIONS.HURT];
     const dodgeBatch = Loader.textures[character][CHARACTER_ANIMATIONS.DODGE];
+    const dieBatch = Loader.textures[character][CHARACTER_ANIMATIONS.DIE];
 
     const hold = new PIXI.AnimatedSprite(holdBatch);
     const walk = new PIXI.AnimatedSprite(walkBatch);
     const attack = new PIXI.AnimatedSprite(attackBatch);
     const hurt = new PIXI.AnimatedSprite(hurtBatch);
     const dodge = new PIXI.AnimatedSprite(dodgeBatch);
+    const die = new PIXI.AnimatedSprite(dieBatch);
 
     const holdShadow = new PIXI.AnimatedSprite(holdBatch);
     const walkShadow = new PIXI.AnimatedSprite(walkBatch);
     const attackShadow = new PIXI.AnimatedSprite(attackBatch);
     const hurtShadow = new PIXI.AnimatedSprite(hurtBatch);
     const dodgeShadow = new PIXI.AnimatedSprite(dodgeBatch);
+    const dieShadow = new PIXI.AnimatedSprite(dieBatch);
 
     holdShadow.visible = true;
     walkShadow.visible = false;
     attackShadow.visible = false;
     hurtShadow.visible = false;
     dodgeShadow.visible = false;
+    dieShadow.visible = false;
 
     hold.visible = true;
     walk.visible = false;
     attack.visible = false;
     hurt.visible = false;
     dodge.visible = false;
+    die.visible = false;
+
+    hurt.tint = 0xda4e38;
 
     holdShadow.tint = 0x000000;
     walkShadow.tint = 0x000000;
     attackShadow.tint = 0x000000;
     hurtShadow.tint = 0x000000;
     dodgeShadow.tint = 0x000000;
+    dieShadow.tint = 0x000000;
 
     holdShadow.position.y = -5;
     walkShadow.position.y = -5;
     attackShadow.position.y = -5;
     hurtShadow.position.y = -5;
     dodgeShadow.position.y = -5;
+    dieShadow.position.y = -5;
 
     holdShadow.alpha = 0.5;
     walkShadow.alpha = 0.5;
     attackShadow.alpha = 0.5;
     hurtShadow.alpha = 0.5;
     dodgeShadow.alpha = 0.5;
+    dieShadow.alpha = 0.5;
 
     attack.loop = false;
     hurt.loop = false;
     dodge.loop = false;
-
-    dodge.alpha = 0.75;
+    die.loop = false;
 
     attackShadow.loop = false;
     hurtShadow.loop = false;
-    // dodgeShadow.loop = false;
+    dodgeShadow.loop = false;
+    dieShadow.loop = false;
 
     hold.animationSpeed = 0.133;
     walk.animationSpeed = 0.188;
     attack.animationSpeed = 0.3;
-    hurt.animationSpeed = 0.3;
-    dodge.animationSpeed = 0.3;
+    hurt.animationSpeed = 0.2;
+    dodge.animationSpeed = 0.2;
+    die.animationSpeed = 0.1;
 
     holdShadow.animationSpeed = 0.133;
     walkShadow.animationSpeed = 0.188;
     attackShadow.animationSpeed = 0.3;
-    hurtShadow.animationSpeed = 0.3;
-    dodgeShadow.animationSpeed = 0.3;
-
-    hurt.tint = 0xda4e38;
+    hurtShadow.animationSpeed = 0.2;
+    dodgeShadow.animationSpeed = 0.2;
+    dieShadow.animationSpeed = 0.1;
 
     hold.anchor.set(0.5, 0.5);
     walk.anchor.set(0.5, 0.5);
     attack.anchor.set(0.5, 0.5);
     hurt.anchor.set(0.5, 0.5);
     dodge.anchor.set(0.5, 0.5);
+    die.anchor.set(0.5, 0.5);
 
     holdShadow.anchor.set(0.5, 0.5);
     walkShadow.anchor.set(0.5, 0.5);
     attackShadow.anchor.set(0.5, 0.5);
     hurtShadow.anchor.set(0.5, 0.5);
     dodgeShadow.anchor.set(0.5, 0.5);
+    dieShadow.anchor.set(0.5, 0.5);
 
     // default play HOLD animation
     hold.play();
@@ -587,7 +703,9 @@ export default abstract class Character extends Renderable {
       hurtShadow,
       hurt,
       dodgeShadow,
-      dodge
+      dodge,
+      dieShadow,
+      die
     );
 
     this.geometryPosition = this._geometryPosition;

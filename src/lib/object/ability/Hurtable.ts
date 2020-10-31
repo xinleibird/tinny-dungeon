@@ -1,4 +1,4 @@
-import { Character, CHARACTER_TYPES, Player } from '../../character';
+import { Character, CHARACTER_TYPES, NonPlayer, Player } from '../../character';
 import { StaticSystem } from '../../core';
 import { Entity } from '../../entity';
 import { Vector2 } from '../../geometry';
@@ -36,12 +36,18 @@ export default class Hurtable extends Ability {
           character.dodgeSound.play();
           character.dodge();
         }
+
         const di = character.getExternal(EXTERNAL_NAMES.DAMAGE_INDICATOR) as DamageIndicator;
         if (this._owner instanceof Player) {
           di.addDamageText(damage, CHARACTER_TYPES.PLAYER);
-        } else {
-          di.addDamageText(damage, CHARACTER_TYPES.NON_PLAYER);
+          this._owner.damageHP(damage);
         }
+
+        if (this._owner instanceof NonPlayer) {
+          di.addDamageText(damage, CHARACTER_TYPES.NON_PLAYER);
+          this._owner.damageHP(damage);
+        }
+
         character.showExternal(EXTERNAL_NAMES.DAMAGE_INDICATOR);
       }, 50);
     }

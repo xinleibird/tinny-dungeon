@@ -106,6 +106,7 @@ export default class Loader {
           [CHARACTER_ANIMATIONS.ATTACK]: [],
           [CHARACTER_ANIMATIONS.HURT]: [],
           [CHARACTER_ANIMATIONS.DODGE]: [],
+          [CHARACTER_ANIMATIONS.DIE]: [],
         };
 
         const frameName = character.toString().toLowerCase();
@@ -132,6 +133,11 @@ export default class Loader {
         for (let i = 16; i < 20; i++) {
           const texture = PIXI.Texture.from(`${frameName}_${i}`);
           this.textures[character][CHARACTER_ANIMATIONS.DODGE].push(texture);
+        }
+
+        for (let i = 20; i < 24; i++) {
+          const texture = PIXI.Texture.from(`${frameName}_${i}`);
+          this.textures[character][CHARACTER_ANIMATIONS.DIE].push(texture);
         }
       });
 

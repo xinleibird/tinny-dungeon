@@ -107,16 +107,17 @@ export default class Attacking extends Behavior {
       damage = this._character.class.damageRoll();
     }
 
-    if (tarEntity?.hasAbility(ABILITY_NAMES.HURTABLE)) {
-      const hurtable = tarEntity?.getAbility(ABILITY_NAMES.HURTABLE);
-      if (hurtable?.status === ABILITY_STATUS.CANHURT) {
-        hurtable?.exert(direction);
-      }
-    } else if (tarCharacter?.hasAbility(ABILITY_NAMES.HURTABLE)) {
-      const hurtable = tarCharacter?.getAbility(ABILITY_NAMES.HURTABLE);
-      if (hurtable?.status === ABILITY_STATUS.CANHURT) {
-        hurtable?.exert(direction, damage);
-      }
+    const hurtableEntity = tarEntity?.getAbility(ABILITY_NAMES.HURTABLE);
+    const hurtableCharacter = tarCharacter?.getAbility(ABILITY_NAMES.HURTABLE);
+
+    if (hurtableEntity?.status === ABILITY_STATUS.CANHURT) {
+      hurtableEntity?.exert(direction);
+      return;
+    }
+
+    if (hurtableCharacter?.status === ABILITY_STATUS.CANHURT) {
+      hurtableCharacter?.exert(direction, damage);
+      return;
     }
   }
 }
