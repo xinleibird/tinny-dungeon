@@ -3,11 +3,12 @@ import { OldFilmFilter } from '@pixi/filter-old-film';
 import * as PIXI from 'pixi.js';
 import { NonPlayer, NONPLAYER_TYPES, Player, PLAYER_TYPES } from './character';
 import { GAME_OPTIONS } from './config';
-import { Camera, Renderer } from './core';
+import { Camera, Renderer, StaticSystem } from './core';
 import { Vector2 } from './geometry';
 import Controller from './input/Controller';
 import { Scene } from './scene';
 import Dungeon from './scene/Dungeon';
+import { BackgroundScreen, ForegroundScreen } from './screen';
 import { GameMusic, GameSound } from './sound';
 import { Emitter, Loader, RESOURCE_EVENTS } from './system';
 import { GAME_EVENTS } from './system/Emitter';
@@ -31,8 +32,8 @@ export interface GameOptions {
   resizeTo?: Window | HTMLElement;
 }
 
-const DUNGEON_SIZE_WIDTH = 71;
-const DUNGEON_SIZE_HEITHT = 71;
+const DUNGEON_SIZE_WIDTH = 31;
+const DUNGEON_SIZE_HEITHT = 31;
 
 const { DEBUG, PIXEL_SCALE } = GAME_OPTIONS;
 
@@ -51,13 +52,17 @@ if (DEBUG) {
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 
 export default class Game extends PIXI.Application {
-  private _background: PIXI.Graphics;
   private _controller: Controller;
   private _camera: Camera;
   private _renderer: Renderer;
-  private _scene: Scene;
 
+  private _scene: Scene;
   private _player: Player;
+
+  private _background: BackgroundScreen;
+  private _foreground: ForegroundScreen;
+
+  private _viewportSize: { width: number; height: number } = { width: 0, height: 0 };
 
   // for stats.js
   private stats: any;
@@ -72,72 +77,16 @@ export default class Game extends PIXI.Application {
 
   public play() {
     Emitter.on(RESOURCE_EVENTS.RESOURCES_LOADED, () => {
+      Emitter.emit(GAME_EVENTS.GAME_PLAY);
       this.gameLoop();
     });
   }
 
-  private ScreenEffect(gameEvent: GAME_EVENTS) {
-    switch (gameEvent) {
-      case GAME_EVENTS.USER_DIE: {
-        const blackScreen = new PIXI.filters.ColorMatrixFilter();
-        blackScreen.desaturate();
-
-        PIXI.Ticker.shared.add(() => {
-          this.stage.filters = [
-            new OldFilmFilter(
-              {
-                sepia: 0,
-                noise: 0.0618,
-                noiseSize: 1,
-                scratch: -1,
-                scratchDensity: 0.0382,
-                scratchWidth: 1,
-                vignetting: 0.3,
-                vignettingAlpha: 0.618,
-                vignettingBlur: 0.3,
-              },
-              Math.random()
-            ),
-            blackScreen,
-          ];
-        });
-
-        break;
-      }
-
-      case GAME_EVENTS.SCENE_START: {
-        let count = 1;
-        PIXI.Ticker.shared.add(() => {
-          if (count > 0.3) {
-            count -= 0.005;
-          }
-
-          this.stage.filters = [
-            new OldFilmFilter(
-              {
-                sepia: 0,
-                noise: 0.0618,
-                noiseSize: 1,
-                scratch: -1,
-                scratchDensity: 0.0382,
-                scratchWidth: 1,
-                vignetting: count,
-                vignettingAlpha: 0.618,
-                vignettingBlur: 0.3,
-              },
-              Math.random()
-            ),
-          ];
-        });
-        break;
-      }
-
-      default:
-        break;
-    }
-  }
-
   private initialize() {
+    this._viewportSize = {
+      width: defaultGameOptions.width,
+      height: defaultGameOptions.height,
+    };
     const root = document.getElementById('root');
     root.appendChild(this.view);
 
@@ -158,9 +107,10 @@ export default class Game extends PIXI.Application {
     this.registResizer();
     this.registFilter();
 
-    this.registBackground();
     this.registCamera();
     this.registRenderer();
+    this.registBackground();
+    this.registForeground();
   }
 
   public get controller() {
@@ -185,40 +135,40 @@ export default class Game extends PIXI.Application {
   }
 
   private registBackground() {
-    const background = new PIXI.Graphics();
-    background.beginFill(0x160c21);
-    background.drawRect(
-      0,
-      0,
-      DUNGEON_SIZE_WIDTH * 16 + window.innerWidth * 2,
-      DUNGEON_SIZE_HEITHT * 16 + window.innerHeight * 2
-    );
-    background.endFill();
+    const width = (window.innerWidth / PIXEL_SCALE) * window.devicePixelRatio;
+    const height = (window.innerHeight / PIXEL_SCALE) * window.devicePixelRatio;
+    const background = new BackgroundScreen(width, height);
 
     this._background = background;
-    this.stage.addChild(this._background);
+    StaticSystem.renderer.add(background);
+  }
+
+  private registForeground() {
+    const width = (window.innerWidth / PIXEL_SCALE) * window.devicePixelRatio;
+    const height = (window.innerHeight / PIXEL_SCALE) * window.devicePixelRatio;
+    const foreground = new ForegroundScreen(width, height);
+    this._foreground = foreground;
+    StaticSystem.renderer.add(foreground);
   }
 
   private registResizer() {
     window.onorientationchange = () => {
-      this.renderer.resize(
-        (window.innerWidth / PIXEL_SCALE) * window.devicePixelRatio,
-        (window.innerHeight / PIXEL_SCALE) * window.devicePixelRatio
-      );
-      this._camera.viewport.resize(
-        (window.innerWidth / PIXEL_SCALE) * window.devicePixelRatio,
-        (window.innerHeight / PIXEL_SCALE) * window.devicePixelRatio
-      );
+      const width = (window.innerWidth / PIXEL_SCALE) * window.devicePixelRatio;
+      const height = (window.innerHeight / PIXEL_SCALE) * window.devicePixelRatio;
+      this._viewportSize = { width, height };
+
+      this.renderer.resize(width, height);
+      this._camera.viewport.resize(width, height);
+      this._background.resize(width, height);
     };
     window.onresize = () => {
-      this.renderer.resize(
-        (window.innerWidth / PIXEL_SCALE) * window.devicePixelRatio,
-        (window.innerHeight / PIXEL_SCALE) * window.devicePixelRatio
-      );
-      this._camera.viewport.resize(
-        (window.innerWidth / PIXEL_SCALE) * window.devicePixelRatio,
-        (window.innerHeight / PIXEL_SCALE) * window.devicePixelRatio
-      );
+      const width = (window.innerWidth / PIXEL_SCALE) * window.devicePixelRatio;
+      const height = (window.innerHeight / PIXEL_SCALE) * window.devicePixelRatio;
+      this._viewportSize = { width, height };
+
+      this.renderer.resize(width, height);
+      this._camera.viewport.resize(width, height);
+      this._background.resize(width, height);
     };
   }
 
@@ -233,8 +183,8 @@ export default class Game extends PIXI.Application {
             scratch: -1,
             scratchDensity: 0.0382,
             scratchWidth: 1,
-            vignetting: 1,
-            vignettingAlpha: 1,
+            vignetting: 0.3,
+            vignettingAlpha: 0.618,
             vignettingBlur: 0.3,
           },
           Math.random()
@@ -244,12 +194,16 @@ export default class Game extends PIXI.Application {
   }
 
   private gameLoop() {
-    Emitter.on(GAME_EVENTS.USER_DIE, () => {
-      this.ScreenEffect(GAME_EVENTS.USER_DIE);
+    Emitter.on(GAME_EVENTS.SCENE_START, () => {
+      this._foreground.effect(GAME_EVENTS.SCENE_START);
     });
 
-    Emitter.on(GAME_EVENTS.SCENE_START, () => {
-      this.ScreenEffect(GAME_EVENTS.SCENE_START);
+    Emitter.on(GAME_EVENTS.USER_DIE, () => {
+      this._foreground.effect(GAME_EVENTS.USER_DIE);
+    });
+
+    Emitter.on(GAME_EVENTS.GAME_OVER, () => {
+      console.log('game over');
     });
 
     GameMusic.play('main');
@@ -257,7 +211,6 @@ export default class Game extends PIXI.Application {
 
     this._scene = new Dungeon(DUNGEON_SIZE_WIDTH, DUNGEON_SIZE_HEITHT);
     this._player = new Player(PLAYER_TYPES.KNIGHT_M);
-    this._camera.follow(this._player.rendering);
     this._player.respawn(this._scene.playerRespawnPosition);
 
     const { x, y } = this._scene.playerRespawnPosition;
@@ -271,6 +224,7 @@ export default class Game extends PIXI.Application {
     skeleton3.geometryPosition = new Vector2(x + 3, y);
     skeleton4.geometryPosition = new Vector2(x + 1, y + 1);
     skeleton5.geometryPosition = new Vector2(x, y + 1);
+
     this._renderer.render();
   }
 }

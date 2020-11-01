@@ -55,6 +55,7 @@ export default class Loader {
     loader.add('cave_airflow', 'assets/sounds/effects/cave_airflow.wav');
     loader.add('damage', 'assets/sounds/effects/sfx_damage_hit9.wav');
     loader.add('dodge', 'assets/sounds/effects/sfx_damage_hit1.wav');
+    loader.add('you_died', 'assets/sounds/effects/punctuation.mp3');
 
     loader.add('Click', 'assets/fonts/click.fnt');
 
@@ -153,6 +154,7 @@ export default class Loader {
       this.sounds.effects['cave_airflow'] = sound.Sound.from(this.resources.cave_airflow);
       this.sounds.effects['damage'] = sound.Sound.from(this.resources.damage);
       this.sounds.effects['dodge'] = sound.Sound.from(this.resources.dodge);
+      this.sounds.effects['you_died'] = sound.Sound.from(this.resources.you_died);
 
       Emitter.emit(RESOURCE_EVENTS.RESOURCES_LOADED);
     });

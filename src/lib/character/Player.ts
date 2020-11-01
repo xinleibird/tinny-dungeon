@@ -1,3 +1,4 @@
+import { StaticSystem } from '../core';
 import { Vector2 } from '../geometry';
 import { GameSound } from '../sound';
 import { Emitter } from '../system';
@@ -14,6 +15,7 @@ export default class Player extends Character {
     this._class.attackBonus = 1;
     this._class.damageResistance = 1;
     this.registSounds();
+    StaticSystem.camera.follow(this);
   }
 
   public damageHP(damage: number) {

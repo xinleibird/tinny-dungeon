@@ -3,6 +3,7 @@ import { Renderable } from '../abstraction';
 import { Character, Player } from '../character';
 import { Vector2 } from '../geometry';
 import { Ability, Lightable } from '../object/ability';
+import { BackgroundScreen, ForegroundScreen, GameScreen } from '../screen';
 import { Tile } from '../tilemap';
 import Camera from './Camera';
 import StaticSystem from './StaticSystem';
@@ -10,10 +11,12 @@ import StaticSystem from './StaticSystem';
 export default class Renderer {
   private _camera: Camera;
 
+  private _backgroundLayer: PIXI.Container = new PIXI.Container();
   private _tileLayer: PIXI.DisplayObject[] = [];
   private _floorLayer: PIXI.DisplayObject[] = [];
   private _characterLayer: PIXI.Container = new PIXI.Container();
   private _lightingLayer: PIXI.DisplayObject[] = [];
+  private _foregroundLayer: PIXI.Container = new PIXI.Container();
 
   private _player: Player;
 
@@ -23,19 +26,21 @@ export default class Renderer {
   }
 
   public render() {
+    this._camera.viewport.addChild(this._backgroundLayer);
     this._tileLayer.length > 0 && this._camera.addChild(...this._tileLayer);
     this._floorLayer.length > 0 && this._camera.viewport.addChild(...this._floorLayer);
-    this._characterLayer.children.length > 0 &&
-      this._camera.viewport.addChild(this._characterLayer);
+    this._camera.viewport.addChild(this._characterLayer);
     this._lightingLayer.length > 0 && this._camera.viewport.addChild(...this._lightingLayer);
+    this._camera.viewport.addChild(this._foregroundLayer);
   }
 
   public trash() {
+    this._backgroundLayer.removeChildren();
     this._tileLayer = [];
     this._floorLayer = [];
-    this._lightingLayer = [];
-
     this._characterLayer.removeChildren();
+    this._lightingLayer = [];
+    this._foregroundLayer.removeChildren();
     StaticSystem.camera.removeChildren();
 
     this._player.geometryPosition = new Vector2(0, 0);
@@ -46,20 +51,19 @@ export default class Renderer {
     return this._characterLayer;
   }
 
-  public setCharIndex(obj: PIXI.DisplayObject, index: number) {
-    this._characterLayer.setChildIndex(obj, index);
-  }
-
   public add(obj: Renderable) {
     if (obj instanceof Tile) {
       this._tileLayer.push(obj.rendering);
+      return;
     }
 
     if (obj instanceof Ability) {
       if (obj instanceof Lightable) {
         this._lightingLayer.push(obj.rendering);
+        return;
       } else {
         this._floorLayer.push(obj.rendering);
+        return;
       }
     }
 
@@ -68,6 +72,17 @@ export default class Renderer {
 
       if (obj instanceof Player) {
         this._player = obj;
+      }
+      return;
+    }
+
+    if (obj instanceof GameScreen) {
+      if (obj instanceof BackgroundScreen) {
+        this._backgroundLayer.addChild(obj.rendering);
+      }
+
+      if (obj instanceof ForegroundScreen) {
+        this._foregroundLayer.addChild(obj.rendering);
       }
     }
   }

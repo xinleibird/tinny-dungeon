@@ -1,4 +1,6 @@
 import nipple, { JoystickManager } from 'nipplejs';
+import { Emitter } from '../system';
+import { GAME_EVENTS } from '../system/Emitter';
 import Joy, { IJoyEventType, JOY_NAMES } from './Joy';
 
 type HandleJoysType = {
@@ -30,8 +32,14 @@ export default class Joystick {
     this._nipple = nipple.create({ zone: document.body });
     this._handleJoys = {};
 
-    this._nipple.on('plain', this.processJoyDown.bind(this));
-    this._nipple.on('end', this.processJoyUp.bind(this));
+    Emitter.on(GAME_EVENTS.SCENE_START, () => {
+      this._nipple.on('plain', this.processJoyDown.bind(this));
+      this._nipple.on('end', this.processJoyUp.bind(this));
+    });
+
+    Emitter.on(GAME_EVENTS.USER_DIE, () => {
+      this._nipple.destroy();
+    });
   }
 
   private processJoyDown(event: nipple.EventData, data: nipple.JoystickOutputData) {

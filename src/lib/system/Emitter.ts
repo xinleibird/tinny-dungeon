@@ -3,9 +3,10 @@ import { utils } from 'pixi.js';
 const { EventEmitter } = utils;
 
 export enum GAME_EVENTS {
-  GAME_START = 'game_start',
   GAME_PLAY = 'game_play',
+  GAME_START = 'game_start',
   GAME_OVER = 'game_over',
+  GAME_RESTART = 'game_restart',
   SCENE_START = 'scene_start',
   SCENE_CLEAR = 'scene_clear',
   USER_NORMAL = 'user_normal',
@@ -17,10 +18,6 @@ export enum GAME_EVENTS {
 }
 
 export enum RESOURCE_EVENTS {
-  RESOURCES_LOADED = 'resources_loaded',
-}
-
-export enum GAME_EVENTS {
   RESOURCES_LOADED = 'resources_loaded',
 }
 

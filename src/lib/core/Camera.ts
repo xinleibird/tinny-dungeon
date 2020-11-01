@@ -1,6 +1,7 @@
 import Cull from 'pixi-cull';
 import { Viewport, ViewportOptions } from 'pixi-viewport';
 import * as PIXI from 'pixi.js';
+import { Character } from '../character';
 import { GAME_OPTIONS } from '../config';
 import StaticSystem from './StaticSystem';
 
@@ -39,8 +40,8 @@ export default class Camera {
     this._viewport.removeChildren();
   }
 
-  public follow(obj: PIXI.DisplayObject) {
-    this._viewport.follow(obj);
+  public follow(character: Character) {
+    this._viewport.follow(character.rendering);
   }
 
   public get viewport() {

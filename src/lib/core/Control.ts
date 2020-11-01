@@ -176,8 +176,6 @@ export default class Control {
         updateEntitiesLightings(this._player.geometryPosition);
       } else {
         this.turnBase.clear();
-
-        console.log(2);
         Emitter.emit(GAME_EVENTS.GAME_OVER);
       }
     }
