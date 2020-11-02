@@ -5,6 +5,7 @@ export enum JOY_NAMES {
   down = 'down',
   left = 'left',
   right = 'right',
+  center = 'center',
 }
 
 export interface IJoyEventType {

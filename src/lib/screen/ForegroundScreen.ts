@@ -2,7 +2,7 @@ import { gsap } from 'gsap';
 import * as PIXI from 'pixi.js';
 import { GAME_OPTIONS } from '../config';
 import { GameSound } from '../sound';
-import { Emitter, GAME_EVENTS } from '../system/Emitter';
+import { Emitter, GAME_EVENTS, JOY_EVENTS, KEY_EVENTS } from '../system/Emitter';
 import GameScreen from './GameScreen';
 
 const { PIXEL_SCALE } = GAME_OPTIONS;
@@ -53,34 +53,33 @@ export default class ForegroundScreen extends GameScreen {
   }
 
   private tapToRestart() {
-    const bitmapText = new PIXI.BitmapText(`Tap to Restart`, {
+    const bitmapText = new PIXI.BitmapText(`PRESS TO RESTART`, {
       fontName: 'Click',
       fontSize: 13,
     });
 
     bitmapText.anchor = 0.5;
-    bitmapText.position.y += 20;
+    bitmapText.position.y += 5;
 
     this._rendering.addChild(bitmapText);
-    this.rendering.on('mousedown', () => {
+
+    Emitter.on(KEY_EVENTS.KEY_DOWN, () => {
       Emitter.emit(GAME_EVENTS.GAME_OVER);
     });
-    this.rendering.on('touchstart', () => {
-      Emitter.emit(GAME_EVENTS.GAME_OVER);
-    });
-    this.rendering.on('keydown', () => {
+    Emitter.on(JOY_EVENTS.JOY_DOWN, () => {
       Emitter.emit(GAME_EVENTS.GAME_OVER);
     });
   }
 
   private youDied() {
-    const bitmapText = new PIXI.BitmapText(`YOU   DIED`, {
+    const bitmapText = new PIXI.BitmapText(`YOU DIED`, {
       fontName: 'Click',
-      fontSize: 21,
+      fontSize: 30,
       tint: 0xda4e38,
     });
 
     bitmapText.anchor = 0.5;
+    bitmapText.position.y -= 20;
     this._rendering.addChild(bitmapText);
     GameSound.play('you_died', 1);
   }

@@ -1,6 +1,4 @@
 import nipple, { JoystickManager } from 'nipplejs';
-import { Emitter } from '../system';
-import { GAME_EVENTS } from '../system/Emitter';
 import Joy, { IJoyEventType, JOY_NAMES } from './Joy';
 
 type HandleJoysType = {
@@ -29,20 +27,29 @@ export default class Joystick {
   }
 
   private initialize() {
-    this._nipple = nipple.create({ zone: document.body });
+    this._nipple = nipple.create({ zone: document.body, color: '#5a697b', threshold: 0.6 });
     this._handleJoys = {};
 
-    Emitter.on(GAME_EVENTS.SCENE_START, () => {
-      this._nipple.on('plain', this.processJoyDown.bind(this));
-      this._nipple.on('end', this.processJoyUp.bind(this));
-    });
-
-    Emitter.on(GAME_EVENTS.USER_DIE, () => {
-      this._nipple.destroy();
-    });
+    this._nipple.on('dir', this.processJoyDown.bind(this));
+    this._nipple.on('end', this.processJoyUp.bind(this));
+    this._nipple.on('start', this.processJoyCenter.bind(this));
   }
 
-  private processJoyDown(event: nipple.EventData, data: nipple.JoystickOutputData) {
+  private processJoyCenter(event: nipple.EventData, data: nipple.JoystickOutputData & 1) {
+    const joy = JOY_NAMES.center;
+    const inHandleJoy = this._handleJoys?.[joy];
+    const timeStamp = Date.now();
+    if (inHandleJoy) {
+      const event: IJoyEventType = { timeStamp, joy };
+      inHandleJoy.processJoyDown(event);
+      this._lastJoy = joy as JOY_NAMES;
+      this._lastDown = timeStamp;
+    }
+  }
+
+  private processJoyDown(event: nipple.EventData, data: nipple.JoystickOutputData & 1) {
+    this.clearAllInterval();
+
     const joy = data?.direction?.angle as JOY_NAMES;
     const inHandleJoy = this._handleJoys?.[joy];
 
@@ -75,6 +82,10 @@ export default class Joystick {
       }
     }
 
+    this.clearAllInterval();
+  }
+
+  private clearAllInterval() {
     this._burstIDs.forEach((id) => {
       clearInterval(id);
     });

@@ -203,7 +203,7 @@ export default class Game extends PIXI.Application {
     });
 
     Emitter.on(GAME_EVENTS.GAME_OVER, () => {
-      console.log('game over');
+      this._scene.destroy();
     });
 
     GameMusic.play('main');
