@@ -53,22 +53,23 @@ export default class ForegroundScreen extends GameScreen {
   }
 
   private tapToRestart() {
-    const bitmapText = new PIXI.BitmapText(`PRESS TO RESTART`, {
+    const tapText = new PIXI.BitmapText(`TAP TO RESTART`, {
       fontName: 'Click',
       fontSize: 13,
     });
 
-    bitmapText.anchor = 0.5;
-    bitmapText.position.y += 5;
+    tapText.anchor = 0.5;
+    tapText.position.y += 5;
 
-    this._rendering.addChild(bitmapText);
+    this._rendering.addChild(tapText);
 
-    Emitter.on(KEY_EVENTS.KEY_DOWN, () => {
+    const tap = () => {
       Emitter.emit(GAME_EVENTS.GAME_OVER);
-    });
-    Emitter.on(JOY_EVENTS.JOY_DOWN, () => {
-      Emitter.emit(GAME_EVENTS.GAME_OVER);
-    });
+      Emitter.removeListener(KEY_EVENTS.KEY_DOWN, tap);
+    };
+
+    Emitter.on(KEY_EVENTS.KEY_DOWN, tap);
+    Emitter.on(JOY_EVENTS.JOY_DOWN, tap);
   }
 
   private youDied() {

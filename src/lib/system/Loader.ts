@@ -22,6 +22,7 @@ type TexturesTypes = {
 interface SoundTypes {
   musics?: {
     main?: sound.Sound;
+    title?: sound.Sound;
   };
   effects?: {
     [key: string]: sound.Sound;
@@ -30,9 +31,15 @@ interface SoundTypes {
 
 export default class Loader {
   public static resources: PIXI.IResourceDictionary;
-  public static textures: TexturesTypes;
-  public static tileset: PIXI.Texture[];
-  public static sounds: SoundTypes;
+  public static textures: TexturesTypes = {
+    UI: {},
+    DOORS: [],
+    STAIRS: [],
+    FLOOR_DECORATORS: [],
+    LIGHTING_MASK: [],
+  };
+  public static tileset: PIXI.Texture[] = [];
+  public static sounds: SoundTypes = { effects: {}, musics: {} };
 
   public static load() {
     loader.add('assets/tiles/tileset.json');
@@ -46,16 +53,56 @@ export default class Loader {
     loader.add('assets/sprites/skeleton.json');
 
     loader.add('main', 'assets/sounds/musics/平坡の道.mp3');
+    loader.add('title', 'assets/sounds/musics/first-story.ogg');
 
-    loader.add('player_step', 'assets/sounds/effects/sfx_movement_footsteps1a.wav');
-    loader.add('player_attack', 'assets/sounds/effects/sfx_wpn_sword1.wav');
-    loader.add('nonplayer_step', 'assets/sounds/effects/sfx_movement_footstepsloop3_fast.wav');
-    loader.add('nonplayer_attack', 'assets/sounds/effects/sfx_wpn_dagger.wav');
-    loader.add('door_open', 'assets/sounds/effects/sfx_movement_dooropen2.wav');
-    loader.add('cave_airflow', 'assets/sounds/effects/cave_airflow.wav');
-    loader.add('damage', 'assets/sounds/effects/sfx_damage_hit9.wav');
-    loader.add('dodge', 'assets/sounds/effects/sfx_damage_hit1.wav');
-    loader.add('you_died', 'assets/sounds/effects/punctuation.mp3');
+    this.sounds.musics.main = sound.Sound.from({
+      url: 'assets/sounds/musics/平坡の道.mp3',
+      preload: true,
+    });
+
+    this.sounds.musics.title = sound.Sound.from({
+      url: 'assets/sounds/musics/first-story.ogg',
+      preload: true,
+    });
+
+    this.sounds.effects['cave_airflow'] = sound.Sound.from({
+      url: 'assets/sounds/effects/cave_airflow.wav',
+      preload: true,
+    });
+
+    this.sounds.effects['player_step'] = sound.Sound.from({
+      url: 'assets/sounds/effects/sfx_movement_footsteps1a.wav',
+      preload: true,
+    });
+
+    this.sounds.effects['player_attack'] = sound.Sound.from({
+      url: 'assets/sounds/effects/sfx_wpn_sword1.wav',
+      preload: true,
+    });
+    this.sounds.effects['nonplayer_step'] = sound.Sound.from({
+      url: 'assets/sounds/effects/sfx_movement_footstepsloop3_fast.wav',
+      preload: true,
+    });
+    this.sounds.effects['nonplayer_attack'] = sound.Sound.from({
+      url: 'assets/sounds/effects/sfx_wpn_dagger.wav',
+      preload: true,
+    });
+    this.sounds.effects['door_open'] = sound.Sound.from({
+      url: 'assets/sounds/effects/sfx_movement_dooropen2.wav',
+      preload: true,
+    });
+    this.sounds.effects['damage'] = sound.Sound.from({
+      url: 'assets/sounds/effects/sfx_damage_hit9.wav',
+      preload: true,
+    });
+    this.sounds.effects['dodge'] = sound.Sound.from({
+      url: 'assets/sounds/effects/sfx_damage_hit1.wav',
+      preload: true,
+    });
+    this.sounds.effects['you_died'] = sound.Sound.from({
+      url: 'assets/sounds/effects/punctuation.mp3',
+      preload: true,
+    });
 
     loader.add('Click', 'assets/fonts/click.fnt');
 
@@ -64,19 +111,11 @@ export default class Loader {
     });
 
     loader.onComplete.add(() => {
-      this.tileset = [];
       for (let i = 0; i < 48; i++) {
         const texture = PIXI.Texture.from(`tileset_${i}`);
         this.tileset.push(texture);
       }
 
-      this.textures = {
-        UI: {},
-        DOORS: [],
-        STAIRS: [],
-        FLOOR_DECORATORS: [],
-        LIGHTING_MASK: [],
-      };
       for (let i = 0; i < 6; i++) {
         const texture = PIXI.Texture.from(`doors_${i}`);
         this.textures.DOORS.push(texture);
@@ -141,20 +180,6 @@ export default class Loader {
           this.textures[character][CHARACTER_ANIMATIONS.DIE].push(texture);
         }
       });
-
-      this.sounds = { musics: {}, effects: {} };
-      this.sounds.musics['main'] = sound.Sound.from(this.resources.main);
-      this.sounds.effects['player_step'] = sound.Sound.from(this.resources.player_step);
-      this.sounds.effects['player_attack'] = sound.Sound.from(this.resources.player_attack);
-      this.sounds.effects['nonplayer_step'] = sound.Sound.from(this.resources.nonplayer_step);
-      this.sounds.effects['nonplayer_attack'] = sound.Sound.from(
-        this.resources.nonplayer_attack
-      );
-      this.sounds.effects['door_open'] = sound.Sound.from(this.resources.door_open);
-      this.sounds.effects['cave_airflow'] = sound.Sound.from(this.resources.cave_airflow);
-      this.sounds.effects['damage'] = sound.Sound.from(this.resources.damage);
-      this.sounds.effects['dodge'] = sound.Sound.from(this.resources.dodge);
-      this.sounds.effects['you_died'] = sound.Sound.from(this.resources.you_died);
 
       Emitter.emit(RESOURCE_EVENTS.RESOURCES_LOADED);
     });

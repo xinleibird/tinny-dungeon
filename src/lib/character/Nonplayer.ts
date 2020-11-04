@@ -23,7 +23,7 @@ export default class NonPlayer extends Character {
   }
 
   private registSounds() {
-    this._stepSound = GameSound.get('nonplayer_step', 0.006);
+    this._stepSound = GameSound.get('nonplayer_step', 0.003);
     this._attackSound = GameSound.get('nonplayer_attack', 0.01);
   }
 }

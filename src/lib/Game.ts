@@ -10,6 +10,7 @@ import { Scene } from './scene';
 import Dungeon from './scene/Dungeon';
 import { BackgroundScreen, ForegroundScreen } from './screen';
 import { GameMusic, GameSound } from './sound';
+import { ALBUM } from './sound/GameMusic';
 import { Emitter, Loader, RESOURCE_EVENTS } from './system';
 import { GAME_EVENTS } from './system/Emitter';
 
@@ -206,14 +207,16 @@ export default class Game extends PIXI.Application {
       this._scene.destroy();
     });
 
-    GameMusic.play('main');
+    GameMusic.play(ALBUM.MAIN);
     GameSound.play('cave_airflow', 0.02, true);
-
+    GameMusic.play(ALBUM.TITLE);
     this._scene = new Dungeon(DUNGEON_SIZE_WIDTH, DUNGEON_SIZE_HEITHT);
     this._player = new Player(PLAYER_TYPES.KNIGHT_M);
     this._player.respawn(this._scene.playerRespawnPosition);
+    GameMusic.play(ALBUM.TITLE);
 
     const { x, y } = this._scene.playerRespawnPosition;
+    GameMusic.play(ALBUM.MAIN);
     const skeleton1 = new NonPlayer(NONPLAYER_TYPES.SKELETON);
     const skeleton2 = new NonPlayer(NONPLAYER_TYPES.SKELETON);
     const skeleton3 = new NonPlayer(NONPLAYER_TYPES.SKELETON);
