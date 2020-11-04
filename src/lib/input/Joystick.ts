@@ -36,6 +36,7 @@ export default class Joystick {
   }
 
   private processJoyCenter(event: nipple.EventData, data: nipple.JoystickOutputData & 1) {
+    this.clearAllInterval();
     const joy = JOY_NAMES.center;
     const inHandleJoy = this._handleJoys?.[joy];
     const timeStamp = Date.now();
@@ -68,7 +69,7 @@ export default class Joystick {
             this._lastDown = timeStamp;
           }
         }
-      }, 50)
+      }, this._delay)
     );
   }
 
