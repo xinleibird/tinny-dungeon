@@ -3,8 +3,13 @@
   margin: 0;
 }
 
+html {
+  touch-action: manipulation;
+}
+
 body {
   background-color: #07020f;
+  touch-action: manipulation;
 }
 
 canvas {

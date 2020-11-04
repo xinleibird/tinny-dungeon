@@ -17,6 +17,8 @@ type TexturesTypes = {
   STAIRS?: PIXI.Texture[];
   FLOOR_DECORATORS?: PIXI.Texture[];
   LIGHTING_MASK?: PIXI.Texture[];
+  TITLE?: PIXI.Texture;
+  AVATAR?: PIXI.Texture;
 };
 
 interface SoundTypes {
@@ -53,17 +55,7 @@ export default class Loader {
     loader.add('assets/sprites/skeleton.json');
 
     loader.add('main', 'assets/sounds/musics/平坡の道.mp3');
-    loader.add('title', 'assets/sounds/musics/first-story.ogg');
-
-    this.sounds.musics.main = sound.Sound.from({
-      url: 'assets/sounds/musics/平坡の道.mp3',
-      preload: true,
-    });
-
-    this.sounds.musics.title = sound.Sound.from({
-      url: 'assets/sounds/musics/first-story.ogg',
-      preload: true,
-    });
+    loader.add('title', 'assets/sounds/musics/MusMus-BGM-070.mp3');
 
     this.sounds.effects['cave_airflow'] = sound.Sound.from({
       url: 'assets/sounds/effects/cave_airflow.wav',
@@ -103,14 +95,25 @@ export default class Loader {
       url: 'assets/sounds/effects/punctuation.mp3',
       preload: true,
     });
+    this.sounds.effects['coin'] = sound.Sound.from({
+      url: 'assets/sounds/effects/sfx_coin_double3.wav',
+      preload: true,
+    });
 
     loader.add('Click', 'assets/fonts/click.fnt');
+    loader.add('Zpix', 'assets/fonts/Zpix.fnt');
+
+    loader.add('titleImage', 'assets/sprites/title.png');
+    loader.add('avatarImage', 'assets/sprites/avatar.png');
 
     loader.load((loader, resources) => {
       this.resources = resources;
     });
 
     loader.onComplete.add(() => {
+      this.textures.AVATAR = PIXI.Texture.from(`avatarImage`);
+      this.textures.TITLE = PIXI.Texture.from(`titleImage`);
+
       for (let i = 0; i < 48; i++) {
         const texture = PIXI.Texture.from(`tileset_${i}`);
         this.tileset.push(texture);
@@ -138,6 +141,7 @@ export default class Loader {
       this.textures.UI['arrow_up'] = PIXI.Texture.from(`ui_arrow_up`);
       this.textures.UI['arrow_left'] = PIXI.Texture.from(`ui_arrow_left`);
       this.textures.UI['arrow_right'] = PIXI.Texture.from(`ui_arrow_right`);
+      this.textures.UI['tap'] = PIXI.Texture.from(`ui_tap`);
 
       Object.keys(CHARACTER_CATEGORIES).forEach((character) => {
         this.textures[character] = {
@@ -180,6 +184,9 @@ export default class Loader {
           this.textures[character][CHARACTER_ANIMATIONS.DIE].push(texture);
         }
       });
+
+      this.sounds.musics.main = sound.Sound.from(this.resources.main);
+      this.sounds.musics.title = sound.Sound.from(this.resources.title);
 
       Emitter.emit(RESOURCE_EVENTS.RESOURCES_LOADED);
     });

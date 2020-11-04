@@ -10,7 +10,7 @@ import { Scene } from './scene';
 import Dungeon from './scene/Dungeon';
 import { BackgroundScreen, ForegroundScreen } from './screen';
 import { GameMusic, GameSound } from './sound';
-import { ALBUM } from './sound/GameMusic';
+import { MUSIC_ALBUM } from './sound/GameMusic';
 import { Emitter, Loader, RESOURCE_EVENTS } from './system';
 import { GAME_EVENTS } from './system/Emitter';
 
@@ -77,6 +77,28 @@ export default class Game extends PIXI.Application {
   }
 
   public play() {
+    Emitter.on(GAME_EVENTS.GAME_PLAY, () => {
+      this._foreground.effect(GAME_EVENTS.GAME_PLAY);
+    });
+
+    Emitter.on(GAME_EVENTS.GAME_START, () => {
+      this._player.respawn(this._scene.playerRespawnPosition);
+    });
+
+    Emitter.on(GAME_EVENTS.SCENE_START, () => {
+      this._foreground.effect(GAME_EVENTS.SCENE_START);
+      GameMusic.play(MUSIC_ALBUM.MAIN);
+      GameSound.play('cave_airflow', 0.02, true);
+    });
+
+    Emitter.on(GAME_EVENTS.USER_DIE, () => {
+      this._foreground.effect(GAME_EVENTS.USER_DIE);
+    });
+
+    Emitter.on(GAME_EVENTS.GAME_OVER, () => {
+      this._scene.destroy();
+    });
+
     Emitter.on(RESOURCE_EVENTS.RESOURCES_LOADED, () => {
       Emitter.emit(GAME_EVENTS.GAME_PLAY);
       this.gameLoop();
@@ -195,28 +217,10 @@ export default class Game extends PIXI.Application {
   }
 
   private gameLoop() {
-    Emitter.on(GAME_EVENTS.SCENE_START, () => {
-      this._foreground.effect(GAME_EVENTS.SCENE_START);
-    });
-
-    Emitter.on(GAME_EVENTS.USER_DIE, () => {
-      this._foreground.effect(GAME_EVENTS.USER_DIE);
-    });
-
-    Emitter.on(GAME_EVENTS.GAME_OVER, () => {
-      this._scene.destroy();
-    });
-
-    GameMusic.play(ALBUM.MAIN);
-    GameSound.play('cave_airflow', 0.02, true);
-    GameMusic.play(ALBUM.TITLE);
     this._scene = new Dungeon(DUNGEON_SIZE_WIDTH, DUNGEON_SIZE_HEITHT);
     this._player = new Player(PLAYER_TYPES.KNIGHT_M);
-    this._player.respawn(this._scene.playerRespawnPosition);
-    GameMusic.play(ALBUM.TITLE);
 
     const { x, y } = this._scene.playerRespawnPosition;
-    GameMusic.play(ALBUM.MAIN);
     const skeleton1 = new NonPlayer(NONPLAYER_TYPES.SKELETON);
     const skeleton2 = new NonPlayer(NONPLAYER_TYPES.SKELETON);
     const skeleton3 = new NonPlayer(NONPLAYER_TYPES.SKELETON);
