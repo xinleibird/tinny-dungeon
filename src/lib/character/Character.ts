@@ -550,22 +550,10 @@ export default abstract class Character extends Renderable {
   protected changeSpriteDirection(direction: Vector2) {
     if (direction.equals(Vector2.left)) {
       this._rendering.scale.x = -1;
-      const [hold, walk, attack, hurt] = this._rendering.children as PIXI.AnimatedSprite[];
-
-      hold.anchor.set(0.5625, 0.5);
-      walk.anchor.set(0.5625, 0.5);
-      attack.anchor.set(0.5625, 0.5);
-      hurt.anchor.set(0.5625, 0.5);
     }
 
     if (direction.equals(Vector2.right)) {
       this._rendering.scale.x = 1;
-      const [hold, walk, attack, hurt] = this._rendering.children as PIXI.AnimatedSprite[];
-
-      hold.anchor.set(0.5, 0.5);
-      walk.anchor.set(0.5, 0.5);
-      attack.anchor.set(0.5, 0.5);
-      hurt.anchor.set(0.5, 0.5);
     }
   }
 

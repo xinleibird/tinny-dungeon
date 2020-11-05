@@ -7,6 +7,7 @@ import {
 import { StaticSystem } from '../core';
 import { Vector2 } from '../geometry';
 import { JOY_NAMES, KEY_NAMES } from '../input';
+import { EXTERNAL_NAMES } from '../object/external/External';
 import { Disable, Goto, Trace } from '../object/strategy';
 import { Emitter, JOY_EVENTS, KEY_EVENTS } from '../system';
 import { GAME_EVENTS } from '../system/Emitter';
@@ -54,6 +55,7 @@ export default class Control {
   private _nonPlayers: NonPlayer[] = [];
 
   private _lock = false;
+  private _showUI = false;
 
   private constructor() {
     this.handleKeyDown();
@@ -122,6 +124,18 @@ export default class Control {
 
         case JOYSTICK_CONTROLLED_JOYS[CONTROL_ACTIONS.WALK_DOWN]: {
           await this.processTurn(Vector2.down);
+
+          break;
+        }
+
+        case JOYSTICK_CONTROLLED_JOYS[CONTROL_ACTIONS.CONFIRM]: {
+          if (!this._showUI) {
+            this._player.showExternal(EXTERNAL_NAMES.DIRECTION_INDICATOR);
+            this._showUI = true;
+          } else {
+            this._player.hideExternal(EXTERNAL_NAMES.DIRECTION_INDICATOR);
+            this._showUI = false;
+          }
 
           break;
         }

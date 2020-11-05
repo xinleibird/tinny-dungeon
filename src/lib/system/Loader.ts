@@ -142,6 +142,12 @@ export default class Loader {
       this.textures.UI['arrow_left'] = PIXI.Texture.from(`ui_arrow_left`);
       this.textures.UI['arrow_right'] = PIXI.Texture.from(`ui_arrow_right`);
       this.textures.UI['tap'] = PIXI.Texture.from(`ui_tap`);
+      this.textures.UI['w'] = PIXI.Texture.from(`ui_w`);
+      this.textures.UI['a'] = PIXI.Texture.from(`ui_a`);
+      this.textures.UI['s'] = PIXI.Texture.from(`ui_s`);
+      this.textures.UI['d'] = PIXI.Texture.from(`ui_d`);
+      this.textures.UI['space'] = PIXI.Texture.from(`ui_space`);
+      this.textures.UI['enter'] = PIXI.Texture.from(`ui_enter`);
 
       Object.keys(CHARACTER_CATEGORIES).forEach((character) => {
         this.textures[character] = {

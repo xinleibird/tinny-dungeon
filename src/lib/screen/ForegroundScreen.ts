@@ -60,27 +60,42 @@ export default class ForegroundScreen extends GameScreen {
 
   private gameTitle() {
     const haveToTap = () => {
-      const text = new PIXI.BitmapText(
-        `
-This game use
-w / a / s / d
-or 
-visual Joystick
-for controller
-      `,
-        {
-          fontName: 'Click',
-          fontSize: 13,
-        }
-      );
+      const keyboard = new PIXI.Container();
+      keyboard.pivot.set(16);
+
+      const w = new PIXI.Sprite(Loader.textures.UI.w);
+      const a = new PIXI.Sprite(Loader.textures.UI.a);
+      const s = new PIXI.Sprite(Loader.textures.UI.s);
+      const d = new PIXI.Sprite(Loader.textures.UI.a);
+      const space = new PIXI.Sprite(Loader.textures.UI.space);
+      const enter = new PIXI.Sprite(Loader.textures.UI.enter);
+
+      w.position.y -= 16;
+      a.position.x -= 16;
+      s.position.x += 0;
+      d.position.x += 16;
+      space.position.x += 32;
+      enter.position.x += 48;
+
+      keyboard.position.y -= 24;
+      keyboard.position.x -= 8;
+
+      keyboard.addChild(w, a, s, d, space, enter);
+      this._rendering.addChild(keyboard);
+
+      const text = new PIXI.BitmapText(`Use Keyboard\n\n\n\n\n\n\nor\n\nTap Screen `, {
+        fontName: 'Click',
+        fontSize: 13,
+        align: 'center',
+      });
 
       text.anchor = 0.5;
-      text.position.y -= 30;
+      text.position.y -= 16;
       this._rendering.addChild(text);
 
       const tapIcon = new PIXI.Sprite(Loader.textures.UI.tap);
       tapIcon.anchor.set(0.5);
-      tapIcon.position.y += 25;
+      tapIcon.position.y += 80;
       this._rendering.addChild(tapIcon);
 
       gsap.to(tapIcon, {
@@ -93,7 +108,7 @@ for controller
       const tap = () => {
         Emitter.removeListener(KEY_EVENTS.KEY_DOWN, tap);
         Emitter.removeListener(JOY_EVENTS.JOY_DOWN, tap);
-        this._rendering.removeChild(text, tapIcon);
+        this._rendering.removeChild(keyboard, text, tapIcon);
         showAuthor();
       };
 
