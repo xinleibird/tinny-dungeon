@@ -17,7 +17,7 @@ type TexturesTypes = {
   STAIRS?: PIXI.Texture[];
   FLOOR_DECORATORS?: PIXI.Texture[];
   LIGHTING_MASK?: PIXI.Texture[];
-  TITLE?: PIXI.Texture;
+  TITLES?: PIXI.Texture[];
   AVATAR?: PIXI.Texture;
 };
 
@@ -39,6 +39,7 @@ export default class Loader {
     STAIRS: [],
     FLOOR_DECORATORS: [],
     LIGHTING_MASK: [],
+    TITLES: [],
   };
   public static tileset: PIXI.Texture[] = [];
   public static sounds: SoundTypes = { effects: {}, musics: {} };
@@ -50,9 +51,15 @@ export default class Loader {
     loader.add('assets/tiles/floor_decorators.json');
     loader.add('assets/tiles/ui.json');
     loader.add('assets/tiles/lighting_mask.json');
+    loader.add('titleImages', 'assets/sprites/title.json');
 
     loader.add('assets/sprites/knight_m.json');
     loader.add('assets/sprites/skeleton.json');
+
+    loader.add('Click', 'assets/fonts/click.fnt');
+    loader.add('Zpix', 'assets/fonts/Zpix.fnt');
+
+    loader.add('avatarImage', 'assets/sprites/avatar.png');
 
     loader.add('main', 'assets/sounds/musics/平坡の道.mp3');
     loader.add('title', 'assets/sounds/musics/MusMus-BGM-070.mp3');
@@ -100,19 +107,17 @@ export default class Loader {
       preload: true,
     });
 
-    loader.add('Click', 'assets/fonts/click.fnt');
-    loader.add('Zpix', 'assets/fonts/Zpix.fnt');
-
-    loader.add('titleImage', 'assets/sprites/title.png');
-    loader.add('avatarImage', 'assets/sprites/avatar.png');
-
     loader.load((loader, resources) => {
       this.resources = resources;
     });
 
     loader.onComplete.add(() => {
       this.textures.AVATAR = PIXI.Texture.from(`avatarImage`);
-      this.textures.TITLE = PIXI.Texture.from(`titleImage`);
+
+      for (let i = 0; i < 6; i++) {
+        const texture = PIXI.Texture.from(`title_${i}`);
+        this.textures.TITLES.push(texture);
+      }
 
       for (let i = 0; i < 48; i++) {
         const texture = PIXI.Texture.from(`tileset_${i}`);

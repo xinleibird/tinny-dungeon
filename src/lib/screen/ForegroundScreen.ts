@@ -168,11 +168,14 @@ export default class ForegroundScreen extends GameScreen {
     const showTitle = () => {
       GameMusic.play(MUSIC_ALBUM.TITLE);
 
-      const title = new PIXI.Sprite(Loader.textures.TITLE);
-      title.anchor.set(0.5);
-      title.position.y -= 40;
-      title.alpha = 0;
-      this._rendering.addChild(title);
+      const titleBatch = Loader.textures.TITLES;
+      const titleSprite = new PIXI.AnimatedSprite(titleBatch);
+      titleSprite.anchor.set(0.5);
+      titleSprite.position.y -= 40;
+      titleSprite.alpha = 0;
+      titleSprite.animationSpeed = 0.1;
+      titleSprite.play();
+      this._rendering.addChild(titleSprite);
 
       const holdBatch = Loader.textures['KNIGHT_M'][CHARACTER_ANIMATIONS.HOLD];
       const anim = new PIXI.AnimatedSprite(holdBatch);
@@ -193,11 +196,11 @@ export default class ForegroundScreen extends GameScreen {
 
       gsap.to(tapToStart, { duration: 0.233, pixi: { alpha: 0.5 }, repeat: -1, yoyo: true });
 
-      gsap.to(title, {
+      gsap.to(titleSprite, {
         duration: 1.5,
         alpha: 1,
         onComplete: () => {
-          gsap.to(title, {
+          gsap.to(titleSprite, {
             duration: 2,
             pixi: { alpha: 0.382 },
             yoyo: true,
@@ -210,7 +213,7 @@ export default class ForegroundScreen extends GameScreen {
         Emitter.emit(GAME_EVENTS.GAME_START);
         Emitter.removeListener(KEY_EVENTS.KEY_DOWN, tap);
         Emitter.removeListener(JOY_EVENTS.JOY_DOWN, tap);
-        this._rendering.removeChild(title, anim, tapToStart);
+        this._rendering.removeChild(titleSprite, anim, tapToStart);
       };
 
       Emitter.on(KEY_EVENTS.KEY_DOWN, tap);
