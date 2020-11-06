@@ -1,7 +1,7 @@
 ## 版权声明
 
 - 项目中的**知识创作内容**（包含但不仅限于可编译为二进制资源的 ts、js 源码或 html、css 等静态资源），遵循 MIT 协议，你**可以自由的修改分发**。
-- 项目中的图片等**艺术创作**内容（包含但不仅限于 png 资源），遵循 CC 协议，使用请为我署名并且**不得用于商业内容**。
+- 项目中的图片等**艺术创作内容**（包含但不仅限于 png 资源），遵循 CC 协议，使用请为我署名并且**不得用于商业内容**。
 - 项目中的 autotile 算法，来自于 [node-autotile][autotile]，我觉得丑了点修改了一下，抱歉。其协议为 BSD-2-Clause。
 - 项目中使用了 [Click Font][click]，其协议为 CC0。
 - 项目中使用了 [Zpix Font][zpix]，其授权见 https://github.com/SolidZORO/zpix-pixel-font
