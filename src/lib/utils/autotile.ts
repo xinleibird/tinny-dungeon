@@ -1,4 +1,5 @@
 /**
+ * Code copy from https://github.com/tlhunter/node-autotile#readme  It's BSD-V2
  * Algorithm from https://gamedevelopment.tutsplus.com/tutorials/how-to-use-tile-bitmasking-to-auto-tile-your-level-layouts--cms-25673
  */
 

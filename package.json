@@ -9,7 +9,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "@armathai/pixi-stats": "^1.0.1",
     "@types/copy-webpack-plugin": "^6.0.0",
