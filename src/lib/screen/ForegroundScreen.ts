@@ -190,7 +190,7 @@ export default class ForegroundScreen extends GameScreen {
         fontSize: 13,
       });
       tapToStart.anchor = 0.5;
-      tapToStart.position.y += 10;
+      tapToStart.position.y += 20;
 
       this._rendering.addChild(tapToStart);
 
@@ -202,7 +202,7 @@ export default class ForegroundScreen extends GameScreen {
         onComplete: () => {
           gsap.to(titleSprite, {
             duration: 2,
-            pixi: { alpha: 0.382 },
+            pixi: { alpha: 0.618 },
             yoyo: true,
             repeat: -1,
           });
