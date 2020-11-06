@@ -8,7 +8,7 @@
 - 项目中使用了 [kenkenbgm][kenkenbgm] 的 BGM '平坡の道'，其协议是 CC3。
 - 项目中使用了 [musmus][musmus] 的 BGM ’かぼちゃ騎士団の行進‘，其协议见 https://musmus.main.jp/info.html。
 - 项目中使用了 [Juhani Junkala][junkala] 的效果音合集 'The Essential Retro Video Game Sound Effects Collection [512 sounds]'，他的协议是 CC0。
-- 创作 tile sprite 是那个用的是 Aseprite。与 node-autotile 配合的图片分割脚本来自[GMS2-Autotile-Converter][gms2-autotile-converter]，是 MIT 协议，但是他的脚本是为 GameMaker Studio 2 的。 配合 node-autotile 的方式，我 fork 了一份并修改了图片分割顺序，你应该使用[这个版本][fork]，但是推荐你给原作者一个 star。
+- 创作 tile sprite 用的是 Aseprite。与 node-autotile 配合的图片分割脚本来自[GMS2-Autotile-Converter][gms2-autotile-converter]，是 MIT 协议，但是他的脚本是为 GameMaker Studio 2 的。 配合 node-autotile 的方式，我 fork 了一份并修改了图片分割顺序，你应该使用[这个版本][fork]，但是推荐你给原作者一个 star。
 
 [click]: https://opengameart.org/content/click-pixel-font
 [zpix]: https://opengameart.org/content/click-pixel-font
