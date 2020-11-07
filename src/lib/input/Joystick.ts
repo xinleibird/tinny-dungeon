@@ -27,7 +27,7 @@ export default class Joystick {
   }
 
   private initialize() {
-    this._nipple = nipple.create({ zone: document.body, color: '#5a697b', threshold: 0.6 });
+    this._nipple = nipple.create({ zone: document.body, color: '#5a697b', threshold: 0.2 });
     this._handleJoys = {};
 
     this._nipple.on('dir', this.processJoyDown.bind(this));

@@ -1,13 +1,12 @@
-import { utils } from 'pixi.js';
-
-const { EventEmitter } = utils;
+import * as PIXI from 'pixi.js';
 
 export enum GAME_EVENTS {
-  GAME_PLAY = 'game_play',
-  GAME_START = 'game_start',
+  NULL = 'null',
+  GAME_TITLE = 'game_title',
   GAME_OVER = 'game_over',
   GAME_RESTART = 'game_restart',
   SCENE_START = 'scene_start',
+  SCENE_RUNNING = 'scene_running',
   SCENE_CLEAR = 'scene_clear',
   USER_NORMAL = 'user_normal',
   USER_LOW_HP = 'user_low_hp',
@@ -31,4 +30,43 @@ export enum JOY_EVENTS {
   JOY_UP = 'joyUp',
 }
 
-export const Emitter = new EventEmitter();
+export default class Emitter extends PIXI.utils.EventEmitter {
+  private static _instance: Emitter;
+  private static _phase: GAME_EVENTS = GAME_EVENTS.NULL;
+
+  public static getInstance() {
+    if (!this._instance) {
+      this._instance = new Emitter();
+    }
+    return this._instance;
+  }
+
+  public static get phase() {
+    return this._phase;
+  }
+
+  public static on(event: string, fn: Function, ctx?: any) {
+    const instance = this.getInstance();
+    instance.on(event, fn, ctx);
+  }
+
+  public static emit(event: string, ...args: any[]) {
+    const instance = this.getInstance();
+    instance.emit(event, ...args);
+
+    const enumValues: string[] = Object.values(GAME_EVENTS);
+
+    if (enumValues.includes(event)) {
+      this._phase = event as GAME_EVENTS;
+    }
+  }
+
+  public static removeListener(event: string, fn: Function, ctx?: any, once?: boolean) {
+    const instance = this.getInstance();
+    instance.removeListener(event, fn, ctx, once);
+  }
+
+  private constructor() {
+    super();
+  }
+}

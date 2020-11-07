@@ -8,9 +8,8 @@ import { StaticSystem } from '../core';
 import { Vector2 } from '../geometry';
 import { JOY_NAMES, KEY_NAMES } from '../input';
 import { EXTERNAL_NAMES } from '../object/external/External';
-import { Disable, Goto, Trace } from '../object/strategy';
-import { Emitter, JOY_EVENTS, KEY_EVENTS } from '../system';
-import { GAME_EVENTS } from '../system/Emitter';
+import { Disable, Trace } from '../object/strategy';
+import { Emitter, GAME_EVENTS, JOY_EVENTS, KEY_EVENTS } from '../system';
 import { TurnBase, TurnEvent } from '../turn/';
 import { updateEntitiesDislightings, updateEntitiesLightings } from '../utils';
 
@@ -60,6 +59,8 @@ export default class Control {
   private constructor() {
     this.handleKeyDown();
     this.handleJoyDown();
+    // Emitter.on(GAME_EVENTS.SCENE_START, () => {
+    // });
   }
 
   private handleKeyDown() {
@@ -85,12 +86,6 @@ export default class Control {
 
         case KEYBOARD_CONTROLLED_KEYS[CONTROL_ACTIONS.WALK_DOWN]: {
           this.processTurn(Vector2.down);
-
-          break;
-        }
-
-        case KEYBOARD_CONTROLLED_KEYS[CONTROL_ACTIONS.GO_TO_LEFT]: {
-          this.setNon();
 
           break;
         }
@@ -146,51 +141,42 @@ export default class Control {
     });
   }
 
-  private setNon() {
-    this._nonPlayers.forEach((char) => {
-      char.strategy = new Goto(
-        char,
-        Vector2.merge(this._player.geometryPosition, Vector2.left)
-      );
-      this.turnBase.remove(char);
-      char.decide();
-    });
-  }
-
   private async processTurn(direction: Vector2, count?: number) {
-    if (Date.now() > this._lastDownTimeStamp + this._delay && !this._lock) {
-      if (!this._player.canBehave(direction)) {
-        return;
-      }
+    if (Emitter.phase === GAME_EVENTS.SCENE_RUNNING) {
+      if (Date.now() > this._lastDownTimeStamp + this._delay && !this._lock) {
+        if (!this?._player?.canBehave(direction)) {
+          return;
+        }
 
-      if (this._player.alive) {
-        this._lock = true;
-        this.turnBase.add(new TurnEvent(this._player, direction));
+        if (this._player.alive) {
+          this._lock = true;
+          this.turnBase.add(new TurnEvent(this._player, direction));
 
-        this._nonPlayers.forEach((non) => {
-          if (!non.alive) {
-            non.strategy = new Disable(non);
-          } else {
-            non.strategy = new Trace(non, this._player);
-          }
+          this._nonPlayers.forEach((non) => {
+            if (!non.alive) {
+              non.strategy = new Disable(non);
+            } else {
+              non.strategy = new Trace(non, this._player);
+            }
 
-          non.decide();
-        });
+            non.decide();
+          });
 
-        await this.turnBase.tickTurnAll();
+          await this.turnBase.tickTurnAll();
 
-        this.turnBase.clear();
+          this.turnBase.clear();
 
-        this._lastDownTimeStamp = Date.now();
-        this._lock = false;
+          this._lastDownTimeStamp = Date.now();
+          this._lock = false;
 
-        StaticSystem.renderer.characterLayer.sortChildren();
+          StaticSystem.renderer.characterLayer.sortChildren();
 
-        updateEntitiesDislightings(this._player.geometryPosition);
-        updateEntitiesLightings(this._player.geometryPosition);
-      } else {
-        this.turnBase.clear();
-        Emitter.emit(GAME_EVENTS.GAME_OVER);
+          updateEntitiesDislightings(this._player.geometryPosition);
+          updateEntitiesLightings(this._player.geometryPosition);
+        } else {
+          this.turnBase.clear();
+          Emitter.emit(GAME_EVENTS.GAME_OVER);
+        }
       }
     }
   }

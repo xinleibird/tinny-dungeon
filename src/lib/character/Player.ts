@@ -1,8 +1,7 @@
 import { StaticSystem } from '../core';
 import { Vector2 } from '../geometry';
 import { GameSound } from '../sound';
-import { Emitter } from '../system';
-import { GAME_EVENTS } from '../system/Emitter';
+import { Emitter, GAME_EVENTS } from '../system';
 import { updateEntitiesLightings } from '../utils';
 import Character, { PLAYER_TYPES } from './Character';
 import CharacterClass from './CharacterClass';

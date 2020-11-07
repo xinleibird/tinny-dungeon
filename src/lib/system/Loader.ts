@@ -1,7 +1,7 @@
 import sound from 'pixi-sound';
 import * as PIXI from 'pixi.js';
 import { CHARACTER_ANIMATIONS, CHARACTER_CATEGORIES, PLAYER_TYPES } from '../character';
-import { Emitter, RESOURCE_EVENTS } from './Emitter';
+import { default as Emitter, RESOURCE_EVENTS } from './Emitter';
 
 const loader = PIXI.Loader.shared;
 

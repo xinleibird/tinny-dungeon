@@ -11,8 +11,7 @@ import Dungeon from './scene/Dungeon';
 import { BackgroundScreen, ForegroundScreen } from './screen';
 import { GameMusic, GameSound } from './sound';
 import { MUSIC_ALBUM } from './sound/GameMusic';
-import { Emitter, Loader, RESOURCE_EVENTS } from './system';
-import { GAME_EVENTS } from './system/Emitter';
+import { Emitter, GAME_EVENTS, Loader, RESOURCE_EVENTS } from './system';
 
 export interface GameOptions {
   autoStart?: boolean;
@@ -77,18 +76,18 @@ export default class Game extends PIXI.Application {
   }
 
   public play() {
-    Emitter.on(GAME_EVENTS.GAME_PLAY, () => {
-      this._foreground.effect(GAME_EVENTS.GAME_PLAY);
-    });
-
-    Emitter.on(GAME_EVENTS.GAME_START, () => {
-      this._player.respawn(this._scene.playerRespawnPosition);
+    Emitter.on(GAME_EVENTS.GAME_TITLE, () => {
+      this._foreground.effect(GAME_EVENTS.GAME_TITLE);
     });
 
     Emitter.on(GAME_EVENTS.SCENE_START, () => {
       this._foreground.effect(GAME_EVENTS.SCENE_START);
       GameMusic.play(MUSIC_ALBUM.MAIN);
       GameSound.play('cave_airflow', 0.02, true);
+    });
+
+    Emitter.on(GAME_EVENTS.SCENE_RUNNING, () => {
+      this._player.respawn(this._scene.playerRespawnPosition);
     });
 
     Emitter.on(GAME_EVENTS.USER_DIE, () => {
@@ -100,7 +99,7 @@ export default class Game extends PIXI.Application {
     });
 
     Emitter.on(RESOURCE_EVENTS.RESOURCES_LOADED, () => {
-      Emitter.emit(GAME_EVENTS.GAME_PLAY);
+      Emitter.emit(GAME_EVENTS.GAME_TITLE);
       this.gameLoop();
     });
   }
@@ -113,10 +112,36 @@ export default class Game extends PIXI.Application {
     const root = document.getElementById('root');
     root.appendChild(this.view);
 
-    // prevent contextmenu
-    window.addEventListener('contextmenu', (e) => {
-      e.preventDefault();
-    });
+    window.onload = () => {
+      // prevent contextmenu
+      document.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+      });
+
+      // hack for safari 12 maximum-scale ignore
+      document.addEventListener(
+        'touchstart',
+        (event) => {
+          if (event.touches.length > 1) {
+            event.preventDefault();
+          }
+        },
+        { passive: false }
+      );
+
+      let lastTouchEnd = 0;
+      document.addEventListener(
+        'touchend',
+        (event) => {
+          const now = new Date().getTime();
+          if (now - lastTouchEnd <= 300) {
+            event.preventDefault();
+          }
+          lastTouchEnd = now;
+        },
+        false
+      );
+    };
 
     // stats.js;
     if (DEBUG) {

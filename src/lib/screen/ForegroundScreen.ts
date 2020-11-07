@@ -4,8 +4,7 @@ import { CHARACTER_ANIMATIONS } from '../character';
 import { GAME_OPTIONS } from '../config';
 import { GameMusic, GameSound } from '../sound';
 import { MUSIC_ALBUM } from '../sound/GameMusic';
-import { Loader } from '../system';
-import { Emitter, GAME_EVENTS, JOY_EVENTS, KEY_EVENTS } from '../system/Emitter';
+import { Emitter, GAME_EVENTS, JOY_EVENTS, KEY_EVENTS, Loader } from '../system';
 import GameScreen from './GameScreen';
 
 const { PIXEL_SCALE } = GAME_OPTIONS;
@@ -38,7 +37,7 @@ export default class ForegroundScreen extends GameScreen {
 
   public effect(event: GAME_EVENTS) {
     switch (event) {
-      case GAME_EVENTS.GAME_PLAY: {
+      case GAME_EVENTS.GAME_TITLE: {
         this.gameTitle();
         break;
       }
@@ -210,7 +209,7 @@ export default class ForegroundScreen extends GameScreen {
       });
 
       const tap = () => {
-        Emitter.emit(GAME_EVENTS.GAME_START);
+        Emitter.emit(GAME_EVENTS.SCENE_RUNNING);
         Emitter.removeListener(KEY_EVENTS.KEY_DOWN, tap);
         Emitter.removeListener(JOY_EVENTS.JOY_DOWN, tap);
         this._rendering.removeChild(titleSprite, anim, tapToStart);
