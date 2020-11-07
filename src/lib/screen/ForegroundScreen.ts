@@ -76,29 +76,28 @@ export default class ForegroundScreen extends GameScreen {
       space.position.x += 32;
       enter.position.x += 48;
 
-      keyboard.position.y -= 24;
+      keyboard.position.y -= 48;
       keyboard.position.x -= 8;
 
       keyboard.addChild(w, a, s, d, space, enter);
       this._rendering.addChild(keyboard);
 
-      const text = new PIXI.BitmapText(`Use Keyboard\n\n\n\n\n\n\nor\n\nTap Screen `, {
-        fontName: 'Click',
+      const text = new PIXI.BitmapText(`Use Keyboard\n\nor\n\nTap  Screen`, {
+        fontName: 'Covenant5x5',
         fontSize: 13,
         align: 'center',
       });
 
       text.anchor = 0.5;
-      text.position.y -= 16;
       this._rendering.addChild(text);
 
       const tapIcon = new PIXI.Sprite(Loader.textures.UI.tap);
       tapIcon.anchor.set(0.5);
-      tapIcon.position.y += 80;
+      tapIcon.position.y += 48;
       this._rendering.addChild(tapIcon);
 
       gsap.to(tapIcon, {
-        duration: 0.8,
+        duration: 0.5,
         pixi: { alpha: 0.3 },
         repeat: -1,
         yoyo: true,
@@ -180,16 +179,16 @@ export default class ForegroundScreen extends GameScreen {
       const anim = new PIXI.AnimatedSprite(holdBatch);
       anim.anchor.set(0.5);
       anim.animationSpeed = 0.133;
-      anim.position.y += 40;
+      anim.position.y += 48;
       this.rendering.addChild(anim);
       anim.play();
 
-      const tapToStart = new PIXI.BitmapText('TAP TO START', {
+      const tapToStart = new PIXI.BitmapText('GAME START', {
         fontName: 'Click',
         fontSize: 13,
       });
       tapToStart.anchor = 0.5;
-      tapToStart.position.y += 20;
+      tapToStart.position.y += 32;
 
       this._rendering.addChild(tapToStart);
 
@@ -235,7 +234,7 @@ export default class ForegroundScreen extends GameScreen {
     GameSound.play('you_died', 1);
 
     this.fadeIn(2, 0, 0.618, () => {
-      const tapText = new PIXI.BitmapText(`TAP TO RESTART`, {
+      const tapText = new PIXI.BitmapText(`GAME RESTART`, {
         fontName: 'Click',
         fontSize: 13,
       });

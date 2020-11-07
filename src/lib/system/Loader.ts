@@ -58,6 +58,7 @@ export default class Loader {
 
     loader.add('Click', 'assets/fonts/click.fnt');
     loader.add('Zpix', 'assets/fonts/Zpix.fnt');
+    loader.add('Convenant', 'assets/fonts/Covenant5x5.fnt');
 
     loader.add('avatarImage', 'assets/sprites/avatar.png');
 
