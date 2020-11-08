@@ -93,17 +93,17 @@ export default class Attacking extends Behavior {
     const tarEntity = StaticSystem.entityGroup.getEntity(tarPosition);
     const tarCharacter = StaticSystem.entityGroup.getCharacter(tarPosition);
 
-    const attackRoll = this._character.class.attackRoll();
+    const attackRoll = this._character?.class?.attackRoll();
     let damage = 0;
 
     if (attackRoll !== -1) {
-      const defenceRoll = tarCharacter.class.defenceRoll();
+      const defenceRoll = tarCharacter?.class?.defenceRoll();
 
       if (!defenceRoll) {
-        damage = this._character.class.damageRoll();
+        damage = this._character?.class?.damageRoll();
       }
     } else {
-      damage = this._character.class.damageRoll();
+      damage = this._character?.class?.damageRoll();
     }
 
     const hurtableEntity = tarEntity?.getAbility(ABILITY_NAMES.HURTABLE);

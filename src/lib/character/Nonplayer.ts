@@ -7,8 +7,14 @@ export default class NonPlayer extends Character {
   public constructor(type: NONPLAYER_TYPES, scene?: Scene) {
     super(type);
 
+    this._class = new CharacterClass({ ST: 10, DX: 10, IQ: 10, HT: 10 }, 'Thr', 'cr');
+
     if (type === NONPLAYER_TYPES.SKELETON) {
       this._class = new CharacterClass({ ST: 10, DX: 11, IQ: 9, HT: 10 }, 'Thr', 'cr');
+    }
+
+    if (type === NONPLAYER_TYPES.BAT) {
+      this._class = new CharacterClass({ ST: 8, DX: 12, IQ: 9, HT: 9 }, 'Thr', 'cr');
     }
 
     this.registSounds();

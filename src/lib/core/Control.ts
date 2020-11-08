@@ -15,7 +15,6 @@ import { updateEntitiesDislightings, updateEntitiesLightings } from '../utils';
 
 export default class Control {
   private static _instance: Control;
-  private static _turnBase: TurnBase = TurnBase.getInstance();
 
   public static getInstance() {
     if (!this._instance) {
@@ -26,7 +25,6 @@ export default class Control {
 
   public static regist(character: Character) {
     const instance = this.getInstance();
-    instance._characters.push(character);
 
     if (character instanceof Player) {
       const player = character as Player;
@@ -42,23 +40,30 @@ export default class Control {
   }
 
   public static get turnBase() {
-    return this._turnBase;
+    const instance = this.getInstance();
+    return instance._turnBase;
+  }
+
+  public static trash() {
+    const instance = this.getInstance();
+    instance._player = null;
+    instance._nonPlayers = [];
   }
 
   public get turnBase() {
-    return Control._turnBase;
+    return this._turnBase;
   }
 
   private _lastDownTimeStamp = 0;
   private _delay = 150;
-
-  private _characters: Character[] = [];
 
   private _player: Player;
   private _nonPlayers: NonPlayer[] = [];
 
   private _lock = false;
   private _showUI = false;
+
+  private _turnBase: TurnBase = TurnBase.getInstance();
 
   private constructor() {
     this.handleKeyDown();

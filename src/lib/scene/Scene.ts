@@ -1,4 +1,4 @@
-import { StaticSystem } from '../core';
+import { Control, StaticSystem } from '../core';
 import { EntityGroup } from '../entity';
 import { Vector2 } from '../geometry';
 
@@ -21,5 +21,6 @@ export default class Scene {
 
   public destroy() {
     StaticSystem.renderer.trash();
+    Control.trash();
   }
 }

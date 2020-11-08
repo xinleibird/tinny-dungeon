@@ -32,7 +32,6 @@ export enum JOY_EVENTS {
 
 export default class Emitter extends PIXI.utils.EventEmitter {
   private static _instance: Emitter;
-  private static _phase: GAME_EVENTS = GAME_EVENTS.NULL;
 
   public static getInstance() {
     if (!this._instance) {
@@ -42,7 +41,8 @@ export default class Emitter extends PIXI.utils.EventEmitter {
   }
 
   public static get phase() {
-    return this._phase;
+    const instance = this.getInstance();
+    return instance._phase;
   }
 
   public static on(event: string, fn: Function, ctx?: any) {
@@ -57,7 +57,7 @@ export default class Emitter extends PIXI.utils.EventEmitter {
     const enumValues: string[] = Object.values(GAME_EVENTS);
 
     if (enumValues.includes(event)) {
-      this._phase = event as GAME_EVENTS;
+      instance._phase = event as GAME_EVENTS;
     }
   }
 
@@ -65,6 +65,12 @@ export default class Emitter extends PIXI.utils.EventEmitter {
     const instance = this.getInstance();
     instance.removeListener(event, fn, ctx, once);
   }
+
+  public get phase() {
+    return this._phase;
+  }
+
+  private _phase: GAME_EVENTS = GAME_EVENTS.NULL;
 
   private constructor() {
     super();

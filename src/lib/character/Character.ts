@@ -24,6 +24,7 @@ export enum PLAYER_TYPES {
 
 export enum NONPLAYER_TYPES {
   SKELETON = 'skeleton',
+  BAT = 'bat',
 }
 
 export const CHARACTER_CATEGORIES = {

@@ -246,7 +246,7 @@ export default class Game extends PIXI.Application {
     this._player = new Player(PLAYER_TYPES.KNIGHT_M);
 
     const { x, y } = this._scene.playerRespawnPosition;
-    const skeleton1 = new NonPlayer(NONPLAYER_TYPES.SKELETON);
+    const skeleton1 = new NonPlayer(NONPLAYER_TYPES.BAT);
     const skeleton2 = new NonPlayer(NONPLAYER_TYPES.SKELETON);
     const skeleton3 = new NonPlayer(NONPLAYER_TYPES.SKELETON);
     const skeleton4 = new NonPlayer(NONPLAYER_TYPES.SKELETON);

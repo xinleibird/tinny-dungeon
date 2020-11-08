@@ -115,7 +115,7 @@ export default class ForegroundScreen extends GameScreen {
     };
 
     const showAuthor = () => {
-      const product = new PIXI.BitmapText(`辛磊作品\n\nxinleibird@gmail.com`, {
+      const product = new PIXI.BitmapText(`辛磊作品`, {
         fontName: 'Pixel',
         fontSize: 8,
       });

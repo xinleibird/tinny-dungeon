@@ -1,4 +1,4 @@
-import { StaticSystem } from '../core';
+import { Control, StaticSystem } from '../core';
 import { Vector2 } from '../geometry';
 import { GameSound } from '../sound';
 import { Emitter, GAME_EVENTS } from '../system';
@@ -26,6 +26,7 @@ export default class Player extends Character {
   }
 
   public respawn(geometryPosition: Vector2) {
+    Control.regist(this);
     this.geometryPosition = geometryPosition;
     Emitter.emit(GAME_EVENTS.SCENE_START);
     updateEntitiesLightings(this._geometryPosition);

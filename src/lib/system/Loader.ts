@@ -55,6 +55,7 @@ export default class Loader {
 
     loader.add('assets/sprites/knight_m.json');
     loader.add('assets/sprites/skeleton.json');
+    loader.add('assets/sprites/bat.json');
 
     loader.add('Click', 'assets/fonts/click.fnt');
     loader.add('Pixel', 'assets/fonts/Pixel.fnt');
