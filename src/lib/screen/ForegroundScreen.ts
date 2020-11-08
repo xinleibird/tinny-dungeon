@@ -82,9 +82,9 @@ export default class ForegroundScreen extends GameScreen {
       keyboard.addChild(w, a, s, d, space, enter);
       this._rendering.addChild(keyboard);
 
-      const text = new PIXI.BitmapText(`Use Keyboard\n\nor\n\nTap  Screen`, {
+      const text = new PIXI.BitmapText(`USE KEYBOARD\n\n\n\nOR\n\n\nTAP   SCREEN`, {
         fontName: 'Covenant5x5',
-        fontSize: 13,
+        fontSize: 9,
         align: 'center',
       });
 
@@ -115,9 +115,9 @@ export default class ForegroundScreen extends GameScreen {
     };
 
     const showAuthor = () => {
-      const product = new PIXI.BitmapText('辛磊作品', {
-        fontName: 'Zpix',
-        fontSize: 13,
+      const product = new PIXI.BitmapText(`辛磊作品\n\nxinleibird@gmail.com`, {
+        fontName: 'Pixel',
+        fontSize: 8,
       });
       product.anchor = 0.5;
       product.alpha = 0;
@@ -184,8 +184,8 @@ export default class ForegroundScreen extends GameScreen {
       anim.play();
 
       const tapToStart = new PIXI.BitmapText('GAME START', {
-        fontName: 'Click',
-        fontSize: 13,
+        fontName: 'Covenant5x5',
+        fontSize: 9,
       });
       tapToStart.anchor = 0.5;
       tapToStart.position.y += 32;
@@ -234,9 +234,9 @@ export default class ForegroundScreen extends GameScreen {
     GameSound.play('you_died', 1);
 
     this.fadeIn(2, 0, 0.618, () => {
-      const tapText = new PIXI.BitmapText(`GAME RESTART`, {
-        fontName: 'Click',
-        fontSize: 13,
+      const tapText = new PIXI.BitmapText(`GAME OVER`, {
+        fontName: 'Covenant5x5',
+        fontSize: 9,
       });
 
       tapText.anchor = 0.5;
