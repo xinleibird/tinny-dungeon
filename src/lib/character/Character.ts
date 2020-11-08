@@ -87,7 +87,7 @@ export default abstract class Character extends Renderable {
     this.registExternals();
 
     Control.regist(this);
-    this._turnBase = Control.getInstance().turnBase;
+    this._turnBase = Control.turnBase;
 
     StaticSystem.renderer.add(this);
     StaticSystem.entityGroup.setCharacter(Vector2.center, this);

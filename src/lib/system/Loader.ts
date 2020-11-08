@@ -57,7 +57,7 @@ export default class Loader {
     loader.add('assets/sprites/skeleton.json');
 
     loader.add('Click', 'assets/fonts/click.fnt');
-    loader.add('Zfull', 'assets/fonts/Zfull.fnt');
+    loader.add('Pixel', 'assets/fonts/Pixel.fnt');
     loader.add('Convenant', 'assets/fonts/Covenant5x5.fnt');
 
     loader.add('avatarImage', 'assets/sprites/avatar.png');

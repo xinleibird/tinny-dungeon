@@ -41,6 +41,10 @@ export default class Control {
     return instance;
   }
 
+  public static get turnBase() {
+    return this._turnBase;
+  }
+
   public get turnBase() {
     return Control._turnBase;
   }
@@ -59,8 +63,6 @@ export default class Control {
   private constructor() {
     this.handleKeyDown();
     this.handleJoyDown();
-    // Emitter.on(GAME_EVENTS.SCENE_START, () => {
-    // });
   }
 
   private handleKeyDown() {
