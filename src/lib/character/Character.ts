@@ -4,7 +4,7 @@ import { SPRITE_OPTIONS } from '../config';
 import { Control, StaticSystem } from '../core';
 import { Vector2 } from '../geometry';
 import { Ability, ABILITY_NAMES, ABILITY_STATUS, Hurtable, Passable } from '../object/ability';
-import { Attacking, Behavior, Movement, Opening } from '../object/behavior';
+import { Behavior } from '../object/behavior';
 import { BEHAVIOR_NAMES } from '../object/behavior/Behavior';
 import { DirectionIndicator, External } from '../object/external';
 import DamageIndicator from '../object/external/DamageIndicator';
@@ -84,7 +84,7 @@ export default abstract class Character extends Renderable {
     this.initialize(type);
     this.registBehaviors();
     this.registAbilities();
-    this.registSound();
+    this.registSounds();
     this.registExternals();
 
     Control.regist(this);
@@ -566,6 +566,11 @@ export default abstract class Character extends Renderable {
     this._rendering.visible = true;
   }
 
+  protected registSounds() {
+    this._damageSound = GameSound.get('damage');
+    this._dodgeSound = GameSound.get('dodge');
+  }
+
   private setDie() {
     this._behaviors = this._behaviors.filter((behavior) => {
       return (
@@ -717,21 +722,11 @@ export default abstract class Character extends Renderable {
     this.addExternal(damageIndicator);
   }
 
-  private registBehaviors() {
-    const movement = new Movement(this);
-    const opening = new Opening(this);
-    const attacting = new Attacking(this);
-    this._behaviors.push(opening, attacting, movement);
-  }
-
   private registAbilities() {
     const passable = new Passable(this, ABILITY_STATUS.STOP);
     const hurtable = new Hurtable(this);
     this._abilities.push(passable, hurtable);
   }
 
-  private registSound() {
-    this._damageSound = GameSound.get('damage');
-    this._dodgeSound = GameSound.get('dodge');
-  }
+  protected abstract registBehaviors(): void;
 }

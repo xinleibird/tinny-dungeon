@@ -117,20 +117,32 @@ export default class ForegroundScreen extends GameScreen {
     const showAuthor = () => {
       const product = new PIXI.BitmapText(`辛磊作品`, {
         fontName: 'Pixel',
-        fontSize: 8,
+        fontSize: 9,
       });
+      product.position.y -= 10;
       product.anchor = 0.5;
-      product.alpha = 0;
 
-      this._rendering.addChild(product);
+      const email = new PIXI.BitmapText(`xinleibird@gmail.com`, {
+        fontName: 'Covenant5x5',
+        fontSize: 9,
+      });
 
-      gsap.to(product, {
+      email.position.y += 10;
+      email.anchor = 0.5;
+
+      const container = new PIXI.Container();
+
+      container.addChild(product, email);
+
+      this._rendering.addChild(container);
+
+      gsap.to(container, {
         duration: 1.5,
         pixi: { alpha: 0.8 },
         yoyo: true,
         repeat: 1,
         onComplete: () => {
-          this._rendering.removeChild(product);
+          this._rendering.removeChild(container);
           showAvatar();
         },
       });

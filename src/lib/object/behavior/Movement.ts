@@ -68,6 +68,7 @@ export default class Movement extends Behavior {
 
     if (tarEntity.hasAbility(ABILITY_NAMES.PASSABLE)) {
       const passable = tarEntity.getAbility(ABILITY_NAMES.PASSABLE);
+
       if (passable.status === ABILITY_STATUS.STOP) {
         return false;
       }

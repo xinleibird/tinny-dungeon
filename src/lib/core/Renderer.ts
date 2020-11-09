@@ -2,7 +2,7 @@ import * as PIXI from 'pixi.js';
 import { Renderable } from '../abstraction';
 import { Character, Player } from '../character';
 import { Vector2 } from '../geometry';
-import { Ability, Lightable } from '../object/ability';
+import { Ability, Clearable, Lightable, Respawnable } from '../object/ability';
 import { BackgroundScreen, ForegroundScreen, GameScreen } from '../screen';
 import { Tile } from '../tilemap';
 import Camera from './Camera';
@@ -14,6 +14,7 @@ export default class Renderer {
   private _backgroundLayer: PIXI.Container = new PIXI.Container();
   private _tileLayer: PIXI.DisplayObject[] = [];
   private _floorLayer: PIXI.DisplayObject[] = [];
+  private _objectLayer: PIXI.DisplayObject[] = [];
   private _characterLayer: PIXI.Container = new PIXI.Container();
   private _lightingLayer: PIXI.DisplayObject[] = [];
   private _foregroundLayer: PIXI.Container = new PIXI.Container();
@@ -29,6 +30,7 @@ export default class Renderer {
     this._camera.viewport.addChild(this._backgroundLayer);
     this._tileLayer.length > 0 && this._camera.addChild(...this._tileLayer);
     this._floorLayer.length > 0 && this._camera.viewport.addChild(...this._floorLayer);
+    this._objectLayer.length > 0 && this._camera.viewport.addChild(...this._objectLayer);
     this._camera.viewport.addChild(this._characterLayer);
     this._lightingLayer.length > 0 && this._camera.viewport.addChild(...this._lightingLayer);
     this._camera.viewport.addChild(this._foregroundLayer);
@@ -38,6 +40,7 @@ export default class Renderer {
     this._backgroundLayer.removeChildren();
     this._tileLayer = [];
     this._floorLayer = [];
+    this._objectLayer = [];
     this._characterLayer.removeChildren();
     this._lightingLayer = [];
     this._foregroundLayer.removeChildren();
@@ -61,10 +64,15 @@ export default class Renderer {
       if (obj instanceof Lightable) {
         this._lightingLayer.push(obj.rendering);
         return;
-      } else {
-        this._floorLayer.push(obj.rendering);
+      }
+
+      if (obj instanceof Respawnable || obj instanceof Clearable) {
+        this._objectLayer.push(obj.rendering);
         return;
       }
+
+      this._floorLayer.push(obj.rendering);
+      return;
     }
 
     if (obj instanceof Character) {

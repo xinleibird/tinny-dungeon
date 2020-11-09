@@ -32,19 +32,6 @@ export default class Joystick {
 
     this._nipple.on('dir', this.processJoyDown.bind(this));
     this._nipple.on('end', this.processJoyUp.bind(this));
-    this._nipple.on('start', this.processJoyCenter.bind(this));
-  }
-
-  private processJoyCenter(event: nipple.EventData, data: nipple.JoystickOutputData & 1) {
-    const joy = JOY_NAMES.center;
-    const inHandleJoy = this._handleJoys?.[joy];
-    const timeStamp = Date.now();
-    if (inHandleJoy) {
-      const event: IJoyEventType = { timeStamp, joy };
-      inHandleJoy.processJoyDown(event);
-      this._lastJoy = joy as JOY_NAMES;
-      this._lastDown = timeStamp;
-    }
   }
 
   private processJoyDown(event: nipple.EventData, data: nipple.JoystickOutputData & 1) {
@@ -72,8 +59,22 @@ export default class Joystick {
     );
   }
 
-  private processJoyUp(event: nipple.EventData, data: nipple.JoystickOutputData) {
+  private processJoyUp(
+    event: nipple.EventData,
+    data: nipple.JoystickOutputData & { frontPosition: { x: number; y: number } }
+  ) {
     const timeStamp = Date.now();
+
+    const { x, y } = data.frontPosition;
+    if (x < 10 && y < 10) {
+      const center = JOY_NAMES.center;
+      const inHandleJoy = this._handleJoys?.[center];
+      const event: IJoyEventType = { timeStamp, joy: center };
+      inHandleJoy.processJoyDown(event);
+      this._lastJoy = center as JOY_NAMES;
+      this._lastDown = timeStamp;
+      inHandleJoy.processJoyDown(event);
+    }
 
     for (const inHandle in this._handleJoys) {
       if (Object.prototype.hasOwnProperty.call(this._handleJoys, inHandle)) {
