@@ -1,5 +1,7 @@
 import { PixiStatsPlugin } from '@armathai/pixi-stats';
 import { OldFilmFilter } from '@pixi/filter-old-film';
+import { gsap } from 'gsap';
+import { PixiPlugin } from 'gsap/PixiPlugin';
 import * as PIXI from 'pixi.js';
 import { NonPlayer, NONPLAYER_TYPES, Player, PLAYER_TYPES } from './character';
 import { GAME_OPTIONS } from './config';
@@ -90,6 +92,10 @@ export default class Game extends PIXI.Application {
       this._player.respawn(this._scene.playerRespawnPosition);
     });
 
+    Emitter.on(GAME_EVENTS.SCENE_CLEAR, () => {
+      this._foreground.effect(GAME_EVENTS.SCENE_CLEAR);
+    });
+
     Emitter.on(GAME_EVENTS.USER_DIE, () => {
       this._foreground.effect(GAME_EVENTS.USER_DIE);
     });
@@ -151,6 +157,7 @@ export default class Game extends PIXI.Application {
       });
     }
 
+    this.registGsapPlugin();
     this.registController();
     this.registResizer();
     this.registFilter();
@@ -167,6 +174,11 @@ export default class Game extends PIXI.Application {
 
   public set controller(controller: Controller) {
     this._controller = controller;
+  }
+
+  private registGsapPlugin() {
+    gsap.registerPlugin(PixiPlugin);
+    PixiPlugin.registerPIXI(PIXI);
   }
 
   private registController() {

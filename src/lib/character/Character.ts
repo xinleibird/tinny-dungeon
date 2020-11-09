@@ -548,6 +548,15 @@ export default abstract class Character extends Renderable {
     }
   }
 
+  public async doBehavior(name: BEHAVIOR_NAMES, direction: Vector2) {
+    for (const behavior of this._behaviors) {
+      if (behavior.name === name && behavior.canDo(direction)) {
+        await behavior.do(direction);
+        break;
+      }
+    }
+  }
+
   protected changeSpriteDirection(direction: Vector2) {
     if (direction.equals(Vector2.left)) {
       this._rendering.scale.x = -1;

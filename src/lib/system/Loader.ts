@@ -108,6 +108,10 @@ export default class Loader {
       url: 'assets/sounds/effects/sfx_coin_double3.wav',
       preload: true,
     });
+    this.sounds.effects['stair'] = sound.Sound.from({
+      url: 'assets/sounds/effects/sfx_movement_stairs1loop.wav',
+      preload: true,
+    });
 
     loader.load((loader, resources) => {
       this.resources = resources;

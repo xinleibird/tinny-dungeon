@@ -47,6 +47,11 @@ export default class ForegroundScreen extends GameScreen {
         break;
       }
 
+      case GAME_EVENTS.SCENE_CLEAR: {
+        this.fadeIn(3);
+        break;
+      }
+
       case GAME_EVENTS.USER_DIE: {
         this.tapToRestart();
         break;
@@ -115,7 +120,7 @@ export default class ForegroundScreen extends GameScreen {
     };
 
     const showAuthor = () => {
-      const product = new PIXI.BitmapText(`辛磊作品`, {
+      const product = new PIXI.BitmapText(`辛 磊       作 品`, {
         fontName: 'Pixel',
         fontSize: 9,
       });
@@ -131,6 +136,7 @@ export default class ForegroundScreen extends GameScreen {
       email.anchor = 0.5;
 
       const container = new PIXI.Container();
+      container.alpha = 0;
 
       container.addChild(product, email);
 

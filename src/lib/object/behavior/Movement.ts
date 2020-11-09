@@ -1,6 +1,4 @@
 import { gsap } from 'gsap';
-import { PixiPlugin } from 'gsap/PixiPlugin';
-import * as PIXI from 'pixi.js';
 import { Character, Player } from '../../character';
 import { SPRITE_OPTIONS } from '../../config';
 import { StaticSystem } from '../../core';
@@ -8,9 +6,6 @@ import { Vector2 } from '../../geometry';
 import { ABILITY_NAMES, ABILITY_STATUS } from '../ability';
 import { EXTERNAL_NAMES } from '../external/External';
 import Behavior, { BEHAVIOR_NAMES } from './Behavior';
-
-gsap.registerPlugin(PixiPlugin);
-PixiPlugin.registerPIXI(PIXI);
 
 const { SPRITE_OFFSET_X, SPRITE_OFFSET_Y } = SPRITE_OPTIONS;
 
