@@ -5,6 +5,10 @@ import { Vector2 } from '../geometry';
 import { ABILITY_NAMES, ABILITY_STATUS, Lightable } from '../object/ability';
 
 export const updateEntitiesLightings = (geometryPosition: Vector2, radius = 6) => {
+  if (!geometryPosition) {
+    return;
+  }
+
   const entityGroup = StaticSystem.entityGroup;
 
   const fov = new ROT.FOV.RecursiveShadowcasting((x, y) => {
@@ -20,6 +24,17 @@ export const updateEntitiesLightings = (geometryPosition: Vector2, radius = 6) =
     }
     return false;
   });
+
+  if (geometryPosition.equals(Vector2.center)) {
+    entityGroup.forLoop((x, y) => {
+      const entity = entityGroup.getEntity(x, y);
+      if (entity?.hasAbility(ABILITY_NAMES.LIGHTABLE)) {
+        const lightable = entity.getAbility(ABILITY_NAMES.LIGHTABLE);
+        lightable.status = ABILITY_STATUS.UNVISIT;
+        return;
+      }
+    });
+  }
 
   const { x: sx, y: sy } = geometryPosition;
   fov.compute(sx, sy, radius, (x, y, r) => {
@@ -39,7 +54,23 @@ export const updateEntitiesLightings = (geometryPosition: Vector2, radius = 6) =
 };
 
 export const updateEntitiesDislightings = (geometryPosition: Vector2) => {
+  if (!geometryPosition) {
+    return;
+  }
+
   const entityGroup = StaticSystem.entityGroup;
+
+  if (geometryPosition.equals(Vector2.center)) {
+    entityGroup.forLoop((x, y) => {
+      const entity = entityGroup.getEntity(x, y);
+      if (entity?.hasAbility(ABILITY_NAMES.LIGHTABLE)) {
+        const lightable = entity.getAbility(ABILITY_NAMES.LIGHTABLE);
+        lightable.status = ABILITY_STATUS.UNVISIT;
+        return;
+      }
+    });
+  }
+
   entityGroup.forLoop((x, y) => {
     const entity = entityGroup.getEntity(x, y);
     if (entity?.hasAbility(ABILITY_NAMES.LIGHTABLE)) {

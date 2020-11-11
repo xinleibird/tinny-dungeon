@@ -149,6 +149,10 @@ export default class CharacterClass {
     this._damageMultipleType = damageMultipleType;
   }
 
+  public get currentHP() {
+    return this._minorAbility.HP;
+  }
+
   public get attackBonus() {
     return this._attackBonus;
   }

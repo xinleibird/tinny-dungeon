@@ -3,17 +3,18 @@ import { OldFilmFilter } from '@pixi/filter-old-film';
 import { gsap } from 'gsap';
 import { PixiPlugin } from 'gsap/PixiPlugin';
 import * as PIXI from 'pixi.js';
-import { NonPlayer, NONPLAYER_TYPES, Player, PLAYER_TYPES } from './character';
+import { Player, PLAYER_TYPES } from './character';
 import { GAME_OPTIONS } from './config';
 import { Camera, Renderer, StaticSystem } from './core';
 import { Vector2 } from './geometry';
 import Controller from './input/Controller';
+import Level from './Level';
 import { Scene } from './scene';
-import Dungeon from './scene/Dungeon';
 import { BackgroundScreen, ForegroundScreen } from './screen';
 import { GameMusic, GameSound } from './sound';
 import { MUSIC_ALBUM } from './sound/GameMusic';
 import { Emitter, GAME_EVENTS, Loader, RESOURCE_EVENTS } from './system';
+import { updateEntitiesDislightings, updateEntitiesLightings } from './utils';
 
 export interface GameOptions {
   autoStart?: boolean;
@@ -33,9 +34,6 @@ export interface GameOptions {
   sharedLoader?: boolean;
   resizeTo?: Window | HTMLElement;
 }
-
-const DUNGEON_SIZE_WIDTH = 31;
-const DUNGEON_SIZE_HEITHT = 31;
 
 const { DEBUG, PIXEL_SCALE } = GAME_OPTIONS;
 
@@ -64,7 +62,7 @@ export default class Game extends PIXI.Application {
   private _background: BackgroundScreen;
   private _foreground: ForegroundScreen;
 
-  private _viewportSize: { width: number; height: number } = { width: 0, height: 0 };
+  private _level: Level;
 
   // for stats.js
   private stats: any;
@@ -78,43 +76,74 @@ export default class Game extends PIXI.Application {
   }
 
   public play() {
-    Emitter.on(GAME_EVENTS.GAME_TITLE, () => {
-      this._foreground.effect(GAME_EVENTS.GAME_TITLE);
-    });
-
     Emitter.on(GAME_EVENTS.SCENE_START, () => {
-      this._foreground.effect(GAME_EVENTS.SCENE_START);
-      GameMusic.play(MUSIC_ALBUM.MAIN);
-      GameSound.play('cave_airflow', 0.02, true);
-    });
-
-    Emitter.on(GAME_EVENTS.SCENE_RUNNING, () => {
-      this._player.respawn(this._scene.playerRespawnPosition);
-    });
-
-    Emitter.on(GAME_EVENTS.SCENE_CLEAR, () => {
-      this._foreground.effect(GAME_EVENTS.SCENE_CLEAR);
-    });
-
-    Emitter.on(GAME_EVENTS.USER_DIE, () => {
-      this._foreground.effect(GAME_EVENTS.USER_DIE);
+      this._foreground.effect(GAME_EVENTS.SCENE_START, () => {}, this._level.current);
     });
 
     Emitter.on(GAME_EVENTS.GAME_OVER, () => {
       this._scene.destroy();
+      this._level = new Level();
+      this.sceneInitialize();
+      this._foreground.effect(GAME_EVENTS.GAME_TITLE, () => {
+        Emitter.emit(GAME_EVENTS.SCENE_RUNNING);
+      });
+    });
+
+    Emitter.on(GAME_EVENTS.SCENE_RUNNING, () => {
+      GameMusic.play(MUSIC_ALBUM.MAIN);
+      GameSound.play('cave_airflow', 0.02, true);
+      this._player.respawn(this._scene.playerRespawnPosition);
+    });
+
+    Emitter.on(GAME_EVENTS.SCENE_CLEAR, () => {
+      this._foreground.effect(
+        GAME_EVENTS.SCENE_CLEAR,
+        () => {
+          this.sceneNext();
+          Emitter.emit(GAME_EVENTS.SCENE_RUNNING);
+        },
+        this._level.current
+      );
+    });
+
+    Emitter.on(GAME_EVENTS.USER_DIE, () => {
+      this._foreground.effect(GAME_EVENTS.USER_DIE, () => {
+        Emitter.emit(GAME_EVENTS.GAME_OVER);
+      });
     });
 
     Emitter.on(RESOURCE_EVENTS.RESOURCES_LOADED, () => {
-      Emitter.emit(GAME_EVENTS.GAME_TITLE);
-      this.gameLoop();
+      this.sceneInitialize();
+      this._foreground.effect(GAME_EVENTS.GAME_TITLE, () => {
+        Emitter.emit(GAME_EVENTS.SCENE_RUNNING);
+      });
     });
   }
 
+  private sceneNext() {
+    this._scene.destroy();
+    this._level.nextScene();
+    Emitter.emit(GAME_EVENTS.SCENE_RUNNING);
+
+    this._scene = this._level.scene;
+    this._scene.addNonPlayers(this._level.nonPlayers);
+    this._renderer.add(this._player);
+    this._renderer.render();
+
+    updateEntitiesLightings(Vector2.center);
+    updateEntitiesDislightings(Vector2.center);
+  }
+
+  private sceneInitialize() {
+    this._level.nextScene();
+    this._scene = this._level.scene;
+    this._scene.addNonPlayers(this._level.nonPlayers);
+
+    this._player = new Player(PLAYER_TYPES.KNIGHT_M);
+    this._renderer.render();
+  }
+
   private initialize() {
-    this._viewportSize = {
-      width: defaultGameOptions.width,
-      height: defaultGameOptions.height,
-    };
     const root = document.getElementById('root');
     root.appendChild(this.view);
 
@@ -166,6 +195,7 @@ export default class Game extends PIXI.Application {
     this.registRenderer();
     this.registBackground();
     this.registForeground();
+    this.registLevel();
   }
 
   public get controller() {
@@ -174,6 +204,10 @@ export default class Game extends PIXI.Application {
 
   public set controller(controller: Controller) {
     this._controller = controller;
+  }
+
+  private registLevel() {
+    this._level = new Level();
   }
 
   private registGsapPlugin() {
@@ -215,7 +249,6 @@ export default class Game extends PIXI.Application {
     window.onorientationchange = () => {
       const width = (window.innerWidth / PIXEL_SCALE) * window.devicePixelRatio;
       const height = (window.innerHeight / PIXEL_SCALE) * window.devicePixelRatio;
-      this._viewportSize = { width, height };
 
       this.renderer.resize(width, height);
       this._camera.viewport.resize(width, height);
@@ -224,7 +257,6 @@ export default class Game extends PIXI.Application {
     window.onresize = () => {
       const width = (window.innerWidth / PIXEL_SCALE) * window.devicePixelRatio;
       const height = (window.innerHeight / PIXEL_SCALE) * window.devicePixelRatio;
-      this._viewportSize = { width, height };
 
       this.renderer.resize(width, height);
       this._camera.viewport.resize(width, height);
@@ -251,24 +283,5 @@ export default class Game extends PIXI.Application {
         ),
       ];
     });
-  }
-
-  private gameLoop() {
-    this._scene = new Dungeon(DUNGEON_SIZE_WIDTH, DUNGEON_SIZE_HEITHT);
-    this._player = new Player(PLAYER_TYPES.KNIGHT_M);
-
-    const { x, y } = this._scene.playerRespawnPosition;
-    const skeleton1 = new NonPlayer(NONPLAYER_TYPES.BAT);
-    const skeleton2 = new NonPlayer(NONPLAYER_TYPES.SKELETON);
-    const skeleton3 = new NonPlayer(NONPLAYER_TYPES.SKELETON);
-    const skeleton4 = new NonPlayer(NONPLAYER_TYPES.SKELETON);
-    const skeleton5 = new NonPlayer(NONPLAYER_TYPES.SKELETON);
-    skeleton1.geometryPosition = new Vector2(x + 1, y);
-    skeleton2.geometryPosition = new Vector2(x + 2, y);
-    skeleton3.geometryPosition = new Vector2(x + 3, y);
-    skeleton4.geometryPosition = new Vector2(x + 1, y + 1);
-    skeleton5.geometryPosition = new Vector2(x, y + 1);
-
-    this._renderer.render();
   }
 }

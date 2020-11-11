@@ -1,7 +1,6 @@
 import * as PIXI from 'pixi.js';
 import { Renderable } from '../abstraction';
 import { Character, Player } from '../character';
-import { Vector2 } from '../geometry';
 import { Ability, Clearable, Lightable, Respawnable } from '../object/ability';
 import { BackgroundScreen, ForegroundScreen, GameScreen } from '../screen';
 import { Tile } from '../tilemap';
@@ -37,17 +36,13 @@ export default class Renderer {
   }
 
   public trash() {
-    this._backgroundLayer.removeChildren();
     this._tileLayer = [];
     this._floorLayer = [];
     this._objectLayer = [];
     this._characterLayer.removeChildren();
     this._lightingLayer = [];
-    this._foregroundLayer.removeChildren();
     StaticSystem.camera.removeChildren();
-
-    this._player.geometryPosition = new Vector2(0, 0);
-    this.add(this._player);
+    StaticSystem.camera.addChild(this._foregroundLayer);
   }
 
   public get characterLayer() {

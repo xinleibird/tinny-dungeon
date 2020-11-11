@@ -7,8 +7,6 @@ import { generateAutoTile, generateDungeonMapToAutoTile } from '../utils';
 import Scene from './Scene';
 
 export default class Dungeon extends Scene {
-  private static _dungeon: Dungeon;
-
   private _tilesMap: TILE_TYPES[][] = [];
   private _floorsMap: ENTITY_TYPES[][] = [];
   private _decoratorsMap: number[][] = [];

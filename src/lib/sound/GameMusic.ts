@@ -14,7 +14,7 @@ export default class GameMusic {
     return this._instance;
   }
 
-  public static play(name: MUSIC_ALBUM = MUSIC_ALBUM.MAIN, volume = 0.02, loop = true) {
+  public static play(name: MUSIC_ALBUM = MUSIC_ALBUM.MAIN, volume = 0.01, loop = true) {
     const instance = this.getInstance();
     instance._title.volume = volume;
     instance._main.volume = volume;
@@ -37,29 +37,19 @@ export default class GameMusic {
     }
   }
 
+  public static stopAll() {
+    const instance = this.getInstance();
+    instance._title.stop();
+    instance._main.stop();
+  }
+
   private _main: sound.Sound;
   private _title: sound.Sound;
 
   private constructor() {
     this._main = Loader.sounds.musics.main;
     this._title = Loader.sounds.musics.title;
-    // this._main.stop();
-    // this._title.stop();
     this._main.loop = true;
     this._title.loop = true;
-    // sound.Sound.from({
-    //   url: 'assets/sounds/musics/平坡の道.mp3',
-    //   preload: true,
-    //   loaded: (e, r) => {
-    //     this._main = r;
-    //   },
-    // });
-    // sound.Sound.from({
-    //   url: 'assets/sounds/musics/first-story.ogg',
-    //   preload: true,
-    //   loaded: (e, r) => {
-    //     this._title = r;
-    //   },
-    // });
   }
 }

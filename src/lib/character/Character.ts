@@ -558,12 +558,52 @@ export default abstract class Character extends Renderable {
   }
 
   protected changeSpriteDirection(direction: Vector2) {
+    const [
+      holdShadow,
+      hold,
+      walkShadow,
+      walk,
+      attackShadow,
+      attack,
+      hurtShadow,
+      hurt,
+      dodgeShadow,
+      dodge,
+      dieShadow,
+      die,
+    ] = this._rendering.children as PIXI.AnimatedSprite[];
     if (direction.equals(Vector2.left)) {
       this._rendering.scale.x = -1;
+      hold.anchor.set(0.5625, 0.5);
+      walk.anchor.set(0.5625, 0.5);
+      attack.anchor.set(0.5625, 0.5);
+      hurt.anchor.set(0.5625, 0.5);
+      dodge.anchor.set(0.5625, 0.5);
+      die.anchor.set(0.5625, 0.5);
+
+      holdShadow.anchor.set(0.5625, 0.5);
+      walkShadow.anchor.set(0.5625, 0.5);
+      attackShadow.anchor.set(0.5625, 0.5);
+      hurtShadow.anchor.set(0.5625, 0.5);
+      dodgeShadow.anchor.set(0.5625, 0.5);
+      dieShadow.anchor.set(0.5625, 0.5);
     }
 
     if (direction.equals(Vector2.right)) {
       this._rendering.scale.x = 1;
+      hold.anchor.set(0.5, 0.5);
+      walk.anchor.set(0.5, 0.5);
+      attack.anchor.set(0.5, 0.5);
+      hurt.anchor.set(0.5, 0.5);
+      dodge.anchor.set(0.5, 0.5);
+      die.anchor.set(0.5, 0.5);
+
+      holdShadow.anchor.set(0.5, 0.5);
+      walkShadow.anchor.set(0.5, 0.5);
+      attackShadow.anchor.set(0.5, 0.5);
+      hurtShadow.anchor.set(0.5, 0.5);
+      dodgeShadow.anchor.set(0.5, 0.5);
+      dieShadow.anchor.set(0.5, 0.5);
     }
   }
 

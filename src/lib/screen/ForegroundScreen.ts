@@ -35,25 +35,26 @@ export default class ForegroundScreen extends GameScreen {
     gsap.to(this._rendering, { duration, pixi: { alpha: end }, onComplete });
   }
 
-  public effect(event: GAME_EVENTS) {
+  public effect(event: GAME_EVENTS, cb?: () => void, value?: any) {
     switch (event) {
       case GAME_EVENTS.GAME_TITLE: {
-        this.gameTitle();
+        this.gameTitle(cb);
         break;
       }
 
       case GAME_EVENTS.SCENE_START: {
-        this.fadeOut(3);
+        this.sceneStart(value);
         break;
       }
 
       case GAME_EVENTS.SCENE_CLEAR: {
-        this.fadeIn(3);
+        GameMusic.stopAll();
+        this.sceneClear(value, cb);
         break;
       }
 
       case GAME_EVENTS.USER_DIE: {
-        this.tapToRestart();
+        this.tapToRestart(cb);
         break;
       }
 
@@ -62,7 +63,55 @@ export default class ForegroundScreen extends GameScreen {
     }
   }
 
-  private gameTitle() {
+  private sceneClear(value: number, cb: () => void) {
+    const text = new PIXI.BitmapText(`LEVEL ${value} CLEAR`, {
+      fontName: 'Covenant5x5',
+      fontSize: 9,
+      align: 'center',
+    });
+
+    text.anchor = 0.5;
+    text.position.y -= 20;
+    this._rendering.addChild(text);
+    this._rendering.alpha = 0;
+    text.alpha = 0;
+    gsap.to(text, {
+      duration: 2,
+      pixi: { alpha: 1 },
+      onComplete: () => {
+        setTimeout(() => {
+          cb();
+          this._rendering.removeChild(text);
+        }, 1000);
+      },
+    });
+
+    this.fadeIn(4);
+  }
+
+  private sceneStart(value: number) {
+    const text = new PIXI.BitmapText(`DUNGEON LEVEL ${value}`, {
+      fontName: 'Covenant5x5',
+      fontSize: 9,
+      align: 'center',
+    });
+
+    text.anchor = 0.5;
+    text.position.y -= 20;
+    this._rendering.addChild(text);
+    this._rendering.alpha = 1;
+    gsap.to(text, {
+      duration: 2,
+      pixi: { alpha: 0 },
+      onComplete: () => {
+        this._rendering.removeChild(text);
+      },
+    });
+
+    this.fadeOut(4);
+  }
+
+  private gameTitle(cb: () => void) {
     const haveToTap = () => {
       const keyboard = new PIXI.Container();
       keyboard.pivot.set(16);
@@ -226,7 +275,7 @@ export default class ForegroundScreen extends GameScreen {
       });
 
       const tap = () => {
-        Emitter.emit(GAME_EVENTS.SCENE_RUNNING);
+        cb();
         Emitter.removeListener(KEY_EVENTS.KEY_DOWN, tap);
         Emitter.removeListener(JOY_EVENTS.JOY_DOWN, tap);
         this._rendering.removeChild(titleSprite, anim, tapToStart);
@@ -236,10 +285,11 @@ export default class ForegroundScreen extends GameScreen {
       Emitter.on(JOY_EVENTS.JOY_DOWN, tap);
     };
 
+    this._rendering.alpha = 1;
     haveToTap();
   }
 
-  private tapToRestart() {
+  private tapToRestart(cb: () => void) {
     const bitmapText = new PIXI.BitmapText(`YOU DIED`, {
       fontName: 'Click',
       fontSize: 30,
@@ -263,7 +313,8 @@ export default class ForegroundScreen extends GameScreen {
       this._rendering.addChild(tapText);
 
       const tap = () => {
-        Emitter.emit(GAME_EVENTS.GAME_OVER);
+        GameMusic.stopAll();
+        cb();
         Emitter.removeListener(KEY_EVENTS.KEY_DOWN, tap);
         Emitter.removeListener(JOY_EVENTS.JOY_DOWN, tap);
         this._rendering.removeChild(bitmapText, tapText);

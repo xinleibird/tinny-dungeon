@@ -1,13 +1,10 @@
 import { Character } from '../../character';
-import { SPRITE_OPTIONS } from '../../config';
 import { StaticSystem } from '../../core';
 import { Vector2 } from '../../geometry';
 import { GameSound } from '../../sound';
 import { Emitter, GAME_EVENTS } from '../../system';
 import { ABILITY_NAMES } from '../ability';
 import Behavior, { BEHAVIOR_NAMES } from './Behavior';
-
-const { SPRITE_OFFSET_X, SPRITE_OFFSET_Y, SPRITE_SIZE } = SPRITE_OPTIONS;
 
 export default class Clearing extends Behavior {
   public constructor(character: Character) {

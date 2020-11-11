@@ -1,11 +1,10 @@
-import { Attacking, Clearing, Movement, Opening } from '../object/behavior';
-import { Scene } from '../scene';
+import { Attacking, Movement, Opening } from '../object/behavior';
 import { GameSound } from '../sound';
 import Character, { NONPLAYER_TYPES } from './Character';
 import CharacterClass from './CharacterClass';
 
 export default class NonPlayer extends Character {
-  public constructor(type: NONPLAYER_TYPES, scene?: Scene) {
+  public constructor(type: NONPLAYER_TYPES) {
     super(type);
 
     this._class = new CharacterClass({ ST: 10, DX: 10, IQ: 10, HT: 10 }, 'Thr', 'cr');
@@ -31,8 +30,7 @@ export default class NonPlayer extends Character {
     const movement = new Movement(this);
     const opening = new Opening(this);
     const attacting = new Attacking(this);
-    const clearing = new Clearing(this);
-    this._behaviors.push(opening, attacting, clearing, movement);
+    this._behaviors.push(opening, attacting, movement);
   }
 
   protected registSounds() {

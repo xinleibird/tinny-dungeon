@@ -5,8 +5,7 @@
 - 项目中的 autotile 算法，来自于 [node-autotile][autotile]，我觉得丑了点修改了一下，抱歉。其协议为 BSD-2-Clause。
 - 项目中使用了 [Click Font][click]，其协议为 CC 0。
 - 项目中使用了 [Covenant5x5][covenant]，其协议为 CC BY 4.0。
-- 项目中使用了 [kenkenbgm][kenkenbgm] 的 BGM '平坡の道'，其协议是 CC BY-NC-ND 3.0 TW。
-- 项目中使用了 [musmus][musmus] 的 BGM ’かぼちゃ騎士団の行進‘，其协议见 https://musmus.main.jp/info.html。
+- 项目中使用了 [musmus][musmus] 的 BGM ’かぼちゃ騎士団の行進‘ 与 'ヒーローズ'，其协议见 https://musmus.main.jp/info.html。
 - 项目中使用了 [Juhani Junkala][junkala] 的效果音合集 'The Essential Retro Video Game Sound Effects Collection [512 sounds]'，他的协议是 CC 0。
 - 创作 tile sprite 用的是 Aseprite。与 node-autotile 配合的图片分割脚本来自[GMS2-Autotile-Converter][gms2-autotile-converter]，是 MIT 协议，但是他的脚本是为 GameMaker Studio 2 的。 配合 node-autotile 的方式，你应该使用[fork 了一份][fork] 并修改了图片分割顺序，你应该使用修改的版本。但是推荐你给原作者一个 star。
 - 其他未提及的 npm 包遵循一般 Artistic License。
@@ -17,6 +16,5 @@
 [gms2-autotile-converter]: https://github.com/null-sharp/GMS2-Autotile-Converter
 [fork]: https://github.com/xinleibird/GMS2-Autotile-Converter
 [musmus]: http://musmus.main.jp
-[kenkenbgm]: https://kenkenbgm.blogspot.com/
 [junkala]: https://www.youtube.com/watch?v=dbACpSy9FWY
 [cc]: https://creativecommons.org/licenses/by-nc/4.0/

@@ -19,6 +19,12 @@ export default class EntityGroup extends Groupable {
     StaticSystem.registEntityGroup(this);
   }
 
+  public loop(fb: (entity: Entity) => void) {
+    this.forLoop((x, y) => {
+      fb(this._entities[y][x]);
+    });
+  }
+
   public setEntity(
     ...args:
       | [x: number, y: number, entity: Entity]
@@ -38,12 +44,13 @@ export default class EntityGroup extends Groupable {
   public getEntity(...args: [x: number, y: number] | [geometryPosition: Vector2]) {
     if (args.length === 2) {
       const [x, y] = args;
-      return this._entities[y][x];
+
+      return this._entities?.[y]?.[x];
     }
     if (args.length === 1) {
       const [geometryPosition] = args;
       const { x, y } = geometryPosition;
-      return this._entities[y][x];
+      return this._entities?.[y]?.[x];
     }
   }
 

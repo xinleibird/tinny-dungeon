@@ -33,10 +33,11 @@ export default class Player extends Character {
   }
 
   protected registBehaviors() {
-    const movement = new Movement(this);
     const opening = new Opening(this);
     const attacting = new Attacking(this);
     const clearing = new Clearing(this);
+    const movement = new Movement(this);
+
     this._behaviors.push(opening, attacting, clearing, movement);
   }
 

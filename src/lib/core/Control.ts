@@ -160,10 +160,14 @@ export default class Control {
           this.turnBase.add(new TurnEvent(this._player, direction));
 
           this._nonPlayers.forEach((non) => {
-            if (!non.alive) {
-              non.strategy = new Disable(non);
+            if (non.alive) {
+              if (non.geometryPosition.distance(this._player.geometryPosition) <= 6) {
+                non.strategy = new Trace(non, this._player);
+              } else {
+                non.strategy = new Disable(non);
+              }
             } else {
-              non.strategy = new Trace(non, this._player);
+              non.strategy = new Disable(non);
             }
 
             non.decide();
@@ -178,11 +182,10 @@ export default class Control {
 
           StaticSystem.renderer.characterLayer.sortChildren();
 
-          updateEntitiesDislightings(this._player.geometryPosition);
-          updateEntitiesLightings(this._player.geometryPosition);
+          updateEntitiesDislightings(this?._player?.geometryPosition);
+          updateEntitiesLightings(this?._player?.geometryPosition);
         } else {
           this.turnBase.clear();
-          Emitter.emit(GAME_EVENTS.GAME_OVER);
         }
       }
     }

@@ -64,7 +64,7 @@ export default class Loader {
     loader.add('avatarImage', 'assets/sprites/avatar.png');
 
     loader.add('title', 'assets/sounds/musics/MusMus-BGM-070.mp3');
-    loader.add('main', 'assets/sounds/musics/平坡の道.mp3');
+    loader.add('main', 'assets/sounds/musics/MusMus-BGM-076.mp3');
 
     this.sounds.effects['cave_airflow'] = sound.Sound.from({
       url: 'assets/sounds/effects/cave_airflow.wav',
