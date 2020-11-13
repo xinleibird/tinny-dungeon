@@ -14,7 +14,7 @@ export default class GameMusic {
     return this._instance;
   }
 
-  public static play(name: MUSIC_ALBUM = MUSIC_ALBUM.MAIN, volume = 0.01, loop = true) {
+  public static play(name: MUSIC_ALBUM = MUSIC_ALBUM.MAIN, volume = 0.05, loop = true) {
     const instance = this.getInstance();
     instance._title.volume = volume;
     instance._main.volume = volume;
@@ -23,11 +23,15 @@ export default class GameMusic {
     switch (name) {
       case MUSIC_ALBUM.MAIN: {
         instance._title.stop();
-        instance._main.play();
+        if (!instance._main.isPlaying) {
+          instance._main.play();
+        }
         break;
       }
       case MUSIC_ALBUM.TITLE: {
-        instance._title.play();
+        if (!instance._title.isPlaying) {
+          instance._title.play();
+        }
         instance._main.stop();
         break;
       }

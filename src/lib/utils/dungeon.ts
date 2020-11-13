@@ -104,8 +104,8 @@ export const generateDungeonMapToAutoTile = (dungeonW: number, dungeonH: number)
   const decoratorsMap = initialize2DArray(dungeonW, dungeonH, 0);
 
   const dungeon = new ROT.Map.Digger(tilesW, tilesH, {
-    roomHeight: [2, 6],
-    roomWidth: [2, 6],
+    roomHeight: [3, 5],
+    roomWidth: [3, 5],
     dugPercentage: 0.618,
     corridorLength: [1, 2],
     timeLimit: 2000,
@@ -170,16 +170,15 @@ export const generateDungeonMapToAutoTile = (dungeonW: number, dungeonH: number)
       }
     }
   }
-  const { rx, ry } = ROT.RNG.getItem(canRespawn);
-  fillFloorsMap(floorsMap, ry, ry, rx, rx, ENTITY_TYPES.UPSTAIR);
 
+  const { rx, ry } = ROT.RNG.getItem(canRespawn);
+
+  fillFloorsMap(floorsMap, ry, ry, rx, rx, ENTITY_TYPES.UPSTAIR);
   const canClear = [];
   for (let y = 0; y < floorsMap.length; y++) {
     for (let x = 0; x < floorsMap[0].length; x++) {
-      const finalDistance = Vector2.manhattan(new Vector2(rx, ry), new Vector2(x, y));
       if (
         floorsMap[y][x] === ENTITY_TYPES.FLOOR &&
-        // finalDistance > (dungeonW + dungeonH) * 0.2 &&
         floorsMap[y + 1][x] !== ENTITY_TYPES.EMPTY &&
         floorsMap[y + 1][x] !== ENTITY_TYPES.CORRIDOR &&
         floorsMap[y - 1][x] !== ENTITY_TYPES.CORRIDOR &&
@@ -190,6 +189,19 @@ export const generateDungeonMapToAutoTile = (dungeonW: number, dungeonH: number)
       }
     }
   }
+
+  canClear.sort((a, b) => {
+    const { cx: ax, cy: ay } = a;
+    const { cx: bx, cy: by } = b;
+
+    return (
+      Vector2.manhattan(new Vector2(ax, ay), new Vector2(rx, ry)) -
+      Vector2.manhattan(new Vector2(bx, by), new Vector2(rx, ry))
+    );
+  });
+
+  canClear.splice(0, ~~(canClear.length * 0.8));
+
   const { cx, cy } = ROT.RNG.getItem(canClear);
   fillFloorsMap(floorsMap, cy, cy, cx, cx, ENTITY_TYPES.DOWNSTAIR);
 

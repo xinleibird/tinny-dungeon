@@ -33,6 +33,8 @@ export const DecoratorTypesWeight = {
   '24': 2,
   '25': 1,
   '26': 1,
+  '27': 1,
+  '28': 1,
 };
 
 export default class Decorateable extends Ability {
@@ -51,6 +53,7 @@ export default class Decorateable extends Ability {
     if (decoratorIndex !== 0 && decoratorIndex < length) {
       const sprite = new PIXI.Sprite(Loader.textures.FLOOR_DECORATORS[decoratorIndex]);
       sprite.blendMode = PIXI.BLEND_MODES.MULTIPLY;
+
       this.rendering = sprite;
 
       StaticSystem.renderer.add(this);

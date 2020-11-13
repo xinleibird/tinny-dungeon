@@ -6,9 +6,8 @@ export enum CONTROL_ACTIONS {
   WALK_UP = 'walkUp',
   WALK_DOWN = 'walkDown',
   SHOW_EXTERNAL = 'showExternal',
-  ATTACK = 'attack',
+  HOLD = 'hold',
   CONFIRM = 'confirm',
-  GO_TO_LEFT = 'GoToLeft',
 }
 
 export const KEYBOARD_CONTROLLED_KEYS = {
@@ -17,9 +16,8 @@ export const KEYBOARD_CONTROLLED_KEYS = {
   [CONTROL_ACTIONS.WALK_UP]: KEY_NAMES.w,
   [CONTROL_ACTIONS.WALK_DOWN]: KEY_NAMES.s,
   [CONTROL_ACTIONS.SHOW_EXTERNAL]: KEY_NAMES.f,
-  [CONTROL_ACTIONS.ATTACK]: KEY_NAMES.Space,
+  [CONTROL_ACTIONS.HOLD]: KEY_NAMES.Space,
   [CONTROL_ACTIONS.CONFIRM]: KEY_NAMES.Enter,
-  [CONTROL_ACTIONS.GO_TO_LEFT]: KEY_NAMES.ArrowLeft,
 };
 
 export const JOYSTICK_CONTROLLED_JOYS = {
@@ -36,7 +34,7 @@ const PIXEL_SCALE = {
 };
 
 export const GAME_OPTIONS = {
-  DEBUG: true,
+  DEBUG: false,
   MAX_DUNGEON_SIZE: 75,
   PIXEL_SCALE:
     window.devicePixelRatio >= 2

@@ -4,8 +4,7 @@ import { SPRITE_OPTIONS } from '../config';
 import { Control, StaticSystem } from '../core';
 import { Vector2 } from '../geometry';
 import { Ability, ABILITY_NAMES, ABILITY_STATUS, Hurtable, Passable } from '../object/ability';
-import { Behavior } from '../object/behavior';
-import { BEHAVIOR_NAMES } from '../object/behavior/Behavior';
+import { Behavior, BEHAVIOR_NAMES } from '../object/behavior';
 import { DirectionIndicator, External } from '../object/external';
 import DamageIndicator from '../object/external/DamageIndicator';
 import { EXTERNAL_NAMES } from '../object/external/External';
@@ -103,6 +102,10 @@ export default abstract class Character extends Renderable {
 
   public get alive() {
     return this._alive;
+  }
+
+  public get currentHP() {
+    return this._class.currentHP;
   }
 
   public decide() {
@@ -514,8 +517,8 @@ export default abstract class Character extends Renderable {
     };
   }
 
-  public damageHP(damage: number) {
-    const currentHP = this._class.damageHP(damage);
+  public getDamage(damage: number) {
+    const currentHP = this._class.getDamage(damage);
 
     if (currentHP <= 0) {
       this.die();
@@ -526,10 +529,6 @@ export default abstract class Character extends Renderable {
   }
 
   public canBehave(direction: Vector2) {
-    if (this._alive) {
-      this.direction = direction;
-    }
-
     for (const behavior of this._behaviors) {
       if (behavior.canDo(direction)) {
         return true;

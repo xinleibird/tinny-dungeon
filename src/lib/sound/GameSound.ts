@@ -6,13 +6,22 @@ interface ListTypes {
 }
 export default class GameSound {
   private static _list: ListTypes = {};
+
   public static play(name: string, volume = 0.05, loop = false, durations?: number) {
-    const sound = Loader.sounds.effects[name];
+    let sound = null as sound.Sound;
+    if (this._list['name']) {
+      sound = this._list['name'];
+    } else {
+      sound = Loader.sounds.effects[name];
+    }
 
     sound.volume = volume;
     sound.loop = loop;
-    sound.play();
     this._list[name] = sound;
+
+    if (!sound.isPlaying) {
+      sound.play();
+    }
 
     if (durations) {
       setTimeout(() => {
@@ -24,6 +33,15 @@ export default class GameSound {
   public static stop(name: string) {
     if (name in this._list) {
       this._list[name].stop();
+    }
+  }
+
+  public static stopAll() {
+    for (const name in this._list) {
+      if (Object.prototype.hasOwnProperty.call(this._list, name)) {
+        const sound = this._list[name];
+        sound.stop();
+      }
     }
   }
 

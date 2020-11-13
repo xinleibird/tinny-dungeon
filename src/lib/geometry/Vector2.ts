@@ -3,6 +3,13 @@ export class Vector2 {
     return new Vector2(-vector.x, -vector.y);
   }
 
+  public static distance(v1: Vector2, v2: Vector2) {
+    const dx = v1.x - v2._x;
+    const dy = v1.y - v2._y;
+
+    return Math.abs(Math.sqrt(dx ** 2 + dy ** 2));
+  }
+
   public static minus(vector1: Vector2, vector2: Vector2) {
     const { x: x1, y: y1 } = vector1;
     const { x: x2, y: y2 } = vector2;
@@ -110,7 +117,7 @@ export class Vector2 {
     const dx = another.x - this._x;
     const dy = another.y - this._y;
 
-    return Math.abs(Math.sqrt(dx ** 2 + dy ** 2));
+    return Math.sqrt(dx ** 2 + dy ** 2);
   }
 
   public manhattan(another: Vector2) {

@@ -229,7 +229,7 @@ export default class CharacterClass {
     return false;
   }
 
-  public damageHP(damage: number) {
+  public getDamage(damage: number) {
     this._minorAbility.HP -= damage;
     if (this._minorAbility.HP < 0) {
       this._minorAbility.HP = 0;

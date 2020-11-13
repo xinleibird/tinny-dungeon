@@ -38,6 +38,7 @@ export default class Movement extends Behavior {
         this._character.walk(direction);
       },
     });
+    this._character.direction = direction;
 
     if (this._character instanceof Player) {
       this._character.showExternal(EXTERNAL_NAMES.DIRECTION_INDICATOR);

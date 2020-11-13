@@ -4,6 +4,7 @@ import { Character, Player } from '../character';
 import { Ability, Clearable, Lightable, Respawnable } from '../object/ability';
 import { BackgroundScreen, ForegroundScreen, GameScreen } from '../screen';
 import { Tile } from '../tilemap';
+import { UserInterface } from '../ui';
 import Camera from './Camera';
 import StaticSystem from './StaticSystem';
 
@@ -16,6 +17,7 @@ export default class Renderer {
   private _objectLayer: PIXI.DisplayObject[] = [];
   private _characterLayer: PIXI.Container = new PIXI.Container();
   private _lightingLayer: PIXI.DisplayObject[] = [];
+  private _uiLayer: PIXI.DisplayObject[] = [];
   private _foregroundLayer: PIXI.Container = new PIXI.Container();
 
   private _player: Player;
@@ -32,6 +34,7 @@ export default class Renderer {
     this._objectLayer.length > 0 && this._camera.viewport.addChild(...this._objectLayer);
     this._camera.viewport.addChild(this._characterLayer);
     this._lightingLayer.length > 0 && this._camera.viewport.addChild(...this._lightingLayer);
+    this._uiLayer.length > 0 && this._camera.viewport.addChild(...this._uiLayer);
     this._camera.viewport.addChild(this._foregroundLayer);
   }
 
@@ -41,7 +44,9 @@ export default class Renderer {
     this._objectLayer = [];
     this._characterLayer.removeChildren();
     this._lightingLayer = [];
+    this._uiLayer = [];
     StaticSystem.camera.removeChildren();
+    StaticSystem.camera.addChild(this._backgroundLayer);
     StaticSystem.camera.addChild(this._foregroundLayer);
   }
 
@@ -87,6 +92,10 @@ export default class Renderer {
       if (obj instanceof ForegroundScreen) {
         this._foregroundLayer.addChild(obj.rendering);
       }
+    }
+
+    if (obj instanceof UserInterface) {
+      this._uiLayer.push(obj.rendering);
     }
   }
 }

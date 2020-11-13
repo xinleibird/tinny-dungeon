@@ -67,7 +67,7 @@ export default class Loader {
     loader.add('main', 'assets/sounds/musics/MusMus-BGM-076.mp3');
 
     this.sounds.effects['cave_airflow'] = sound.Sound.from({
-      url: 'assets/sounds/effects/cave_airflow.wav',
+      url: 'assets/sounds/effects/MusMus-BGM-111.mp3',
       preload: true,
     });
 
@@ -138,7 +138,7 @@ export default class Loader {
         const texture = PIXI.Texture.from(`stairs_${i}`);
         this.textures.STAIRS.push(texture);
       }
-      for (let i = 0; i <= 26; i++) {
+      for (let i = 0; i <= 28; i++) {
         const texture = PIXI.Texture.from(`floor_decorators_${i}`);
         this.textures.FLOOR_DECORATORS.push(texture);
       }
@@ -159,6 +159,7 @@ export default class Loader {
       this.textures.UI['d'] = PIXI.Texture.from(`ui_d`);
       this.textures.UI['space'] = PIXI.Texture.from(`ui_space`);
       this.textures.UI['enter'] = PIXI.Texture.from(`ui_enter`);
+      this.textures.UI['heart'] = PIXI.Texture.from(`ui_heart`);
 
       Object.keys(CHARACTER_CATEGORIES).forEach((character) => {
         this.textures[character] = {

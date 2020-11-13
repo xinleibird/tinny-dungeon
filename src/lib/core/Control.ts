@@ -7,7 +7,6 @@ import {
 import { StaticSystem } from '../core';
 import { Vector2 } from '../geometry';
 import { JOY_NAMES, KEY_NAMES } from '../input';
-import { EXTERNAL_NAMES } from '../object/external/External';
 import { Disable, Trace } from '../object/strategy';
 import { Emitter, GAME_EVENTS, JOY_EVENTS, KEY_EVENTS } from '../system';
 import { TurnBase, TurnEvent } from '../turn/';
@@ -61,7 +60,6 @@ export default class Control {
   private _nonPlayers: NonPlayer[] = [];
 
   private _lock = false;
-  private _showUI = false;
 
   private _turnBase: TurnBase = TurnBase.getInstance();
 
@@ -93,6 +91,18 @@ export default class Control {
 
         case KEYBOARD_CONTROLLED_KEYS[CONTROL_ACTIONS.WALK_DOWN]: {
           this.processTurn(Vector2.down);
+
+          break;
+        }
+
+        case KEYBOARD_CONTROLLED_KEYS[CONTROL_ACTIONS.HOLD]: {
+          this.processTurn(Vector2.center);
+
+          break;
+        }
+
+        case KEYBOARD_CONTROLLED_KEYS[CONTROL_ACTIONS.CONFIRM]: {
+          this.processTurn(Vector2.center);
 
           break;
         }
@@ -131,14 +141,7 @@ export default class Control {
         }
 
         case JOYSTICK_CONTROLLED_JOYS[CONTROL_ACTIONS.CONFIRM]: {
-          if (!this._showUI) {
-            this._player.showExternal(EXTERNAL_NAMES.DIRECTION_INDICATOR);
-            this._showUI = true;
-          } else {
-            this._player.hideExternal(EXTERNAL_NAMES.DIRECTION_INDICATOR);
-            this._showUI = false;
-          }
-
+          await this.processTurn(Vector2.center);
           break;
         }
 
@@ -151,7 +154,10 @@ export default class Control {
   private async processTurn(direction: Vector2, count?: number) {
     if (Emitter.phase === GAME_EVENTS.SCENE_RUNNING) {
       if (Date.now() > this._lastDownTimeStamp + this._delay && !this._lock) {
-        if (!this?._player?.canBehave(direction)) {
+        if (
+          !this?._player?.canBehave(direction) &&
+          !this?._player?.canBehave(this._player.direction)
+        ) {
           return;
         }
 

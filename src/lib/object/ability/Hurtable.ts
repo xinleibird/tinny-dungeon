@@ -40,12 +40,12 @@ export default class Hurtable extends Ability {
         const di = character.getExternal(EXTERNAL_NAMES.DAMAGE_INDICATOR) as DamageIndicator;
         if (this._owner instanceof Player) {
           di.addDamageText(damage, CHARACTER_TYPES.PLAYER);
-          this._owner.damageHP(damage);
+          this._owner.getDamage(damage);
         }
 
         if (this._owner instanceof NonPlayer) {
           di.addDamageText(damage, CHARACTER_TYPES.NON_PLAYER);
-          this._owner.damageHP(damage);
+          this._owner.getDamage(damage);
         }
 
         character.showExternal(EXTERNAL_NAMES.DAMAGE_INDICATOR);

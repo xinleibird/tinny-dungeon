@@ -48,7 +48,6 @@ export default class ForegroundScreen extends GameScreen {
       }
 
       case GAME_EVENTS.SCENE_CLEAR: {
-        GameMusic.stopAll();
         this.sceneClear(value, cb);
         break;
       }
@@ -90,6 +89,8 @@ export default class ForegroundScreen extends GameScreen {
   }
 
   private sceneStart(value: number) {
+    GameMusic.play(MUSIC_ALBUM.MAIN);
+    GameSound.play('cave_airflow', 0.05, true);
     const text = new PIXI.BitmapText(`DUNGEON LEVEL ${value}`, {
       fontName: 'Covenant5x5',
       fontSize: 9,
@@ -314,6 +315,7 @@ export default class ForegroundScreen extends GameScreen {
 
       const tap = () => {
         GameMusic.stopAll();
+        GameSound.stopAll();
         cb();
         Emitter.removeListener(KEY_EVENTS.KEY_DOWN, tap);
         Emitter.removeListener(JOY_EVENTS.JOY_DOWN, tap);

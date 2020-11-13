@@ -11,9 +11,8 @@ import Controller from './input/Controller';
 import Level from './Level';
 import { Scene } from './scene';
 import { BackgroundScreen, ForegroundScreen } from './screen';
-import { GameMusic, GameSound } from './sound';
-import { MUSIC_ALBUM } from './sound/GameMusic';
 import { Emitter, GAME_EVENTS, Loader, RESOURCE_EVENTS } from './system';
+import { UserInterface } from './ui';
 import { updateEntitiesDislightings, updateEntitiesLightings } from './utils';
 
 export interface GameOptions {
@@ -62,6 +61,8 @@ export default class Game extends PIXI.Application {
   private _background: BackgroundScreen;
   private _foreground: ForegroundScreen;
 
+  private _ui: UserInterface;
+
   private _level: Level;
 
   // for stats.js
@@ -90,8 +91,6 @@ export default class Game extends PIXI.Application {
     });
 
     Emitter.on(GAME_EVENTS.SCENE_RUNNING, () => {
-      GameMusic.play(MUSIC_ALBUM.MAIN);
-      GameSound.play('cave_airflow', 0.02, true);
       this._player.respawn(this._scene.playerRespawnPosition);
     });
 
@@ -128,6 +127,7 @@ export default class Game extends PIXI.Application {
     this._scene = this._level.scene;
     this._scene.addNonPlayers(this._level.nonPlayers);
     this._renderer.add(this._player);
+    this._ui.regist(this._player);
     this._renderer.render();
 
     updateEntitiesLightings(Vector2.center);
@@ -140,6 +140,7 @@ export default class Game extends PIXI.Application {
     this._scene.addNonPlayers(this._level.nonPlayers);
 
     this._player = new Player(PLAYER_TYPES.KNIGHT_M);
+    this._ui.regist(this._player);
     this._renderer.render();
   }
 
@@ -196,6 +197,7 @@ export default class Game extends PIXI.Application {
     this.registBackground();
     this.registForeground();
     this.registLevel();
+    this.registUI();
   }
 
   public get controller() {
@@ -204,6 +206,10 @@ export default class Game extends PIXI.Application {
 
   public set controller(controller: Controller) {
     this._controller = controller;
+  }
+
+  private registUI() {
+    this._ui = new UserInterface(this._player);
   }
 
   private registLevel() {

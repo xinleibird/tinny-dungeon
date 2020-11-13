@@ -1,6 +1,6 @@
 import { Control, StaticSystem } from '../core';
 import { Vector2 } from '../geometry';
-import { Attacking, Clearing, Movement, Opening } from '../object/behavior';
+import { Attacking, BEHAVIOR_NAMES, Clearing, Movement, Opening } from '../object/behavior';
 import { GameSound } from '../sound';
 import { Emitter, GAME_EVENTS } from '../system';
 import { updateEntitiesLightings } from '../utils';
@@ -17,8 +17,8 @@ export default class Player extends Character {
     StaticSystem.camera.follow(this);
   }
 
-  public damageHP(damage: number) {
-    super.damageHP(damage);
+  public getDamage(damage: number) {
+    super.getDamage(damage);
 
     if (!this.alive) {
       Emitter.emit(GAME_EVENTS.USER_DIE);
@@ -30,6 +30,27 @@ export default class Player extends Character {
     this.geometryPosition = geometryPosition;
     Emitter.emit(GAME_EVENTS.SCENE_START);
     updateEntitiesLightings(this._geometryPosition);
+  }
+
+  public async rollBehaviors(direction: Vector2) {
+    let isDo = false;
+    for (const behavior of this._behaviors) {
+      if (behavior.canDo(direction)) {
+        await behavior.do(direction);
+        isDo = true;
+        break;
+      }
+    }
+
+    if (!isDo) {
+      const attack = this._behaviors.find((e) => {
+        return e.name === BEHAVIOR_NAMES.ATTACKING;
+      });
+
+      if (attack?.canDo(this._direction)) {
+        await attack?.do(this._direction);
+      }
+    }
   }
 
   protected registBehaviors() {
