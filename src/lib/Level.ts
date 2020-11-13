@@ -30,7 +30,7 @@ export default class Level {
 
   public generateNonPlayers() {
     this._nonPlayers = [];
-    const nonPlayerNumber = ~~(this._sceneSize ** 2 / 100);
+    const nonPlayerNumber = ~~(this._sceneSize ** 2 / 150);
     const nonPlayerTypes = {
       [NONPLAYER_TYPES.BAT]: 1,
       [NONPLAYER_TYPES.SKELETON]: 2,

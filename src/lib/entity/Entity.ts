@@ -101,7 +101,7 @@ export default class Entity {
     }
 
     if (entityType === ENTITY_TYPES.FLOOR || entityType === ENTITY_TYPES.CORRIDOR) {
-      const passable = new Passable(this, ABILITY_STATUS.PASS);
+      const passable = new Passable(this, ABILITY_STATUS.PASS, entityType);
       this.addAbility(passable);
     }
 

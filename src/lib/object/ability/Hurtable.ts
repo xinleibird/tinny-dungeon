@@ -31,20 +31,22 @@ export default class Hurtable extends Ability {
       setTimeout(() => {
         if (damage) {
           character.damageSound.play();
-          character.hurt();
+          character.animationHurt();
         } else {
           character.dodgeSound.play();
-          character.dodge();
+          character.animationDodge();
         }
 
-        const di = character.getExternal(EXTERNAL_NAMES.DAMAGE_INDICATOR) as DamageIndicator;
+        const damageIndicator = character.getExternal(
+          EXTERNAL_NAMES.DAMAGE_INDICATOR
+        ) as DamageIndicator;
         if (this._owner instanceof Player) {
-          di.addDamageText(damage, CHARACTER_TYPES.PLAYER);
+          damageIndicator.addDamageText(damage, CHARACTER_TYPES.PLAYER);
           this._owner.getDamage(damage);
         }
 
         if (this._owner instanceof NonPlayer) {
-          di.addDamageText(damage, CHARACTER_TYPES.NON_PLAYER);
+          damageIndicator.addDamageText(damage, CHARACTER_TYPES.NON_PLAYER);
           this._owner.getDamage(damage);
         }
 

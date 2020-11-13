@@ -35,7 +35,7 @@ export default class Movement extends Behavior {
       pixi: { x: tarX * 16 + SPRITE_OFFSET_X, y: tarY * 16 + SPRITE_OFFSET_Y },
       onStart: async () => {
         this._character.stepSound.play();
-        this._character.walk(direction);
+        this._character.animationWalk(direction);
       },
     });
     this._character.direction = direction;

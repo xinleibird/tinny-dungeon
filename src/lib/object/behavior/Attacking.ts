@@ -34,7 +34,7 @@ export default class Attacking extends Behavior {
           },
           onStart: () => {
             this._character.attackSound.play();
-            this._character.attack(direction);
+            this._character.animationAttack(direction);
           },
           onComplete: () => {
             gsap.to(this._character.rendering, {

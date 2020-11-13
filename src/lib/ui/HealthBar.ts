@@ -34,8 +34,6 @@ export default class HealthBar extends PIXI.Container {
     }
 
     this.position.x =
-      (StaticSystem.camera.viewport.right - StaticSystem.camera.viewport.left - this.width) /
-        2 +
-      5;
+      (StaticSystem.camera.viewport.right - StaticSystem.camera.viewport.left - 80) / 2 + 1;
   }
 }

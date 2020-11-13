@@ -6,6 +6,7 @@ export enum BEHAVIOR_NAMES {
   OPENING = 'Opening',
   MOVEMENT = 'Movement',
   ATTACKING = 'Attacking',
+  DEFENCING = 'Defencing',
   CLEARING = 'Clearing',
 }
 export default abstract class Behavior {

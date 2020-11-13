@@ -104,7 +104,7 @@ export default class DamageIndicator extends External {
 
   private cleanupText() {
     for (const child of this._rendering.children) {
-      if (child.visible) {
+      if (child.alpha === 0) {
         this._rendering.removeChild(child);
       }
     }

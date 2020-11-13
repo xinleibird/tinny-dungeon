@@ -1,6 +1,13 @@
 import { Control, StaticSystem } from '../core';
 import { Vector2 } from '../geometry';
-import { Attacking, BEHAVIOR_NAMES, Clearing, Movement, Opening } from '../object/behavior';
+import {
+  Attacking,
+  BEHAVIOR_NAMES,
+  Clearing,
+  Defencing,
+  Movement,
+  Opening,
+} from '../object/behavior';
 import { GameSound } from '../sound';
 import { Emitter, GAME_EVENTS } from '../system';
 import { updateEntitiesLightings } from '../utils';
@@ -33,23 +40,17 @@ export default class Player extends Character {
   }
 
   public async rollBehaviors(direction: Vector2) {
-    let isDo = false;
-    for (const behavior of this._behaviors) {
-      if (behavior.canDo(direction)) {
-        await behavior.do(direction);
-        isDo = true;
-        break;
+    if (direction.equals(Vector2.center)) {
+      if (
+        this.canBehave(this._direction, BEHAVIOR_NAMES.ATTACKING) ||
+        this.canBehave(this._direction, BEHAVIOR_NAMES.OPENING)
+      ) {
+        await super.rollBehaviors(this._direction);
+      } else {
+        await super.rollBehaviors(direction);
       }
-    }
-
-    if (!isDo) {
-      const attack = this._behaviors.find((e) => {
-        return e.name === BEHAVIOR_NAMES.ATTACKING;
-      });
-
-      if (attack?.canDo(this._direction)) {
-        await attack?.do(this._direction);
-      }
+    } else {
+      await super.rollBehaviors(direction);
     }
   }
 
@@ -58,8 +59,9 @@ export default class Player extends Character {
     const attacting = new Attacking(this);
     const clearing = new Clearing(this);
     const movement = new Movement(this);
+    const defencing = new Defencing(this);
 
-    this._behaviors.push(opening, attacting, clearing, movement);
+    this._behaviors.push(opening, attacting, defencing, clearing, movement);
   }
 
   protected registSounds() {

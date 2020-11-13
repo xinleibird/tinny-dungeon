@@ -1,9 +1,9 @@
 import * as ROT from 'rot-js';
 import { NonPlayer } from '../character';
 import { Control, StaticSystem } from '../core';
-import { Entity, EntityGroup } from '../entity';
+import { Entity, EntityGroup, ENTITY_TYPES } from '../entity';
 import { Vector2 } from '../geometry';
-import { ABILITY_NAMES, ABILITY_STATUS } from '../object/ability';
+import { ABILITY_NAMES, ABILITY_STATUS, Passable } from '../object/ability';
 
 export default class Scene {
   protected _entityGroup: EntityGroup;
@@ -36,8 +36,8 @@ export default class Scene {
         !entity.hasAbility(ABILITY_NAMES.CLEARABLE) &&
         !entity.hasAbility(ABILITY_NAMES.RESPAWNABLE)
       ) {
-        const passable = entity.getAbility(ABILITY_NAMES.PASSABLE);
-        if (passable.status === ABILITY_STATUS.PASS) {
+        const passable = entity.getAbility(ABILITY_NAMES.PASSABLE) as Passable;
+        if (passable.status === ABILITY_STATUS.PASS && passable.type === ENTITY_TYPES.FLOOR) {
           entities.push(entity);
         }
       }

@@ -287,7 +287,7 @@ export default abstract class Character extends Renderable {
     return this._geometryPosition;
   }
 
-  public hold() {
+  public animationHold() {
     const [
       holdShadow,
       hold,
@@ -322,7 +322,7 @@ export default abstract class Character extends Renderable {
     this.hideExternal(EXTERNAL_NAMES.DIRECTION_INDICATOR);
   }
 
-  public walk(direction: Vector2) {
+  public animationWalk(direction: Vector2) {
     const [
       holdShadow,
       hold,
@@ -358,12 +358,12 @@ export default abstract class Character extends Renderable {
 
     hurt.onComplete = () => {
       if (this._alive) {
-        this.hold();
+        this.animationHold();
       }
     };
   }
 
-  public attack(direction: Vector2) {
+  public animationAttack(direction: Vector2) {
     const [
       holdShadow,
       hold,
@@ -397,12 +397,12 @@ export default abstract class Character extends Renderable {
 
     attack.onComplete = () => {
       if (this._alive) {
-        this.hold();
+        this.animationHold();
       }
     };
   }
 
-  public hurt() {
+  public animationHurt() {
     const [
       holdShadow,
       hold,
@@ -436,12 +436,12 @@ export default abstract class Character extends Renderable {
 
     hurt.onComplete = () => {
       if (this._alive) {
-        this.hold();
+        this.animationHold();
       }
     };
   }
 
-  public dodge() {
+  public animationDodge() {
     const [
       holdShadow,
       hold,
@@ -475,12 +475,12 @@ export default abstract class Character extends Renderable {
 
     dodge.onComplete = () => {
       if (this._alive) {
-        this.hold();
+        this.animationHold();
       }
     };
   }
 
-  public die() {
+  public animationDie() {
     const [
       holdShadow,
       hold,
@@ -521,17 +521,25 @@ export default abstract class Character extends Renderable {
     const currentHP = this._class.getDamage(damage);
 
     if (currentHP <= 0) {
-      this.die();
+      this.animationDie();
       this.setDie();
       this._alive = false;
       this._rendering.zIndex = -1;
     }
   }
 
-  public canBehave(direction: Vector2) {
-    for (const behavior of this._behaviors) {
-      if (behavior.canDo(direction)) {
-        return true;
+  public canBehave(direction: Vector2, behaviorName?: BEHAVIOR_NAMES) {
+    if (behaviorName) {
+      for (const behavior of this._behaviors) {
+        if (behavior.name === behaviorName && behavior.canDo(direction)) {
+          return true;
+        }
+      }
+    } else {
+      for (const behavior of this._behaviors) {
+        if (behavior.canDo(direction)) {
+          return true;
+        }
       }
     }
 

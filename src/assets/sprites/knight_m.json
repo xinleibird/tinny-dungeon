@@ -201,11 +201,7 @@
     "size": { "w": 80, "h": 160 },
     "scale": "1",
     "frameTags": [],
-    "layers": [
-      { "name": "0", "opacity": 255, "blendMode": "normal" },
-      { "name": "1", "opacity": 255, "blendMode": "normal" },
-      { "name": "2", "opacity": 255, "blendMode": "normal" }
-    ],
+    "layers": [{ "name": "Flattened", "opacity": 255, "blendMode": "normal" }],
     "slices": []
   }
 }
