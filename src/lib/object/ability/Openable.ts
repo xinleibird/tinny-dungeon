@@ -10,7 +10,7 @@ import Ability, { ABILITY_NAMES, ABILITY_STATUS } from './Ability';
 type OpenableStatus = ABILITY_STATUS.CLOSE | ABILITY_STATUS.OPEN;
 
 export default class Openable extends Ability {
-  protected _status: ABILITY_STATUS.CLOSE | ABILITY_STATUS.OPEN;
+  protected _status: OpenableStatus;
   protected _rendering: PIXI.AnimatedSprite;
   public constructor(
     owner: Character | Entity,
@@ -65,9 +65,5 @@ export default class Openable extends Ability {
       this._rendering.gotoAndStop(1);
     }
     this._status = status;
-  }
-
-  public get sprite(): PIXI.AnimatedSprite {
-    return this._rendering;
   }
 }

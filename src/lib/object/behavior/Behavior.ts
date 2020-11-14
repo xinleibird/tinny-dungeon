@@ -8,6 +8,7 @@ export enum BEHAVIOR_NAMES {
   ATTACKING = 'Attacking',
   DEFENCING = 'Defencing',
   CLEARING = 'Clearing',
+  BROKING = 'Broking',
 }
 export default abstract class Behavior {
   protected _character: Character;

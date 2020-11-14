@@ -34,6 +34,7 @@ export default class Scene {
         entity.hasAbility(ABILITY_NAMES.PASSABLE) &&
         !entity.hasAbility(ABILITY_NAMES.OPENABLE) &&
         !entity.hasAbility(ABILITY_NAMES.CLEARABLE) &&
+        !entity.hasAbility(ABILITY_NAMES.BROKEABLE) &&
         !entity.hasAbility(ABILITY_NAMES.RESPAWNABLE)
       ) {
         const passable = entity.getAbility(ABILITY_NAMES.PASSABLE) as Passable;

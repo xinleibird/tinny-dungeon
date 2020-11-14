@@ -90,7 +90,7 @@ export default class ForegroundScreen extends GameScreen {
 
   private sceneStart(value: number) {
     GameMusic.play(MUSIC_ALBUM.MAIN);
-    GameSound.play('cave_airflow', 0.05, true);
+    GameSound.play('cave_airflow', 0.03, true);
     const text = new PIXI.BitmapText(`DUNGEON LEVEL ${value}`, {
       fontName: 'Covenant5x5',
       fontSize: 9,

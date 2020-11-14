@@ -3,6 +3,7 @@ import { Vector2 } from '../geometry';
 import {
   Attacking,
   BEHAVIOR_NAMES,
+  Broking,
   Clearing,
   Defencing,
   Movement,
@@ -19,13 +20,14 @@ export default class Player extends Character {
     super(type);
 
     this._class = new CharacterClass({ ST: 12, DX: 12, IQ: 12, HT: 12 }, 'Sw', 'cut');
+
     this._class.attackBonus = 1;
     this._class.damageResistance = 1;
     StaticSystem.camera.follow(this);
   }
 
-  public getDamage(damage: number) {
-    super.getDamage(damage);
+  public gotDamage(damage: number) {
+    super.gotDamage(damage);
 
     if (!this.alive) {
       Emitter.emit(GAME_EVENTS.USER_DIE);
@@ -56,12 +58,13 @@ export default class Player extends Character {
 
   protected registBehaviors() {
     const opening = new Opening(this);
+    const broking = new Broking(this);
     const attacting = new Attacking(this);
     const clearing = new Clearing(this);
     const movement = new Movement(this);
     const defencing = new Defencing(this);
 
-    this._behaviors.push(opening, attacting, defencing, clearing, movement);
+    this._behaviors.push(opening, broking, attacting, defencing, clearing, movement);
   }
 
   protected registSounds() {

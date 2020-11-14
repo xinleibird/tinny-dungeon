@@ -20,9 +20,10 @@ export default class Movement extends Behavior {
 
     const geometryPosition = this._character.geometryPosition;
     const { x, y } = geometryPosition;
-    this._character.lastGeometryPosition = new Vector2(x, y);
 
+    this._character.lastGeometryPosition = new Vector2(x, y);
     geometryPosition.combine(direction);
+    this._character.setGeometry(geometryPosition);
 
     const { x: tarX, y: tarY } = geometryPosition;
 

@@ -1,7 +1,16 @@
+import * as ROT from 'rot-js';
 import { StaticSystem } from '../core';
 import { Entity, EntityGroup, ENTITY_TYPES } from '../entity';
 import { Vector2 } from '../geometry';
-import { ABILITY_NAMES, ABILITY_STATUS, Decorateable, Lightable } from '../object/ability';
+import {
+  ABILITY_NAMES,
+  ABILITY_STATUS,
+  Brokeable,
+  BROKEABLE_TYPES,
+  Decorateable,
+  Lightable,
+  Passable,
+} from '../object/ability';
 import { Tile, TILE_TYPES } from '../tilemap';
 import { generateAutoTile, generateDungeonMapToAutoTile } from '../utils';
 import Scene from './Scene';
@@ -46,15 +55,16 @@ export default class Dungeon extends Scene {
     this._floorsMap = floorsMap;
     this._decoratorsMap = decoratorsMap;
 
-    this.fillTileLayer();
-    this.fillEntityLayer();
-    this.fillLightingLayer();
+    this.fillTiles();
+    this.fillEntities();
+    this.fillLightings();
+    this.fillAttachments();
 
     this._respawnPosition = this.getRespawnPosition();
     this._clearPosition = this.getClearPosition();
   }
 
-  private fillTileLayer() {
+  private fillTiles() {
     const tileArray = generateAutoTile(this._tilesMap);
     const ty = this._tilesMap.length;
     const tx = this._tilesMap[0].length;
@@ -69,10 +79,11 @@ export default class Dungeon extends Scene {
     }
   }
 
-  private fillEntityLayer() {
+  private fillEntities() {
     const fy = this._floorsMap.length;
     const fx = this._floorsMap[0].length;
     const entityGroup = new EntityGroup(fx, fy);
+    this._entityGroup = entityGroup;
 
     entityGroup.forLoop((x: number, y: number) => {
       let direction = Vector2.center;
@@ -105,7 +116,52 @@ export default class Dungeon extends Scene {
     });
   }
 
-  private fillLightingLayer() {
+  private fillAttachments() {
+    const entityGroup = this._entityGroup;
+    const entities = [];
+
+    entityGroup.loop((entity) => {
+      if (entity.hasAbility(ABILITY_NAMES.PASSABLE)) {
+        const passable = entity.getAbility(ABILITY_NAMES.PASSABLE);
+        const { x, y } = entity.geometryPosition;
+        const lower = this._entityGroup?.[y - 1]?.[x];
+
+        if (
+          entity.hasAbility(ABILITY_NAMES.PASSABLE) &&
+          !entity.hasAbility(ABILITY_NAMES.OPENABLE) &&
+          !entity.hasAbility(ABILITY_NAMES.CLEARABLE) &&
+          !entity.hasAbility(ABILITY_NAMES.RESPAWNABLE) &&
+          !lower?.hasAbility(ABILITY_NAMES.CLEARABLE) &&
+          !lower?.hasAbility(ABILITY_NAMES.RESPAWNABLE)
+        ) {
+          const passable = entity.getAbility(ABILITY_NAMES.PASSABLE) as Passable;
+          if (
+            passable.status === ABILITY_STATUS.PASS &&
+            passable.type === ENTITY_TYPES.FLOOR
+          ) {
+            entities.push(entity);
+          }
+        }
+      }
+    });
+
+    const num = ~~((entityGroup.width * entityGroup.height) / 100);
+
+    for (let i = 0; i < num; i++) {
+      const entity: Entity = ROT.RNG.getItem(entities);
+      const index = entities.indexOf(entity);
+      entities.splice(index, 1);
+
+      const type = ROT.RNG.getItem([
+        BROKEABLE_TYPES.POT,
+        BROKEABLE_TYPES.CONTAINER,
+        BROKEABLE_TYPES.BARREL,
+      ]);
+      entity?.addAbility(new Brokeable(entity, type));
+    }
+  }
+
+  private fillLightings() {
     const entityGroup = StaticSystem.entityGroup;
     entityGroup.forLoop((x: number, y: number) => {
       const entity = entityGroup.getEntity(x, y);

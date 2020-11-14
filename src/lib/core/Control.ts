@@ -154,10 +154,7 @@ export default class Control {
   private async processTurn(direction: Vector2, count?: number) {
     if (Emitter.phase === GAME_EVENTS.SCENE_RUNNING) {
       if (Date.now() > this._lastDownTimeStamp + this._delay && !this._lock) {
-        if (
-          !this?._player?.canBehave(direction) &&
-          !this?._player?.canBehave(this._player.direction)
-        ) {
+        if (!this?._player?.canBehave(direction)) {
           return;
         }
 

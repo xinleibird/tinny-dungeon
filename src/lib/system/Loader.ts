@@ -19,6 +19,11 @@ type TexturesTypes = {
   LIGHTING_MASK?: PIXI.Texture[];
   TITLES?: PIXI.Texture[];
   AVATAR?: PIXI.Texture;
+  ATTACHMENTS?: {
+    pot: PIXI.Texture[];
+    container: PIXI.Texture[];
+    barrel: PIXI.Texture[];
+  };
 };
 
 interface SoundTypes {
@@ -40,18 +45,20 @@ export default class Loader {
     FLOOR_DECORATORS: [],
     LIGHTING_MASK: [],
     TITLES: [],
+    ATTACHMENTS: { pot: [], container: [], barrel: [] },
   };
   public static tileset: PIXI.Texture[] = [];
   public static sounds: SoundTypes = { effects: {}, musics: {} };
 
   public static load() {
+    loader.add('assets/tiles/attachments.json');
     loader.add('assets/tiles/tileset.json');
     loader.add('assets/tiles/doors.json');
     loader.add('assets/tiles/stairs.json');
     loader.add('assets/tiles/floor_decorators.json');
     loader.add('assets/tiles/ui.json');
     loader.add('assets/tiles/lighting_mask.json');
-    loader.add('titleImages', 'assets/sprites/title.json');
+    loader.add('assets/sprites/title.json');
 
     loader.add('assets/sprites/knight_m.json');
     loader.add('assets/sprites/skeleton.json');
@@ -117,6 +124,11 @@ export default class Loader {
       preload: true,
     });
 
+    this.sounds.effects['broke'] = sound.Sound.from({
+      url: 'assets/sounds/effects/sfx_exp_odd7.wav',
+      preload: true,
+    });
+
     loader.load((loader, resources) => {
       this.resources = resources;
     });
@@ -150,6 +162,19 @@ export default class Loader {
       {
         const texture = PIXI.Texture.from(`lighting_mask_${0}`);
         this.textures.LIGHTING_MASK.push(texture);
+      }
+
+      for (let i = 0; i < 4; i++) {
+        const texture = PIXI.Texture.from(`attachments_${i}`);
+        this.textures.ATTACHMENTS.container.push(texture);
+      }
+      for (let i = 4; i < 8; i++) {
+        const texture = PIXI.Texture.from(`attachments_${i}`);
+        this.textures.ATTACHMENTS.pot.push(texture);
+      }
+      for (let i = 8; i < 12; i++) {
+        const texture = PIXI.Texture.from(`attachments_${i}`);
+        this.textures.ATTACHMENTS.barrel.push(texture);
       }
 
       this.textures.UI['arrow_down'] = PIXI.Texture.from(`ui_arrow_down`);

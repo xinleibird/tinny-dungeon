@@ -287,6 +287,10 @@ export default abstract class Character extends Renderable {
     return this._geometryPosition;
   }
 
+  public setGeometry(geometryPosition: Vector2) {
+    this._geometryPosition = geometryPosition;
+  }
+
   public animationHold() {
     const [
       holdShadow,
@@ -517,8 +521,8 @@ export default abstract class Character extends Renderable {
     };
   }
 
-  public getDamage(damage: number) {
-    const currentHP = this._class.getDamage(damage);
+  public gotDamage(damage: number) {
+    const currentHP = this._class.makeDamage(damage);
 
     if (currentHP <= 0) {
       this.animationDie();
