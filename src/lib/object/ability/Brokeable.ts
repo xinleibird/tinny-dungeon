@@ -100,11 +100,13 @@ export default class Brokeable extends Ability {
 
     if (this._status === ABILITY_STATUS.ENTIRE) {
       this._owner.getAbility(ABILITY_NAMES.PASSABLE).status = ABILITY_STATUS.PASS;
-      GameSound.play('broke', 0.1);
 
       const [sprite, shadow] = this._rendering.children as PIXI.AnimatedSprite[];
-      sprite.play();
-      shadow.play();
+      setTimeout(() => {
+        GameSound.play('broke', 0.1);
+        sprite.play();
+        shadow.play();
+      }, 200);
 
       sprite.onComplete = () => {
         shadow.alpha = 0;

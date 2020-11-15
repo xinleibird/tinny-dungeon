@@ -27,7 +27,7 @@ export default class Dungeon extends Scene {
 
   private getRespawnPosition() {
     let pos = Vector2.center;
-    const entityGroup = StaticSystem.entityGroup;
+    const entityGroup = this._entityGroup;
     entityGroup.forLoop((x, y) => {
       if (entityGroup.getEntity(x, y).hasAbility(ABILITY_NAMES.RESPAWNABLE)) {
         pos = new Vector2(x, y);
@@ -39,7 +39,7 @@ export default class Dungeon extends Scene {
 
   private getClearPosition() {
     let pos = Vector2.center;
-    const entityGroup = StaticSystem.entityGroup;
+    const entityGroup = this._entityGroup;
     entityGroup.forLoop((x, y) => {
       if (entityGroup.getEntity(x, y).hasAbility(ABILITY_NAMES.CLEARABLE)) {
         pos = new Vector2(x, y);
@@ -122,24 +122,24 @@ export default class Dungeon extends Scene {
 
     entityGroup.loop((entity) => {
       if (entity.hasAbility(ABILITY_NAMES.PASSABLE)) {
-        const passable = entity.getAbility(ABILITY_NAMES.PASSABLE);
         const { x, y } = entity.geometryPosition;
-        const lower = this._entityGroup?.[y - 1]?.[x];
 
         if (
           entity.hasAbility(ABILITY_NAMES.PASSABLE) &&
           !entity.hasAbility(ABILITY_NAMES.OPENABLE) &&
           !entity.hasAbility(ABILITY_NAMES.CLEARABLE) &&
-          !entity.hasAbility(ABILITY_NAMES.RESPAWNABLE) &&
-          !lower?.hasAbility(ABILITY_NAMES.CLEARABLE) &&
-          !lower?.hasAbility(ABILITY_NAMES.RESPAWNABLE)
+          !entity.hasAbility(ABILITY_NAMES.RESPAWNABLE)
         ) {
           const passable = entity.getAbility(ABILITY_NAMES.PASSABLE) as Passable;
           if (
             passable.status === ABILITY_STATUS.PASS &&
             passable.type === ENTITY_TYPES.FLOOR
           ) {
-            entities.push(entity);
+            const upper = this._floorsMap?.[y - 1]?.[x];
+
+            if (upper !== ENTITY_TYPES.DOWNSTAIR && upper !== ENTITY_TYPES.UPSTAIR) {
+              entities.push(entity);
+            }
           }
         }
       }
@@ -162,7 +162,7 @@ export default class Dungeon extends Scene {
   }
 
   private fillLightings() {
-    const entityGroup = StaticSystem.entityGroup;
+    const entityGroup = this._entityGroup;
     entityGroup.forLoop((x: number, y: number) => {
       const entity = entityGroup.getEntity(x, y);
       if (entity.getAbility(ABILITY_NAMES.PASSABLE)) {

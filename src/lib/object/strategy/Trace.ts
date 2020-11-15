@@ -12,7 +12,7 @@ export default class Trace extends Strategy {
   }
 
   public execute() {
-    if (this._target.isStay) {
+    if (this._target.isStay && !this._self.isStay) {
       const dir = this.siege();
       return [new TurnEvent(this._self, dir)];
     }

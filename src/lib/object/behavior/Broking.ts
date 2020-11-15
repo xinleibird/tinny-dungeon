@@ -3,6 +3,7 @@ import { Character, NonPlayer } from '../../character';
 import { SPRITE_OPTIONS } from '../../config';
 import { StaticSystem } from '../../core';
 import { Vector2 } from '../../geometry';
+import { GameSound } from '../../sound';
 import { ABILITY_NAMES, ABILITY_STATUS } from '../ability';
 import Behavior, { BEHAVIOR_NAMES } from './Behavior';
 
@@ -29,12 +30,11 @@ export default class Broking extends Behavior {
         gsap.to(this._character.rendering, {
           duration: 0.15,
           pixi: {
-            x: x * 16 + SPRITE_OFFSET_X + dx * 4,
-            y: y * 16 + SPRITE_OFFSET_Y + dy * 4,
+            x: x * 16 + SPRITE_OFFSET_X + dx * 8,
+            y: y * 16 + SPRITE_OFFSET_Y + dy * 8,
           },
           onStart: () => {
-            this._character.attackSound.play();
-            this._character.animationAttack(direction);
+            GameSound.play('broking');
           },
           onComplete: () => {
             gsap.to(this._character.rendering, {

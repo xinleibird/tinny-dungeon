@@ -1,3 +1,4 @@
+import { GAME_OPTIONS } from '../config';
 import { Control, StaticSystem } from '../core';
 import { Vector2 } from '../geometry';
 import {
@@ -15,11 +16,17 @@ import { updateEntitiesLightings } from '../utils';
 import Character, { PLAYER_TYPES } from './Character';
 import CharacterClass from './CharacterClass';
 
+const { DEBUG } = GAME_OPTIONS;
+
 export default class Player extends Character {
   public constructor(type: PLAYER_TYPES) {
     super(type);
 
-    this._class = new CharacterClass({ ST: 12, DX: 12, IQ: 12, HT: 12 }, 'Sw', 'cut');
+    if (DEBUG) {
+      this._class = new CharacterClass({ ST: 30, DX: 30, IQ: 30, HT: 30 }, 'Sw', 'cut');
+    } else {
+      this._class = new CharacterClass({ ST: 12, DX: 12, IQ: 12, HT: 12 }, 'Sw', 'cut');
+    }
 
     this._class.attackBonus = 1;
     this._class.damageResistance = 1;

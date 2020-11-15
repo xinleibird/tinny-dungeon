@@ -123,9 +123,12 @@ export default class Loader {
       url: 'assets/sounds/effects/sfx_sounds_powerup8.wav',
       preload: true,
     });
-
     this.sounds.effects['broke'] = sound.Sound.from({
       url: 'assets/sounds/effects/sfx_exp_odd7.wav',
+      preload: true,
+    });
+    this.sounds.effects['broking'] = sound.Sound.from({
+      url: 'assets/sounds/effects/sfx_wpn_punch1.wav',
       preload: true,
     });
 
