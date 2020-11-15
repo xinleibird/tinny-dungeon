@@ -6,17 +6,24 @@
 
 <div align="center">
   <h1>Tinny Dungeon</h1>
-  <h3>基于前端技术的 rogue-like 游戏</h3>
-  <h4>A rogue-like game based front end</h3>
+  <h3>基于 PixiJS 的 rogue-like 游戏</h3>
+  <h4>A rogue-like game based PixiJS</h3>
 </div>
 
 <br>
 <br>
 <br>
 
+## 👑 PixiJS
+
+- [PixiJS][pixi] 用来制作精灵动画为基础的 2D 游戏确实非常方便，而且效率一流！测试中在做了 culling 的情况下，5000 个左右的 tile 在桌面端使用核显的情况下可维持 144 帧 (performance 性能帧，pixi 的实际渲染上限是 60 帧)。在移动端可维持在 60 帧。运行中不波动或者仅轻微波动。 WebGL 自然是好，但是如果没有 pixi 这样的基础设施，那开发难度不是个人或者小型机构可以承受的。赞美归于 [PixiJS][pixi]！
+
+<br>
+<br>
+
 ## 👑 算法基础设施
 
-- 游戏中用到的迷宫构造算法、视线遮罩算法、寻路算法、伪随机数生成等等好用的基础工具，来自于 [rot-js][rotjs]，帮助我节省了大量的时间，特别感谢！
+- 游戏中用到的迷宫构造算法、视线遮罩算法、寻路算法、伪随机数生成等等好用的基础工具，来自于 [rot-js][rotjs]，特别感谢！
 
 <br>
 <br>
@@ -49,6 +56,7 @@
 
 xinleibird@gmail.com
 
+[pixi]: https://www.pixijs.com/
 [rotjs]: https://ondras.github.io/rot.js/hp/
 [click]: https://opengameart.org/content/click-pixel-font
 [covenant]: https://heraldod.itch.io/bitmap-fonts
