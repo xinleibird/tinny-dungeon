@@ -11,8 +11,6 @@ export default class Joystick {
   private _delay = 100;
   private _lastDown = 0;
 
-  private _timeout: any;
-
   private _nipple: JoystickManager;
 
   private _burstIDs: any[] = [];
@@ -75,16 +73,16 @@ export default class Joystick {
         const inHandleJoy = this._handleJoys?.[hold];
         const event: IJoyEventType = { timeStamp, joy: hold };
         this._lastJoy = hold as JOY_NAMES;
-        this._lastDown = timeStamp;
         inHandleJoy.processJoyDown(event);
       } else {
         const center = JOY_NAMES.center;
         const inHandleJoy = this._handleJoys?.[center];
         const event: IJoyEventType = { timeStamp, joy: center };
         this._lastJoy = center as JOY_NAMES;
-        this._lastDown = timeStamp;
         inHandleJoy.processJoyDown(event);
       }
+
+      this._lastDown = timeStamp;
     }
 
     for (const inHandle in this._handleJoys) {

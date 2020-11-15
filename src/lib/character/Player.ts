@@ -51,6 +51,7 @@ export default class Player extends Character {
   public async rollBehaviors(direction: Vector2) {
     if (direction.equals(Vector2.center)) {
       if (
+        this.canBehave(this._direction, BEHAVIOR_NAMES.BROKING) ||
         this.canBehave(this._direction, BEHAVIOR_NAMES.ATTACKING) ||
         this.canBehave(this._direction, BEHAVIOR_NAMES.OPENING)
       ) {

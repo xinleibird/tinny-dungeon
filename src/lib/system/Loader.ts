@@ -19,6 +19,7 @@ type TexturesTypes = {
   LIGHTING_MASK?: PIXI.Texture[];
   TITLES?: PIXI.Texture[];
   AVATAR?: PIXI.Texture;
+  RAY?: PIXI.Texture;
   ATTACHMENTS?: {
     pot: PIXI.Texture[];
     container: PIXI.Texture[];
@@ -192,6 +193,7 @@ export default class Loader {
       this.textures.UI['space'] = PIXI.Texture.from(`ui_space`);
       this.textures.UI['enter'] = PIXI.Texture.from(`ui_enter`);
       this.textures.UI['heart'] = PIXI.Texture.from(`ui_heart`);
+      this.textures.UI['health_potion'] = PIXI.Texture.from(`ui_health_potion`);
 
       Object.keys(CHARACTER_CATEGORIES).forEach((character) => {
         this.textures[character] = {

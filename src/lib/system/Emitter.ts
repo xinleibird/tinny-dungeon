@@ -16,6 +16,7 @@ export enum GAME_EVENTS {
   USER_POISONING = 'user_poisoning',
   USER_BLOODING = 'user_blooding',
   USER_DIE = 'user_die',
+  SHOW_MENU = 'show_menu',
 }
 
 export enum RESOURCE_EVENTS {

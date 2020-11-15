@@ -95,6 +95,14 @@
       "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 16 },
       "sourceSize": { "w": 16, "h": 16 },
       "duration": 100
+    },
+    "ui_health_potion": {
+      "frame": { "x": 0, "y": 48, "w": 16, "h": 16 },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 16 },
+      "sourceSize": { "w": 16, "h": 16 },
+      "duration": 100
     }
   },
   "meta": {
@@ -102,21 +110,22 @@
     "version": "1.2.25-x64",
     "image": "ui.png",
     "format": "RGBA8888",
-    "size": { "w": 64, "h": 48 },
+    "size": { "w": 64, "h": 64 },
     "scale": "1",
     "frameTags": [
-      { "name": "arrow_down", "from": 0, "to": 11, "direction": "forward" },
+      { "name": "arrow_down", "from": 0, "to": 12, "direction": "forward" },
       { "name": "arrow_right", "from": 1, "to": 1, "direction": "forward" },
       { "name": "arrow_up", "from": 2, "to": 2, "direction": "forward" },
-      { "name": "arrow_left", "from": 3, "to": 11, "direction": "forward" },
-      { "name": "tap", "from": 4, "to": 11, "direction": "forward" },
+      { "name": "arrow_left", "from": 3, "to": 12, "direction": "forward" },
+      { "name": "tap", "from": 4, "to": 12, "direction": "forward" },
       { "name": "w", "from": 5, "to": 5, "direction": "forward" },
       { "name": "a", "from": 6, "to": 6, "direction": "forward" },
       { "name": "s", "from": 7, "to": 7, "direction": "forward" },
       { "name": "d", "from": 8, "to": 8, "direction": "forward" },
       { "name": "space", "from": 9, "to": 9, "direction": "forward" },
-      { "name": "enter", "from": 10, "to": 11, "direction": "forward" },
-      { "name": "heart", "from": 11, "to": 11, "direction": "forward" }
+      { "name": "enter", "from": 10, "to": 12, "direction": "forward" },
+      { "name": "heart", "from": 11, "to": 12, "direction": "forward" },
+      { "name": "health_potion", "from": 12, "to": 12, "direction": "forward" }
     ],
     "layers": [{ "name": "图层 1", "opacity": 255, "blendMode": "normal" }],
     "slices": []
