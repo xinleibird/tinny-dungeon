@@ -95,7 +95,7 @@ export default class Control {
           break;
         }
 
-        case KEYBOARD_CONTROLLED_KEYS[CONTROL_ACTIONS.HOLD]: {
+        case KEYBOARD_CONTROLLED_KEYS[CONTROL_ACTIONS.MENU]: {
           this.processTurn(Vector2.center);
 
           break;
@@ -137,6 +137,11 @@ export default class Control {
         case JOYSTICK_CONTROLLED_JOYS[CONTROL_ACTIONS.WALK_DOWN]: {
           await this.processTurn(Vector2.down);
 
+          break;
+        }
+
+        case JOYSTICK_CONTROLLED_JOYS[CONTROL_ACTIONS.MENU]: {
+          await this.processTurn(Vector2.center);
           break;
         }
 

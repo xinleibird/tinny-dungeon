@@ -31,8 +31,8 @@ export default class Broking extends Behavior {
           duration: 0.15,
           ease: Back.easeInOut.config(1),
           pixi: {
-            x: x * 16 + SPRITE_OFFSET_X + dx * 4,
-            y: y * 16 + SPRITE_OFFSET_Y + dy * 4,
+            x: x * 16 + SPRITE_OFFSET_X + dx * 8,
+            y: y * 16 + SPRITE_OFFSET_Y + dy * 8,
           },
 
           onStart: () => {

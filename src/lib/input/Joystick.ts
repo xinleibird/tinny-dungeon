@@ -7,9 +7,11 @@ type HandleJoysType = {
 
 export default class Joystick {
   private _handleJoys: HandleJoysType = {};
-  private _lastDown = 0;
   private _lastJoy: JOY_NAMES;
   private _delay = 100;
+  private _lastDown = 0;
+
+  private _timeout: any;
 
   private _nipple: JoystickManager;
 
@@ -34,7 +36,7 @@ export default class Joystick {
     this._nipple.on('end', this.processJoyUp.bind(this));
   }
 
-  private processJoyDown(event: nipple.EventData, data: nipple.JoystickOutputData & 1) {
+  private processJoyDown(event: nipple.EventData, data: nipple.JoystickOutputData) {
     this.clearAllInterval();
 
     const joy = data?.direction?.angle as JOY_NAMES;
@@ -66,16 +68,23 @@ export default class Joystick {
     const timeStamp = Date.now();
 
     const { x, y } = data.frontPosition;
-    console.log(x, y);
 
     if (Math.abs(x) < 10 && Math.abs(y) < 10) {
-      const center = JOY_NAMES.center;
-      const inHandleJoy = this._handleJoys?.[center];
-      const event: IJoyEventType = { timeStamp, joy: center };
-      inHandleJoy.processJoyDown(event);
-      this._lastJoy = center as JOY_NAMES;
-      this._lastDown = timeStamp;
-      inHandleJoy.processJoyDown(event);
+      if (timeStamp > this._lastDown + 1000) {
+        const hold = JOY_NAMES.hold;
+        const inHandleJoy = this._handleJoys?.[hold];
+        const event: IJoyEventType = { timeStamp, joy: hold };
+        this._lastJoy = hold as JOY_NAMES;
+        this._lastDown = timeStamp;
+        inHandleJoy.processJoyDown(event);
+      } else {
+        const center = JOY_NAMES.center;
+        const inHandleJoy = this._handleJoys?.[center];
+        const event: IJoyEventType = { timeStamp, joy: center };
+        this._lastJoy = center as JOY_NAMES;
+        this._lastDown = timeStamp;
+        inHandleJoy.processJoyDown(event);
+      }
     }
 
     for (const inHandle in this._handleJoys) {

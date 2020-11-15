@@ -5,6 +5,7 @@ export enum JOY_NAMES {
   down = 'down',
   left = 'left',
   right = 'right',
+  hold = 'hold',
   center = 'center',
 }
 
