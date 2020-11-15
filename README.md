@@ -47,7 +47,7 @@
 
 ## 📧 联系作者
 
-xinleibird@gmail.com <img src="https://raw.githubusercontent.com/xinleibird/bird-ui/master/public/logo48.png" width="32px" />
+xinleibird@gmail.com
 
 [rotjs]: https://ondras.github.io/rot.js/hp/
 [click]: https://opengameart.org/content/click-pixel-font
