@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://xinleibird.github.io/tinny-dungeon">
+  <a href="https://github.com/xinleibird/tinny-dungeon">
     <img width="256" src="https://raw.githubusercontent.com/xinleibird/tinny-dungeon/master/title.gif">
   </a>
 </p>
