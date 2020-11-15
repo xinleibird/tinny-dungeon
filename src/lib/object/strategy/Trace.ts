@@ -15,9 +15,10 @@ export default class Trace extends Strategy {
     if (this._target.isStay && !this._self.isStay) {
       const dir = this.siege();
       return [new TurnEvent(this._self, dir)];
+    } else {
+      const dir = this.follow();
+      return [new TurnEvent(this._self, dir)];
     }
-    const dir = this.follow();
-    return [new TurnEvent(this._self, dir)];
   }
 
   private follow() {
@@ -76,9 +77,8 @@ export default class Trace extends Strategy {
         if (entity?.hasAbility(ABILITY_NAMES.PASSABLE)) {
           const passable = entity.getAbility(ABILITY_NAMES.PASSABLE);
           const char = entityGroup.getCharacter(x, y);
-          const inTick = char?.inTick;
 
-          if (passable.status === ABILITY_STATUS.PASS && !inTick) {
+          if (passable.status === ABILITY_STATUS.PASS && !char?.inTick) {
             return true;
           }
         }

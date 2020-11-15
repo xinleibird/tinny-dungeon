@@ -1,4 +1,4 @@
-import { gsap } from 'gsap';
+import { Back, gsap } from 'gsap';
 import { Character, NonPlayer } from '../../character';
 import { SPRITE_OPTIONS } from '../../config';
 import { StaticSystem } from '../../core';
@@ -28,6 +28,7 @@ export default class Attacking extends Behavior {
       setTimeout(() => {
         gsap.to(this._character.rendering, {
           duration: 0.15,
+          ease: Back.easeInOut.config(2),
           pixi: {
             x: x * 16 + SPRITE_OFFSET_X + dx * 8,
             y: y * 16 + SPRITE_OFFSET_Y + dy * 8,

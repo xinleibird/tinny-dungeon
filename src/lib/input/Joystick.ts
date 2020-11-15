@@ -66,7 +66,9 @@ export default class Joystick {
     const timeStamp = Date.now();
 
     const { x, y } = data.frontPosition;
-    if (x < 10 && y < 10) {
+    console.log(x, y);
+
+    if (Math.abs(x) < 10 && Math.abs(y) < 10) {
       const center = JOY_NAMES.center;
       const inHandleJoy = this._handleJoys?.[center];
       const event: IJoyEventType = { timeStamp, joy: center };
