@@ -1,3 +1,7 @@
+import * as ROT from 'rot-js';
+import { StaticSystem } from '../core';
+import { Pickupable } from '../object/ability';
+import { PICKUPABLE_TYPES } from '../object/ability/Pickupable';
 import { Attacking, Movement, Opening } from '../object/behavior';
 import { GameSound } from '../sound';
 import Character, { NONPLAYER_TYPES } from './Character';
@@ -15,6 +19,21 @@ export default class NonPlayer extends Character {
 
     if (type === NONPLAYER_TYPES.BAT) {
       this._class = new CharacterClass({ ST: 8, DX: 12, IQ: 9, HT: 9 }, 'Thr', 'cr');
+    }
+  }
+
+  public gotDamage(damage: number) {
+    super.gotDamage(damage);
+
+    if (this.currentHP <= 0) {
+      const itemPool = [null, PICKUPABLE_TYPES.HEALTH_POTION];
+      const roll = ROT.RNG.getItem(itemPool);
+
+      if (roll) {
+        const { x, y } = this._geometryPosition;
+        const entity = StaticSystem.entityGroup.getEntity(x, y);
+        entity.addAbility(new Pickupable(this, roll));
+      }
     }
   }
 

@@ -9,6 +9,7 @@ import {
   Defencing,
   Movement,
   Opening,
+  Picking,
 } from '../object/behavior';
 import { GameSound } from '../sound';
 import { Emitter, GAME_EVENTS } from '../system';
@@ -25,16 +26,16 @@ export default class Player extends Character {
     if (DEBUG) {
       this._class = new CharacterClass({ ST: 30, DX: 30, IQ: 30, HT: 30 }, 'Sw', 'cut');
     } else {
-      this._class = new CharacterClass({ ST: 12, DX: 12, IQ: 12, HT: 12 }, 'Sw', 'cut');
+      this._class = new CharacterClass({ ST: 14, DX: 14, IQ: 14, HT: 14 }, 'Sw', 'cut');
     }
 
-    this._class.attackBonus = 1;
-    this._class.damageResistance = 1;
+    this._class.attackBonus = 2;
+    this._class.damageResistance = 2;
     StaticSystem.camera.follow(this);
   }
 
   public gotDamage(damage: number) {
-    super.gotDamage(damage);
+    super.gotDamage(~~(damage * 0.6));
 
     if (!this.alive) {
       Emitter.emit(GAME_EVENTS.USER_DIE);
@@ -50,6 +51,11 @@ export default class Player extends Character {
 
   public async rollBehaviors(direction: Vector2) {
     if (direction.equals(Vector2.center)) {
+      if (this.canBehave(direction, BEHAVIOR_NAMES.PICKING)) {
+        await super.rollBehaviors(direction);
+        return;
+      }
+
       if (
         this.canBehave(this._direction, BEHAVIOR_NAMES.BROKING) ||
         this.canBehave(this._direction, BEHAVIOR_NAMES.ATTACKING) ||
@@ -65,6 +71,7 @@ export default class Player extends Character {
   }
 
   protected registBehaviors() {
+    const picking = new Picking(this);
     const opening = new Opening(this);
     const broking = new Broking(this);
     const attacting = new Attacking(this);
@@ -72,7 +79,7 @@ export default class Player extends Character {
     const movement = new Movement(this);
     const defencing = new Defencing(this);
 
-    this._behaviors.push(opening, broking, attacting, defencing, clearing, movement);
+    this._behaviors.push(picking, opening, broking, attacting, defencing, clearing, movement);
   }
 
   protected registSounds() {

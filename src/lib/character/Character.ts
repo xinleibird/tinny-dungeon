@@ -50,7 +50,6 @@ export default abstract class Character extends Renderable {
   protected _direction: Vector2 = Vector2.down;
   protected _rendering: PIXI.Container;
   protected _geometryPosition: Vector2;
-  protected _lastGeometryPosition: Vector2;
 
   protected _stepSound: PIXI.sound.Sound;
   protected _attackSound: PIXI.sound.Sound;
@@ -67,6 +66,7 @@ export default abstract class Character extends Renderable {
 
   private _inTick = false;
   private _turnBase: TurnBase;
+  private _isStay = true;
 
   private _alive = true;
 
@@ -76,7 +76,6 @@ export default abstract class Character extends Renderable {
     this._rendering = new PIXI.Container();
 
     this._geometryPosition = new Vector2();
-    this._lastGeometryPosition = null;
 
     this._intelligence = new Intelligence(this);
 
@@ -106,6 +105,14 @@ export default abstract class Character extends Renderable {
 
   public get currentHP() {
     return this._class.currentHP;
+  }
+
+  public set currentHP(hp: number) {
+    if (hp >= 30) {
+      this._class.currentHP = 30;
+      return;
+    }
+    this._class.currentHP = hp;
   }
 
   public decide() {
@@ -254,15 +261,11 @@ export default abstract class Character extends Renderable {
   }
 
   public get isStay() {
-    return this._geometryPosition.equals(this._lastGeometryPosition);
+    return this._isStay;
   }
 
-  public get lastGeometryPosition() {
-    return this._lastGeometryPosition;
-  }
-
-  public set lastGeometryPosition(getmetryPosition: Vector2) {
-    this._lastGeometryPosition = getmetryPosition;
+  public set isStay(stay: boolean) {
+    this._isStay = stay;
   }
 
   public set geometryPosition(geometryPosition: Vector2) {

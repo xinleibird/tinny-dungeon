@@ -15,10 +15,10 @@ export default class Trace extends Strategy {
     if (this._target.isStay && !this._self.isStay) {
       const dir = this.siege();
       return [new TurnEvent(this._self, dir)];
-    } else {
-      const dir = this.follow();
-      return [new TurnEvent(this._self, dir)];
     }
+
+    const dir = this.follow();
+    return [new TurnEvent(this._self, dir)];
   }
 
   private follow() {

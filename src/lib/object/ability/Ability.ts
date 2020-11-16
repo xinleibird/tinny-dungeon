@@ -14,6 +14,7 @@ export enum ABILITY_NAMES {
   LIGHTABLE = 'Lightable',
   HURTABLE = 'Hurtable',
   BROKEABLE = 'Brokeable',
+  PICKUPABLE = 'Pickupable',
 }
 
 export enum ABILITY_STATUS {
@@ -28,6 +29,8 @@ export enum ABILITY_STATUS {
   NOHURT = 'nohurt',
   ENTIRE = 'Entire',
   BROKEN = 'Broken',
+  NOUSE = 'Nouse',
+  USED = 'Used',
 }
 
 export default abstract class Ability extends Renderable {

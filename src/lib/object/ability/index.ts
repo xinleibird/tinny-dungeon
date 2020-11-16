@@ -6,4 +6,5 @@ export { default as Hurtable } from './Hurtable';
 export { default as Lightable } from './Lightable';
 export { default as Openable } from './Openable';
 export { default as Passable } from './Passable';
+export { default as Pickupable } from './Pickupable';
 export { default as Respawnable } from './Respawnable';

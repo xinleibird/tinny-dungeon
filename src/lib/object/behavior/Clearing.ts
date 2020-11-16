@@ -28,6 +28,7 @@ export default class Clearing extends Behavior {
 
   public async do(direction: Vector2) {
     await this._character.doBehavior(BEHAVIOR_NAMES.MOVEMENT, direction);
+    this._character.isStay = true;
     GameSound.play('stair', 0.05, true, 2000);
 
     Emitter.emit(GAME_EVENTS.SCENE_CLEAR);

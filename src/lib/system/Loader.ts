@@ -132,6 +132,10 @@ export default class Loader {
       url: 'assets/sounds/effects/sfx_wpn_punch1.wav',
       preload: true,
     });
+    this.sounds.effects['picking'] = sound.Sound.from({
+      url: 'assets/sounds/effects/sfx_sounds_impact9.wav',
+      preload: true,
+    });
 
     loader.load((loader, resources) => {
       this.resources = resources;

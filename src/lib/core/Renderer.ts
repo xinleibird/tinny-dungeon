@@ -1,7 +1,14 @@
 import * as PIXI from 'pixi.js';
 import { Renderable } from '../abstraction';
 import { Character, Player } from '../character';
-import { Ability, Clearable, Lightable, Respawnable } from '../object/ability';
+import {
+  Ability,
+  Brokeable,
+  Clearable,
+  Lightable,
+  Pickupable,
+  Respawnable,
+} from '../object/ability';
 import { BackgroundScreen, ForegroundScreen, GameScreen } from '../screen';
 import { Tile } from '../tilemap';
 import { UserInterface } from '../ui';
@@ -14,7 +21,6 @@ export default class Renderer {
   private _backgroundLayer: PIXI.Container = new PIXI.Container();
   private _tileLayer: PIXI.DisplayObject[] = [];
   private _floorLayer: PIXI.DisplayObject[] = [];
-  private _objectLayer: PIXI.DisplayObject[] = [];
   private _characterLayer: PIXI.Container = new PIXI.Container();
   private _lightingLayer: PIXI.DisplayObject[] = [];
   private _uiLayer: PIXI.DisplayObject[] = [];
@@ -31,7 +37,6 @@ export default class Renderer {
     this._camera.viewport.addChild(this._backgroundLayer);
     this._tileLayer.length > 0 && this._camera.addChild(...this._tileLayer);
     this._floorLayer.length > 0 && this._camera.viewport.addChild(...this._floorLayer);
-    this._objectLayer.length > 0 && this._camera.viewport.addChild(...this._objectLayer);
     this._camera.viewport.addChild(this._characterLayer);
     this._lightingLayer.length > 0 && this._camera.viewport.addChild(...this._lightingLayer);
     this._uiLayer.length > 0 && this._camera.viewport.addChild(...this._uiLayer);
@@ -41,7 +46,6 @@ export default class Renderer {
   public trash() {
     this._tileLayer = [];
     this._floorLayer = [];
-    this._objectLayer = [];
     this._characterLayer.removeChildren();
     this._lightingLayer = [];
     this._uiLayer = [];
@@ -54,6 +58,15 @@ export default class Renderer {
     return this._characterLayer;
   }
 
+  public remove(obj: Renderable) {
+    if (obj instanceof Ability) {
+      if (obj instanceof Pickupable) {
+        this._characterLayer.removeChild(obj.rendering);
+        return;
+      }
+    }
+  }
+
   public add(obj: Renderable) {
     if (obj instanceof Tile) {
       this._tileLayer.push(obj.rendering);
@@ -61,13 +74,18 @@ export default class Renderer {
     }
 
     if (obj instanceof Ability) {
+      if (obj instanceof Respawnable || obj instanceof Clearable || obj instanceof Brokeable) {
+        this._floorLayer.push(obj.rendering);
+        return;
+      }
+
       if (obj instanceof Lightable) {
         this._lightingLayer.push(obj.rendering);
         return;
       }
 
-      if (obj instanceof Respawnable || obj instanceof Clearable) {
-        this._objectLayer.push(obj.rendering);
+      if (obj instanceof Pickupable) {
+        this._characterLayer.addChild(obj.rendering);
         return;
       }
 

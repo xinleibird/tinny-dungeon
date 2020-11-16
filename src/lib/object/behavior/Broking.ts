@@ -22,7 +22,7 @@ export default class Broking extends Behavior {
       const geometryPosition = this._character.geometryPosition;
       const { x, y } = geometryPosition;
 
-      this._character.lastGeometryPosition = new Vector2(x, y);
+      this._character.isStay = true;
 
       const { x: dx, y: dy } = direction;
 

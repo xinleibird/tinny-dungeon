@@ -153,6 +153,10 @@ export default class CharacterClass {
     return this._minorAbility.HP;
   }
 
+  public set currentHP(hp: number) {
+    this._minorAbility.HP = hp;
+  }
+
   public get attackBonus() {
     return this._attackBonus;
   }

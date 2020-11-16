@@ -1,10 +1,12 @@
 import * as PIXI from 'pixi.js';
+import * as ROT from 'rot-js';
 import { Character } from '../../character';
 import { StaticSystem } from '../../core';
 import { Entity } from '../../entity';
 import { GameSound } from '../../sound';
 import { Loader } from '../../system';
 import Ability, { ABILITY_NAMES, ABILITY_STATUS } from './Ability';
+import Pickupable, { PICKUPABLE_TYPES } from './Pickupable';
 
 export enum BROKEABLE_TYPES {
   CONTAINER = 'container',
@@ -110,6 +112,13 @@ export default class Brokeable extends Ability {
 
       sprite.onComplete = () => {
         shadow.alpha = 0;
+
+        const itemPool = [null, PICKUPABLE_TYPES.HEALTH_HEART];
+        const roll = ROT.RNG.getItem(itemPool);
+
+        if (roll) {
+          this._owner.addAbility(new Pickupable(this._owner, roll));
+        }
       };
 
       this._status = status;

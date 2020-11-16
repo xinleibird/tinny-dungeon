@@ -62,9 +62,7 @@ export default class Entity {
 
   public addAbility(...ability: Ability[]) {
     for (const abi of ability) {
-      if (!this.hasAbility(abi.name)) {
-        this._abilities.push(abi);
-      }
+      this._abilities.push(abi);
     }
   }
 
@@ -92,6 +90,16 @@ export default class Entity {
       }
     }
     return undefined;
+  }
+
+  public getAbilitys(name: ABILITY_NAMES) {
+    const abilities = [];
+    for (const ability of this._abilities) {
+      if (ability.name === name) {
+        abilities.push(ability);
+      }
+    }
+    return abilities;
   }
 
   private initialize(entityType: ENTITY_TYPES) {

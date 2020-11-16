@@ -11,6 +11,7 @@ export default class Opening extends Behavior {
   }
 
   public async do(direction: Vector2) {
+    this._character.isStay = true;
     const tarPosition = Vector2.merge(this._character.geometryPosition, direction);
 
     const tarEntity = StaticSystem.entityGroup.getEntity(tarPosition);
