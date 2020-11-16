@@ -40,11 +40,11 @@ export default class NonPlayer extends Character {
   }
 
   public hide() {
-    this._rendering.visible = false;
+    super.hide();
   }
 
   public show() {
-    this._rendering.visible = true;
+    super.show();
   }
 
   protected registBehaviors() {

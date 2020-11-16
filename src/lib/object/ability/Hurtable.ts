@@ -1,4 +1,4 @@
-import { Character, CHARACTER_TYPES, NonPlayer, Player } from '../../character';
+import { Character } from '../../character';
 import { StaticSystem } from '../../core';
 import { Entity } from '../../entity';
 import { Vector2 } from '../../geometry';
@@ -40,13 +40,8 @@ export default class Hurtable extends Ability {
         const damageIndicator = character.getExternal(
           EXTERNAL_NAMES.DAMAGE_INDICATOR
         ) as DamageIndicator;
-        if (this._owner instanceof Player) {
-          damageIndicator.addDamageText(damage, CHARACTER_TYPES.PLAYER, isCritical);
-          this._owner.gotDamage(damage);
-        }
-
-        if (this._owner instanceof NonPlayer) {
-          damageIndicator.addDamageText(damage, CHARACTER_TYPES.NON_PLAYER, isCritical);
+        if (this._owner instanceof Character) {
+          damageIndicator.addDamageText(damage, isCritical);
           this._owner.gotDamage(damage);
         }
 

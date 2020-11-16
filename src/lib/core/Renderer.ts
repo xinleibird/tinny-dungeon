@@ -9,6 +9,7 @@ import {
   Pickupable,
   Respawnable,
 } from '../object/ability';
+import { External } from '../object/external';
 import { BackgroundScreen, ForegroundScreen, GameScreen } from '../screen';
 import { Tile } from '../tilemap';
 import { UserInterface } from '../ui';
@@ -23,6 +24,7 @@ export default class Renderer {
   private _floorLayer: PIXI.DisplayObject[] = [];
   private _characterLayer: PIXI.Container = new PIXI.Container();
   private _lightingLayer: PIXI.DisplayObject[] = [];
+  private _externalLayer: PIXI.Container = new PIXI.Container();
   private _uiLayer: PIXI.DisplayObject[] = [];
   private _foregroundLayer: PIXI.Container = new PIXI.Container();
 
@@ -39,6 +41,7 @@ export default class Renderer {
     this._floorLayer.length > 0 && this._camera.viewport.addChild(...this._floorLayer);
     this._camera.viewport.addChild(this._characterLayer);
     this._lightingLayer.length > 0 && this._camera.viewport.addChild(...this._lightingLayer);
+    this._camera.viewport.addChild(this._externalLayer);
     this._uiLayer.length > 0 && this._camera.viewport.addChild(...this._uiLayer);
     this._camera.viewport.addChild(this._foregroundLayer);
   }
@@ -48,6 +51,7 @@ export default class Renderer {
     this._floorLayer = [];
     this._characterLayer.removeChildren();
     this._lightingLayer = [];
+    this._externalLayer.removeChildren();
     this._uiLayer = [];
     StaticSystem.camera.removeChildren();
     StaticSystem.camera.addChild(this._backgroundLayer);
@@ -100,6 +104,10 @@ export default class Renderer {
         this._player = obj;
       }
       return;
+    }
+
+    if (obj instanceof External) {
+      this._externalLayer.addChild(obj.rendering);
     }
 
     if (obj instanceof GameScreen) {

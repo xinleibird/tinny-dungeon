@@ -103,6 +103,10 @@ export default abstract class Character extends Renderable {
     return this._alive;
   }
 
+  public set alive(alive: boolean) {
+    this._alive = alive;
+  }
+
   public get currentHP() {
     return this._class.currentHP;
   }
@@ -195,7 +199,6 @@ export default abstract class Character extends Renderable {
 
   public addExternal(external: External) {
     this._externals.push(external);
-    this._rendering.addChild(external.rendering);
   }
 
   public showExternal(externalName?: EXTERNAL_NAMES) {
@@ -622,11 +625,13 @@ export default abstract class Character extends Renderable {
   }
 
   protected hide() {
-    this._rendering.visible = false;
+    // this._rendering.visible = false;
+    this._rendering.alpha = 0;
   }
 
   protected show() {
-    this._rendering.visible = true;
+    // this._rendering.visible = true;
+    this._rendering.alpha = 1;
   }
 
   protected registSounds() {
@@ -777,11 +782,10 @@ export default abstract class Character extends Renderable {
   }
 
   private registExternals() {
-    const directionIndicator = new DirectionIndicator();
-    directionIndicator.direction = this.direction;
+    const directionIndicator = new DirectionIndicator(this);
     this.addExternal(directionIndicator);
 
-    const damageIndicator = new DamageIndicator();
+    const damageIndicator = new DamageIndicator(this);
     this.addExternal(damageIndicator);
   }
 

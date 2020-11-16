@@ -1,24 +1,30 @@
 import { gsap, Power3 } from 'gsap';
 import * as PIXI from 'pixi.js';
-import { CHARACTER_TYPES } from '../../character';
+import { Character, Player } from '../../character';
+import { StaticSystem } from '../../core';
 import { Vector2 } from '../../geometry';
 import External, { EXTERNAL_NAMES } from './External';
 
 export default class DamageIndicator extends External {
   protected _rendering: PIXI.Container;
 
-  public constructor() {
-    super();
+  public constructor(character: Character) {
+    super(character);
     this._name = EXTERNAL_NAMES.DAMAGE_INDICATOR;
     this._rendering = new PIXI.Container();
+
+    StaticSystem.renderer.add(this);
+    PIXI.Ticker.shared.add(() => {
+      this._rendering.position = this._owner.rendering.position;
+    });
   }
 
-  public addDamageText(damage: number, characterType: CHARACTER_TYPES, isCritical = false) {
+  public addDamageText(damage: number, isCritical = false) {
     this.cleanupText();
 
     let color = 0xac3232;
 
-    if (characterType === CHARACTER_TYPES.PLAYER) {
+    if (this._owner instanceof Player) {
       color = 0x306082;
     }
 
@@ -64,7 +70,7 @@ export default class DamageIndicator extends External {
             gsap.to(bitmapText, {
               duration: 0.2,
               pixi: {
-                x: 8 * dir,
+                x: 16 * dir,
                 y: 4,
                 alpha: 0,
               },
@@ -82,7 +88,6 @@ export default class DamageIndicator extends External {
 
   public set direction(direction: Vector2) {
     this._direction = direction;
-    this.handleDirection(direction);
   }
 
   public get visiable() {
@@ -91,16 +96,6 @@ export default class DamageIndicator extends External {
 
   public set visiable(visiable: boolean) {
     this._rendering.visible = visiable;
-  }
-
-  private handleDirection(direction: Vector2) {
-    if (direction.equals(Vector2.left)) {
-      this._rendering.scale.x = -1;
-    }
-
-    if (direction.equals(Vector2.right)) {
-      this._rendering.scale.x = 1;
-    }
   }
 
   private cleanupText() {

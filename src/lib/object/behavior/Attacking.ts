@@ -92,14 +92,19 @@ export default class Attacking extends Behavior {
     const attackRoll = this._character?.class?.attackRoll();
     let damage = 0;
 
-    if (attackRoll !== -1) {
-      const defenceRoll = tarCharacter?.class?.defenceRoll();
+    if (attackRoll === 'GreatCritical') {
+      damage = this._character?.class?.damageRoll(attackRoll);
+    }
 
+    if (attackRoll === 'Critical') {
+      damage = this._character?.class?.damageRoll(attackRoll);
+    }
+
+    if (attackRoll === 'Success') {
+      const defenceRoll = tarCharacter?.class?.defenceRoll();
       if (!defenceRoll) {
-        damage = this._character?.class?.damageRoll();
+        damage = this._character?.class?.damageRoll(attackRoll);
       }
-    } else {
-      damage = this._character?.class?.damageRoll(true);
     }
 
     const hurtableEntity = tarEntity?.getAbility(ABILITY_NAMES.HURTABLE) as Hurtable;
@@ -112,9 +117,13 @@ export default class Attacking extends Behavior {
 
     if (hurtableCharacter?.status === ABILITY_STATUS.CANHURT) {
       if (hurtableCharacter instanceof Player) {
-        damage = ~~(damage * 0.33);
+        damage = ~~(damage * 0.25);
       }
-      hurtableCharacter?.exert(direction, damage, attackRoll === -1);
+      hurtableCharacter?.exert(
+        direction,
+        damage,
+        attackRoll === 'Critical' || attackRoll === 'GreatCritical'
+      );
       return;
     }
   }

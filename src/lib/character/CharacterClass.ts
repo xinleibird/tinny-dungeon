@@ -114,6 +114,7 @@ export default class CharacterClass {
   private _level: number;
 
   private _attackBonus: number;
+  private _criticalBonus: number;
   private _damageType: 'Thr' | 'Sw';
   private _damageResistance: number;
   private _damageMultipleType: 'cr' | 'cut' | 'imp';
@@ -144,6 +145,7 @@ export default class CharacterClass {
 
     this._level = 1;
     this._attackBonus = 0;
+    this._criticalBonus = 0;
     this._damageType = damageType;
     this._damageResistance = 0;
     this._damageMultipleType = damageMultipleType;
@@ -165,6 +167,14 @@ export default class CharacterClass {
     this._attackBonus = ~~bonus;
   }
 
+  public get criticalBonus() {
+    return this._criticalBonus;
+  }
+
+  public set criticalBonus(bonus: number) {
+    this._criticalBonus = bonus;
+  }
+
   public get damageResistance() {
     return this._damageResistance;
   }
@@ -184,32 +194,54 @@ export default class CharacterClass {
   public attackRoll() {
     const roll = this.d6(3);
 
-    // Great Success
-    if (roll <= 4 + ~~((this._attackBonus + this._damageResistance) * 0.42)) {
-      return -1;
+    let criticalBonus = 0;
+
+    if (this._majorAbility.HT === 15) {
+      criticalBonus = 1;
+    }
+
+    if (this._majorAbility.HT > 15) {
+      criticalBonus = 2;
+    }
+
+    if (roll === 3) {
+      return 'GreatCritical';
+    }
+
+    if (roll <= 4 + criticalBonus + this._criticalBonus) {
+      return 'Critical';
     }
 
     if (roll >= 17) {
-      return 0;
+      return 'GreatFail';
     }
 
     if (roll < this._majorAbility.ST + this._attackBonus) {
-      return 1;
+      return 'Success';
     }
 
-    return 0;
+    return 'Fail';
   }
 
-  public damageRoll(isCritical = false) {
+  public damageRoll(type: 'GreatCritical' | 'Critical' | 'Success' = 'Success') {
     const damageModel = this._minorAbility.Dmg[this._damageType];
     const { d, a } = damageModel;
+
     let damage = 0;
 
-    if (isCritical) {
+    if (type === 'GreatCritical') {
       damage = ~~((6 * d + a) * damageMultiple[this._damageMultipleType]);
-      damage *= 1.5;
+      damage *= 2;
       damage = ~~damage;
-    } else {
+    }
+
+    if (type === 'Critical') {
+      damage = ~~(this.d6(d, a) * damageMultiple[this._damageMultipleType]);
+      damage *= 2;
+      damage = ~~damage;
+    }
+
+    if (type === 'Success') {
       damage = ~~(this.d6(d, a) * damageMultiple[this._damageMultipleType]);
     }
 

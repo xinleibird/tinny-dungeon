@@ -71,25 +71,16 @@ export const updateEntitiesDislightings = (geometryPosition: Vector2) => {
     });
   }
 
-  entityGroup.forLoop((x, y) => {
-    const entity = entityGroup.getEntity(x, y);
+  entityGroup.loop((entity) => {
     if (entity?.hasAbility(ABILITY_NAMES.LIGHTABLE)) {
       const lightable = entity.getAbility(ABILITY_NAMES.LIGHTABLE);
       if (lightable.status === ABILITY_STATUS.LIGHTING) {
         lightable.status = ABILITY_STATUS.DISLIGHTING;
-
-        const character = entityGroup.getCharacter(x, y);
-        if (character instanceof NonPlayer) {
-          character?.hide();
-        }
       }
-
-      if (lightable.status === ABILITY_STATUS.DISLIGHTING) {
-        const character = entityGroup.getCharacter(x, y);
-        if (character instanceof NonPlayer) {
-          character?.hide();
-        }
-      }
+    }
+    if (entity?.character) {
+      const non = entity?.character as NonPlayer;
+      non.hide();
     }
   });
 };

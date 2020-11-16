@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js';
 import { Renderable } from '../../abstraction';
+import { Character } from '../../character';
 import { Vector2 } from '../../geometry';
 
 export enum EXTERNAL_NAMES {
@@ -11,12 +12,14 @@ export enum EXTERNAL_NAMES {
 export default abstract class External extends Renderable {
   protected _direction: Vector2;
   protected _name: EXTERNAL_NAMES;
+  protected _visiable = true;
 
-  private _visiable = true;
+  protected _owner: Character;
 
-  protected constructor() {
+  protected constructor(owner: Character) {
     super();
     this._name = EXTERNAL_NAMES.ABSTRACT_EXTERNAL;
+    this._owner = owner;
   }
 
   public get rendering() {
