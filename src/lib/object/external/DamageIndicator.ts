@@ -5,14 +5,15 @@ import { Vector2 } from '../../geometry';
 import External, { EXTERNAL_NAMES } from './External';
 
 export default class DamageIndicator extends External {
-  protected _rendering: PIXI.Container = new PIXI.Container();
+  protected _rendering: PIXI.Container;
 
   public constructor() {
     super();
     this._name = EXTERNAL_NAMES.DAMAGE_INDICATOR;
+    this._rendering = new PIXI.Container();
   }
 
-  public addDamageText(damage: number, characterType: CHARACTER_TYPES) {
+  public addDamageText(damage: number, characterType: CHARACTER_TYPES, isCritical = false) {
     this.cleanupText();
 
     let color = 0xac3232;
@@ -25,7 +26,7 @@ export default class DamageIndicator extends External {
     if (damage) {
       bitmapText = new PIXI.BitmapText(`-${damage}`, {
         fontName: 'Click',
-        fontSize: 13,
+        fontSize: isCritical ? 26 : 13,
         tint: color,
       });
     } else {

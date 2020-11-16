@@ -131,10 +131,7 @@ export default class Dungeon extends Scene {
           !entity.hasAbility(ABILITY_NAMES.RESPAWNABLE)
         ) {
           const passable = entity.getAbility(ABILITY_NAMES.PASSABLE) as Passable;
-          if (
-            passable.status === ABILITY_STATUS.PASS &&
-            passable.type === ENTITY_TYPES.FLOOR
-          ) {
+          if (passable.status === ABILITY_STATUS.PASS) {
             const upper = this._floorsMap?.[y - 1]?.[x];
 
             if (upper !== ENTITY_TYPES.DOWNSTAIR && upper !== ENTITY_TYPES.UPSTAIR) {
@@ -145,7 +142,7 @@ export default class Dungeon extends Scene {
       }
     });
 
-    const num = ~~((entityGroup.width * entityGroup.height) / 100);
+    const num = ~~((entityGroup.width * entityGroup.height) / 65);
 
     for (let i = 0; i < num; i++) {
       const entity: Entity = ROT.RNG.getItem(entities);

@@ -26,16 +26,16 @@ export default class Player extends Character {
     if (DEBUG) {
       this._class = new CharacterClass({ ST: 30, DX: 30, IQ: 30, HT: 30 }, 'Sw', 'cut');
     } else {
-      this._class = new CharacterClass({ ST: 14, DX: 14, IQ: 14, HT: 14 }, 'Sw', 'cut');
+      this._class = new CharacterClass({ ST: 12, DX: 12, IQ: 12, HT: 12 }, 'Sw', 'cut');
     }
 
-    this._class.attackBonus = 2;
-    this._class.damageResistance = 2;
+    this._class.attackBonus = 6;
+    this._class.damageResistance = 6;
     StaticSystem.camera.follow(this);
   }
 
   public gotDamage(damage: number) {
-    super.gotDamage(~~(damage * 0.6));
+    super.gotDamage(damage);
 
     if (!this.alive) {
       Emitter.emit(GAME_EVENTS.USER_DIE);

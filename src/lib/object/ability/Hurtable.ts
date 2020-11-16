@@ -20,7 +20,7 @@ export default class Hurtable extends Ability {
     this._status = initStatus;
   }
 
-  public exert(originDirection: Vector2, damage: number) {
+  public exert(originDirection: Vector2, damage: number, isCritical = false) {
     if (this._status === ABILITY_STATUS.CANHURT) {
       const { x, y } = this._geometryPosition;
       const character = StaticSystem.entityGroup.getCharacter(x, y);
@@ -41,12 +41,12 @@ export default class Hurtable extends Ability {
           EXTERNAL_NAMES.DAMAGE_INDICATOR
         ) as DamageIndicator;
         if (this._owner instanceof Player) {
-          damageIndicator.addDamageText(damage, CHARACTER_TYPES.PLAYER);
+          damageIndicator.addDamageText(damage, CHARACTER_TYPES.PLAYER, isCritical);
           this._owner.gotDamage(damage);
         }
 
         if (this._owner instanceof NonPlayer) {
-          damageIndicator.addDamageText(damage, CHARACTER_TYPES.NON_PLAYER);
+          damageIndicator.addDamageText(damage, CHARACTER_TYPES.NON_PLAYER, isCritical);
           this._owner.gotDamage(damage);
         }
 

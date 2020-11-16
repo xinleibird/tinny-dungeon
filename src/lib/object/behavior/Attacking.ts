@@ -1,9 +1,9 @@
 import { Back, gsap } from 'gsap';
-import { Character, NonPlayer } from '../../character';
+import { Character, NonPlayer, Player } from '../../character';
 import { SPRITE_OPTIONS } from '../../config';
 import { StaticSystem } from '../../core';
 import { Vector2 } from '../../geometry';
-import { ABILITY_NAMES, ABILITY_STATUS } from '../ability';
+import { ABILITY_NAMES, ABILITY_STATUS, Hurtable } from '../ability';
 import Behavior, { BEHAVIOR_NAMES } from './Behavior';
 
 const { SPRITE_OFFSET_X, SPRITE_OFFSET_Y } = SPRITE_OPTIONS;
@@ -99,19 +99,22 @@ export default class Attacking extends Behavior {
         damage = this._character?.class?.damageRoll();
       }
     } else {
-      damage = this._character?.class?.damageRoll();
+      damage = this._character?.class?.damageRoll(true);
     }
 
-    const hurtableEntity = tarEntity?.getAbility(ABILITY_NAMES.HURTABLE);
-    const hurtableCharacter = tarCharacter?.getAbility(ABILITY_NAMES.HURTABLE);
+    const hurtableEntity = tarEntity?.getAbility(ABILITY_NAMES.HURTABLE) as Hurtable;
+    const hurtableCharacter = tarCharacter?.getAbility(ABILITY_NAMES.HURTABLE) as Hurtable;
 
     if (hurtableEntity?.status === ABILITY_STATUS.CANHURT) {
-      hurtableEntity?.exert(direction);
+      hurtableEntity?.exert(direction, damage);
       return;
     }
 
     if (hurtableCharacter?.status === ABILITY_STATUS.CANHURT) {
-      hurtableCharacter?.exert(direction, damage);
+      if (hurtableCharacter instanceof Player) {
+        damage = ~~(damage * 0.33);
+      }
+      hurtableCharacter?.exert(direction, damage, attackRoll === -1);
       return;
     }
   }

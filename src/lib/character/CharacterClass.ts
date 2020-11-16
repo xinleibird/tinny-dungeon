@@ -185,7 +185,7 @@ export default class CharacterClass {
     const roll = this.d6(3);
 
     // Great Success
-    if (roll <= 4) {
+    if (roll <= 4 + ~~((this._attackBonus + this._damageResistance) * 0.42)) {
       return -1;
     }
 
@@ -203,10 +203,14 @@ export default class CharacterClass {
   public damageRoll(isCritical = false) {
     const damageModel = this._minorAbility.Dmg[this._damageType];
     const { d, a } = damageModel;
-    let damage = ~~(this.d6(d, a) * damageMultiple[this._damageMultipleType]);
+    let damage = 0;
 
     if (isCritical) {
-      damage *= 2;
+      damage = ~~((6 * d + a) * damageMultiple[this._damageMultipleType]);
+      damage *= 1.5;
+      damage = ~~damage;
+    } else {
+      damage = ~~(this.d6(d, a) * damageMultiple[this._damageMultipleType]);
     }
 
     damage = damage ? damage - this._damageResistance : damage;
