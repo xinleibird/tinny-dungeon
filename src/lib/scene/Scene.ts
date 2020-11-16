@@ -49,7 +49,7 @@ export default class Scene {
       const index = entities.indexOf(entity);
       entities.splice(index, 1);
 
-      non.geometryPosition = entity.geometryPosition;
+      non.respawn(entity.geometryPosition);
     }
   }
 }

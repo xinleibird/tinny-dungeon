@@ -1,6 +1,5 @@
 import * as PIXI from 'pixi.js';
 import { Character } from '../../character';
-import { StaticSystem } from '../../core';
 import { Vector2 } from '../../geometry';
 import { Loader } from '../../system';
 import External, { EXTERNAL_NAMES } from './External';
@@ -14,7 +13,6 @@ export default class DirectionIndicator extends External {
     this._name = EXTERNAL_NAMES.DIRECTION_INDICATOR;
     this.initialize(character.direction);
 
-    StaticSystem.renderer.add(this);
     PIXI.Ticker.shared.add(() => {
       this._rendering.position = this._owner.rendering.position;
     });

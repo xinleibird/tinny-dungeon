@@ -1,7 +1,6 @@
 import { gsap, Power3 } from 'gsap';
 import * as PIXI from 'pixi.js';
 import { Character, Player } from '../../character';
-import { StaticSystem } from '../../core';
 import { Vector2 } from '../../geometry';
 import External, { EXTERNAL_NAMES } from './External';
 
@@ -13,7 +12,6 @@ export default class DamageIndicator extends External {
     this._name = EXTERNAL_NAMES.DAMAGE_INDICATOR;
     this._rendering = new PIXI.Container();
 
-    StaticSystem.renderer.add(this);
     PIXI.Ticker.shared.add(() => {
       this._rendering.position = this._owner.rendering.position;
     });

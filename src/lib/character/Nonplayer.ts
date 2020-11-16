@@ -1,5 +1,6 @@
 import * as ROT from 'rot-js';
 import { StaticSystem } from '../core';
+import { Vector2 } from '../geometry';
 import { Pickupable } from '../object/ability';
 import { PICKUPABLE_TYPES } from '../object/ability/Pickupable';
 import { Attacking, Movement, Opening } from '../object/behavior';
@@ -37,6 +38,13 @@ export default class NonPlayer extends Character {
         entity.addAbility(new Pickupable(this, roll));
       }
     }
+  }
+
+  public respawn(geometryPosition: Vector2) {
+    this.geometryPosition = geometryPosition;
+    this._externals.forEach((ex) => {
+      StaticSystem.renderer.add(ex);
+    });
   }
 
   public hide() {

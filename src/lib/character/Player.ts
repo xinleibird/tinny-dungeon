@@ -46,6 +46,9 @@ export default class Player extends Character {
   public respawn(geometryPosition: Vector2) {
     Control.regist(this);
     this.geometryPosition = geometryPosition;
+    this._externals.forEach((ex) => {
+      StaticSystem.renderer.add(ex);
+    });
     Emitter.emit(GAME_EVENTS.SCENE_START);
     updateEntitiesLightings(this._geometryPosition);
   }
