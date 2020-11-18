@@ -7,8 +7,8 @@
     { "src": "android-chrome-512x512.png", "sizes": "512x512", "type": "image/png" }
   ],
   "theme_color": "#ffffff",
-  "background_color": "#ffffff",
-  "display": "standalone",
+  "background_color": "#160C21",
+  "display": "fullscreen",
   "orientation": "landscape-primary",
   "start_url": "/tinny-dungeon"
 }
