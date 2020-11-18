@@ -3,6 +3,7 @@ import CopyWebpackPlugin from 'copy-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import path from 'path';
 import { Configuration } from 'webpack';
+import WorkboxWebpackPlugin from 'workbox-webpack-plugin';
 
 const config: Configuration = {
   mode: 'production',
@@ -56,6 +57,11 @@ const config: Configuration = {
         { from: 'src/assets/', to: 'assets/' },
         { from: 'public', to: '' },
       ],
+    }),
+    new WorkboxWebpackPlugin.GenerateSW({
+      clientsClaim: true,
+      skipWaiting: true,
+      maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
     }),
     new CleanWebpackPlugin(),
   ],
