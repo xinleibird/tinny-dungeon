@@ -141,7 +141,15 @@ export default class Loader {
       this.resources = resources;
     });
 
+    loader.onProgress.add((e) => {
+      document.getElementById('loading').innerText = `Loading ... ${Math.floor(e.progress)
+        .toString()
+        .padStart(2, '0')}`;
+    });
+
     loader.onComplete.add(() => {
+      document.getElementById('loading').style.display = 'none';
+
       this.textures.AVATAR = PIXI.Texture.from(`avatarImage`);
 
       for (let i = 0; i < 6; i++) {
@@ -248,8 +256,6 @@ export default class Loader {
     });
 
     loader.onError.add(() => {});
-
-    loader.onProgress.add((e) => {});
 
     loader.onLoad.add(() => {});
   }

@@ -10,9 +10,21 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover"
     />
+    <style>
+      #loading {
+        position: absolute;
+        font-size: x-large;
+        color: white;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+    </style>
     <title>Dungeon</title>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div id="loading"></div>
+    </div>
   </body>
 </html>
