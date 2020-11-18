@@ -144,7 +144,7 @@ export default class Loader {
     loader.onProgress.add((e) => {
       document.getElementById('loading').innerText = `Loading ... ${Math.floor(e.progress)
         .toString()
-        .padStart(2, '0')}`;
+        .padStart(2, '0')}%`;
     });
 
     loader.onComplete.add(() => {
