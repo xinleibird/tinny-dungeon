@@ -9,5 +9,6 @@
   "theme_color": "#ffffff",
   "background_color": "#ffffff",
   "display": "standalone",
+  "orientation": "landscape-primary",
   "start_url": "/tinny-dungeon"
 }
