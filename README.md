@@ -8,6 +8,9 @@
   <h1>Tinny Dungeon</h1>
   <h3>基于 PixiJS 的 rogue-like 游戏</h3>
   <h4>A rogue-like game based PixiJS</h3>
+  <br>
+  <br>
+  <h3><a href="https://xinleibird.github.io/tinny-dungeon/">Online Demo</a></h3>
 </div>
 
 <br>
