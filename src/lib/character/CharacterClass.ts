@@ -231,7 +231,7 @@ export default class CharacterClass {
 
     if (type === 'GreatCritical') {
       damage = ~~((6 * d + a) * damageMultiple[this._damageMultipleType]);
-      damage *= 2;
+      damage *= 1.25;
       damage = ~~damage;
     }
 

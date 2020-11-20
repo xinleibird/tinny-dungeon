@@ -22,6 +22,10 @@ export default class NonPlayer extends Character {
       this._class = new CharacterClass({ ST: 8, DX: 12, IQ: 9, HT: 9 }, 'Thr', 'cr');
     }
 
+    if (type === NONPLAYER_TYPES.SLIME) {
+      this._class = new CharacterClass({ ST: 8, DX: 8, IQ: 10, HT: 12 }, 'Thr', 'cr');
+    }
+
     this.hide();
   }
 

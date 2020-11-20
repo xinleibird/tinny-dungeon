@@ -34,6 +34,7 @@ export default class Level {
     const nonPlayerTypes = {
       [NONPLAYER_TYPES.BAT]: 1,
       [NONPLAYER_TYPES.SKELETON]: 2,
+      [NONPLAYER_TYPES.SLIME]: 1,
     };
 
     for (let i = 0; i < nonPlayerNumber; i++) {
