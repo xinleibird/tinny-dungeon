@@ -247,6 +247,7 @@ export default class ForegroundScreen extends GameScreen {
       titleSprite.alpha = 0;
       titleSprite.animationSpeed = 0.1;
       titleSprite.play();
+
       this._rendering.addChild(titleSprite);
 
       const holdBatch = Loader.textures['KNIGHT_M'][CHARACTER_ANIMATIONS.HOLD];
@@ -271,14 +272,6 @@ export default class ForegroundScreen extends GameScreen {
       gsap.to(titleSprite, {
         duration: 1.5,
         alpha: 1,
-        onComplete: () => {
-          gsap.to(titleSprite, {
-            duration: 2,
-            pixi: { alpha: 0.618 },
-            yoyo: true,
-            repeat: -1,
-          });
-        },
       });
 
       const tap = () => {
