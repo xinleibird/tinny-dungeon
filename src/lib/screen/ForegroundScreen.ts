@@ -131,24 +131,25 @@ export default class ForegroundScreen extends GameScreen {
       space.position.x += 32;
       enter.position.x += 48;
 
-      keyboard.position.y -= 48;
+      keyboard.position.y -= 16;
       keyboard.position.x -= 8;
 
       keyboard.addChild(w, a, s, d, space, enter);
       this._rendering.addChild(keyboard);
 
-      const text = new PIXI.BitmapText(`USE KEYBOARD\n\n\n\nOR\n\n\nTAP   SCREEN`, {
+      const text = new PIXI.BitmapText(`USE  KEYBOARD\n\n\nOR TAP SCREEN`, {
         fontName: 'Covenant5x5',
         fontSize: 9,
         align: 'center',
       });
 
       text.anchor = 0.5;
+      text.position.y += 10;
       this._rendering.addChild(text);
 
       const tapIcon = new PIXI.Sprite(Loader.textures.UI.tap);
       tapIcon.anchor.set(0.5);
-      tapIcon.position.y += 48;
+      tapIcon.position.y += 36;
       this._rendering.addChild(tapIcon);
 
       gsap.to(tapIcon, {
@@ -234,10 +235,15 @@ export default class ForegroundScreen extends GameScreen {
     const showTitle = () => {
       GameMusic.play(MUSIC_ALBUM.TITLE);
 
+      const titleBackground = new PIXI.Sprite(Loader.textures.TITLE_BACKGROUND);
+      titleBackground.anchor.set(0.5);
+      titleBackground.position.y -= 38;
+      this._rendering.addChild(titleBackground);
+
       const titleBatch = Loader.textures.TITLES;
       const titleSprite = new PIXI.AnimatedSprite(titleBatch);
       titleSprite.anchor.set(0.5);
-      titleSprite.position.y -= 40;
+      titleSprite.position.y -= 20;
       titleSprite.alpha = 0;
       titleSprite.animationSpeed = 0.1;
       titleSprite.play();
@@ -247,7 +253,7 @@ export default class ForegroundScreen extends GameScreen {
       const anim = new PIXI.AnimatedSprite(holdBatch);
       anim.anchor.set(0.5);
       anim.animationSpeed = 0.133;
-      anim.position.y += 48;
+      anim.position.y += 42;
       this.rendering.addChild(anim);
       anim.play();
 
@@ -279,7 +285,7 @@ export default class ForegroundScreen extends GameScreen {
         cb();
         Emitter.removeListener(KEY_EVENTS.KEY_DOWN, tap);
         Emitter.removeListener(JOY_EVENTS.JOY_DOWN, tap);
-        this._rendering.removeChild(titleSprite, anim, tapToStart);
+        this._rendering.removeChild(titleSprite, titleBackground, anim, tapToStart);
       };
 
       Emitter.on(KEY_EVENTS.KEY_DOWN, tap);

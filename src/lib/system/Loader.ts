@@ -19,6 +19,7 @@ type TexturesTypes = {
   LIGHTING_MASK?: PIXI.Texture[];
   TITLES?: PIXI.Texture[];
   AVATAR?: PIXI.Texture;
+  TITLE_BACKGROUND?: PIXI.Texture;
   RAY?: PIXI.Texture;
   ATTACHMENTS?: {
     pot: PIXI.Texture[];
@@ -71,6 +72,7 @@ export default class Loader {
     loader.add('Convenant', 'assets/fonts/Covenant5x5.fnt');
 
     loader.add('avatarImage', 'assets/sprites/avatar.png');
+    loader.add('titleBackground', 'assets/sprites/title_background.png');
 
     loader.add('title', 'assets/sounds/musics/MusMus-BGM-070.mp3');
     loader.add('main', 'assets/sounds/musics/MusMus-BGM-076.mp3');
@@ -152,6 +154,7 @@ export default class Loader {
       document.getElementById('loading').style.display = 'none';
 
       this.textures.AVATAR = PIXI.Texture.from(`avatarImage`);
+      this.textures.TITLE_BACKGROUND = PIXI.Texture.from(`titleBackground`);
 
       for (let i = 0; i < 6; i++) {
         const texture = PIXI.Texture.from(`title_${i}`);
