@@ -91,6 +91,7 @@ export default class Game extends PIXI.Application {
     });
 
     Emitter.on(GAME_EVENTS.SCENE_RUNNING, () => {
+      this._background.geometryPosition = this._scene.playerRespawnPosition;
       this._player.respawn(this._scene.playerRespawnPosition);
     });
 
