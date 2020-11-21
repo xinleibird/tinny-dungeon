@@ -175,7 +175,6 @@ export default class ForegroundScreen extends GameScreen {
         fontName: 'Pixel',
         fontSize: 9,
       });
-      product.position.y -= 10;
       product.anchor = 0.5;
 
       const email = new PIXI.BitmapText(`xinleibird@gmail.com`, {
@@ -183,8 +182,8 @@ export default class ForegroundScreen extends GameScreen {
         fontSize: 9,
       });
 
-      email.position.y += 10;
       email.anchor = 0.5;
+      email.position.y += 20;
 
       const container = new PIXI.Container();
       container.alpha = 0;
