@@ -26,10 +26,12 @@
 
 ## 📱 像原生 app 一样运行
 
+<span>
 <img width="192" src="https://raw.githubusercontent.com/xinleibird/tinny-dungeon/master/images/IMG_0232.jpg">
 <img width="192" src="https://raw.githubusercontent.com/xinleibird/tinny-dungeon/master/images/IMG_0233.jpg">
 <img width="192" src="https://raw.githubusercontent.com/xinleibird/tinny-dungeon/master/images/IMG_0234.jpg">
 <img width="192" src="https://raw.githubusercontent.com/xinleibird/tinny-dungeon/master/images/IMG_0235.jpg">
+</span>
 
 <br>
 <br>
