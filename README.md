@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://github.com/xinleibird/tinny-dungeon">
-    <img width="256" src="https://raw.githubusercontent.com/xinleibird/tinny-dungeon/master/title.gif">
+    <img width="256" src="https://raw.githubusercontent.com/xinleibird/tinny-dungeon/master/images/title.gif">
   </a>
 </p>
 
@@ -14,6 +14,23 @@
 </div>
 
 <br>
+<br>
+<br>
+
+## 🎮 操作方法
+
+- 键盘 <kbd>w</kbd> <kbd>a</kbd> <kbd>s</kbd> <kbd>d</kbd> 或者滑动屏幕移动。
+- <kbd>space</kbd> <kbd>enter</kbd> 或者点击屏幕拾取。
+  <br>
+  <br>
+
+## 📱 像原生 app 一样运行
+
+![pic a](https://raw.githubusercontent.com/xinleibird/tinny-dungeon/master/images/IMG_0232.jpg)
+![pic b](https://raw.githubusercontent.com/xinleibird/tinny-dungeon/master/images/IMG_0233.jpg)
+![pic c](https://raw.githubusercontent.com/xinleibird/tinny-dungeon/master/images/IMG_0234.jpg)
+![pic d](https://raw.githubusercontent.com/xinleibird/tinny-dungeon/master/images/IMG_0235.jpg)
+
 <br>
 <br>
 
